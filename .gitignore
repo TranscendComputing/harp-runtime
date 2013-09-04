@@ -9,7 +9,8 @@ _yardoc
 coverage
 doc/
 public/doc/
-public/docs/
+public/docs/*.json
+public/docs/images/
 lib/bundler/man
 pkg
 rdoc

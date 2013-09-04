@@ -29,7 +29,7 @@ Try:
 
 Add this line to your application's Gemfile:
 
-    gem 'harp-engine'
+    gem 'harp-runtime'
 
 And then execute:
 
@@ -37,7 +37,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install harp-engine
+    $ gem install harp-runtime
 
 ## Usage
 
