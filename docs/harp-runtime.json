@@ -1,1 +1,1 @@
-{"swaggerVersion":"1.1","apiVersion":"1.0","apis":[{"path":"/harp.{format}","format":"json","description":"Harp runtime invocation"}]}
+{"swaggerVersion":"1.1","apiVersion":"1.0","apis":[{"path":"harp.{format}","format":"json","description":"Harp runtime invocation"}]}
