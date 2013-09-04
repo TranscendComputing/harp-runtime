@@ -1,0 +1,101 @@
+{
+    "Resources": {
+        "webSecurityGroup": {
+            "type": "Std::SecurityGroup",
+            "ingress": [ {
+                "port": 22,
+                "protocol": "tcp"
+                "cidr": "0.0.0.0/0"
+            }, {
+                "port": 80,
+                "protocol": "tcp"
+                "cidr": "0.0.0.0/0"
+            } ],
+        },
+        "dbSecurityGroup": {
+            "type": "Std::SecurityGroup",
+            "ingress": [ {
+                "port": 22,
+                "protocol": "tcp",
+                "cidr": "0.0.0.0/0"
+            }, {
+                "port": 3306,
+                "protocol": "tcp"
+                "cidr": "0.0.0.0/0"
+            } ],
+        },
+        "webServerPrototype": {
+            "type": "Std::LaunchConfiguration",
+            "imageId": { "ref": "Config::micro::ami" },
+            "instanceType": { "ref": "Config::micro::type" },
+            "securityGroups": [ { "ref" : "webSecurityGroup" } ]
+        },
+        "dbPrimary": {
+            "type": "Std::Instance",
+            "imageId": { "ref": "Config::small::ami" },
+            "instanceType": { "ref": "Config::small::type" },
+            "securityGroups": [ { "ref" : "dbSecurityGroup" } ]
+        },
+        "dbSecondary": {
+            "type": "Std::Instance",
+            "imageId": { "ref": "Config::small::ami" },
+            "instanceType": { "ref": "Config::small::type" },
+            "securityGroups": [ { "ref" : "dbSecurityGroup" } ]
+        },
+        "webScalingGroup": {
+            "type": "Std::AutoScaleGroup",
+            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "desiredCapacity": 5,
+            "maxSize": 10,
+            "minSize": 1,
+            "securityGroups": [ { "ref" : "webSecurityGroup" } ],
+            "launchConfigurationName" : { "ref" : "LaunchConfig" },
+            "loadBalancerNames" : [ { "ref" : "frontLoadBalancer" } ]
+        },
+        "frontLoadBalancer": {
+            "type": "Std::LoadBalancer",
+            "appCookieStickinessPolicy": [],
+            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "HealthCheck": {
+                "healthyThreshold": 2,
+                "interval": 30,
+                "target": "HTTP:80/health",
+                "timeout": 60,
+                "unhealthyThreshold": 2
+            },
+            "lbCookieStickinessPolicy": [],
+            "listeners": [ {
+                "instancePort": 80,
+                "instanceProtocol": "http",
+                "loadBalancerPort": 80,
+                "protocol": "http"
+            } ]
+        },
+        "frontLoadBalancer[Offline]": {
+            "type": "Std::LoadBalancer",
+            "appCookieStickinessPolicy": [],
+            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "HealthCheck": {
+                "healthyThreshold": 2,
+                "interval": 30,
+                "target": "HTTP:80/health",
+                "timeout": 60,
+                "unhealthyThreshold": 2
+            },
+            "lbCookieStickinessPolicy": [],
+            "listeners": [ {
+                "instancePort": 80,
+                "instanceProtocol": "http",
+                "loadBalancerPort": 80,
+                "protocol": "http"
+            } ]
+        },
+        "maintenanceInstance": {
+            "type": "Std::Instance",
+            "description": "This is an instance to serve up a 'down for maintenance' page.",
+            "imageId": { "ref": "Config::tiny::ami" },
+            "instanceType": { "ref": "Config::tiny::type" },
+            "securityGroups": [ { "ref" : "webSecurityGroup" } ]
+        },
+    }
+}
