@@ -1,6 +1,8 @@
+# Author::    John Gardner
+# Copyright:: Copyright (c) 2013 Transcend Computing
+# License::   ASLV2
 require "shikashi"
 require "logging"
-require "pry"
 
 logger = Logging.logger['HarpInterpreter']
 logger.add_appenders(Logging.appenders.stdout)
@@ -27,11 +29,15 @@ module SandboxModule
     return DIE
   end
 
-  #def self.method_added(method_name)
-  #  Logging.logger['SandboxModule'].debug "Adding #{method_name.inspect}"
-  #end
+  def self.method_added(method_name)
+    Logging.logger['SandboxModule'].debug "Adding #{method_name.inspect}"
+  end
 end
 
+module Harp
+# The interpreter reads in the template, and makes itself available as engine()
+# with the scope of the template.  All resource operations are proxied through
+# this object.
 class HarpInterpreter
 
   include Shikashi
@@ -41,51 +47,61 @@ class HarpInterpreter
   def initialize
     @created = []
     @destroyed = []
+    @updated = []
   end
 
-  def engine
-    @@logger.info "Engine call"
-    return self
-  end
-
+  # Accept the resources from a template and add to the dictionary of resources
+  # available to the template.
   def consume(template)
     # TODO: handle URL
     @@logger.info "Consume template: #{template.length.to_s}"
     return self
   end
 
+  # Create a resource and wait for the resource to become available.
   def create(resource)
     @@logger.debug "Launching resource: #{resource}."
     @created.push(resource)
     return self
   end
 
-  def createParallel(res1, res2)
-    resources = [res1, res2]
+  # Create a set of resources; all resources must will be complete before
+  # processing continues.
+  def createParallel(*resources)
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
     @created += resources
-    @@logger.debug "Returning #{self.inspect}."
     return self
   end
 
+  # Update a resource to a new resource definition.
   def update(resource)
     @@logger.debug "Updating resource: #{resource}."
-    @created.push(resource)
+    @updated.push(resource)
     return self
   end
 
+  # Update a set of resources in parallel to new resource definitions.
   def updateParallel(*resources)
     @@logger.debug "Updating resource(s) in parallel #{resources.join(',')}."
-    @created += resources
+    @updated += resources
     return self
   end
 
+  # Update a resource to an alternate definition.
+  def updateTo(resource_start, resource_finish)
+    @@logger.debug "Updating resource: #{resource_start} to #{resource_finish}."
+    @updated.push(resource_finish)
+    return self
+  end
+
+  # Destroy a named resource.
   def destroy(resource)
     @@logger.debug "Destroying resource: #{resource}."
     @destroyed.push resource
     return self
   end
 
+  # Destroy a named resource.
   def destroyParallel(*resources)
     @@logger.debug "Destroying resource(s) in parallel #{resources.join(',')}."
     @destroyed += resources
@@ -109,12 +125,7 @@ class HarpInterpreter
     priv.allow_method :engine
     priv.allow_method :die
 
-    priv.instances_of(HarpInterpreter).allow :create, :createParallel
-    priv.instances_of(HarpInterpreter).allow :update, :updateParallel
-    priv.instances_of(HarpInterpreter).allow :destroy, :destroyParallel
-    priv.instances_of(HarpInterpreter).allow :consume
-    priv.instances_of(HarpInterpreter).allow :onFail
-    priv.instances_of(HarpInterpreter).allow :die
+    priv.instances_of(HarpInterpreter).allow_all
 
     #SandboxModule.interpreter = self
 
@@ -138,6 +149,9 @@ class HarpInterpreter
     @created.each do |createe|
       done.push "created #{createe}"
     end
+    @updated.each do |updatee|
+      done.push "updated #{updatee}"
+    end
     @destroyed.each do |destroyee|
       done.push "destroyed #{destroyee}"
     end
@@ -146,3 +160,4 @@ class HarpInterpreter
 
 end
 
+end

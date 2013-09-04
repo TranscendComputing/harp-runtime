@@ -18,15 +18,25 @@ class RootApp < Sinatra::Base
     headers "Content-Type" => "text/html; charset=utf-8"
   end
 
+  # Routes for Swagger UI to gather web resources
+  get %r{([^.]+).json} do |file|
+    puts "Matched regex for #{file}."
+    send_file(File.join('docs', "#{file}.json"), {:type=>"json"})
+  end
+
   get '/:lifecycle' do
     logger.info "Root handler"
-    interpreter = HarpInterpreter.new
+    interpreter = Harp::HarpInterpreter.new
     if params.key?("lifecycle")
       puts "Got #{params[:lifecycle]}"
     end
 
     results = interpreter.play("sample/basic_webapp.harp", params[:lifecycle])
     erb :default, :locals => {:lifecycle => params[:lifecycle], :results => results}
+  end
+
+  get '/' do
+    erb :welcome
   end
 
 end

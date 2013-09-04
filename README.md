@@ -7,7 +7,7 @@ environment.
 
 This application is both a gem and a Sinatra application.
 
-### To run as app
+### Starting Up
 
 For local testing, you can invoke the app with Shotgun.
 
@@ -25,7 +25,7 @@ Try:
     or
     http://localhost:9393/destroy
 
-### To use as Gem
+### To use as a Gem
 
 Add this line to your application's Gemfile:
 

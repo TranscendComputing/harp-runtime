@@ -121,9 +121,9 @@ END
 engine.consume(template)
 
 def create()
-    engine.createParallel("dbPrimary", "dbSecondary").onFail(die)
-    .create("webScalingGroup")
-    .create("frontLoadBalancer")
+  engine.createParallel("dbPrimary", "dbSecondary").onFail(die)
+  .create("webScalingGroup")
+  .create("frontLoadBalancer")
 end
 
 def deploy()
@@ -133,8 +133,8 @@ end
 def destroy()
     # TODO: make a DB snapshot
     # Transition load balancer to serve maintenance instance
-    #.updateTo("frontLoadBalancer", "frontLoadBalancer[Offline]")
-    engine.create("maintenanceInstance")
+    engine.updateTo("frontLoadBalancer", "frontLoadBalancer[Offline]")
+    .create("maintenanceInstance")
     .destroy("webScalingGroup")
     .destroyParallel("dbPrimary", "dbSecondary")
 end
