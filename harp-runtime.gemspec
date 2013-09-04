@@ -17,9 +17,11 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency "sinatra"
   gem.add_runtime_dependency "shikashi"
-  gem.add_runtime_dependency "docile"
   gem.add_runtime_dependency "datamapper"
   gem.add_runtime_dependency "logging"
+  gem.add_runtime_dependency "fog"
+  gem.add_runtime_dependency "logging"
+  gem.add_runtime_dependency "rgl"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "shotgun"
