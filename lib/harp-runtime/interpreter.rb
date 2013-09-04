@@ -4,11 +4,6 @@
 require "shikashi"
 require "logging"
 
-logger = Logging.logger['HarpInterpreter']
-logger.add_appenders(Logging.appenders.stdout)
-logger = Logging.logger['SandboxModule']
-logger.add_appenders(Logging.appenders.stdout)
-
 module SandboxModule
   extend self
 
@@ -16,12 +11,10 @@ module SandboxModule
   @interpreter = nil
 
   def set_engine(engine)
-    Logging.logger['SandboxModule'].debug "Setting engine"
     @interpreter = engine
   end
 
   def engine()
-    Logging.logger['SandboxModule'].debug "Fetching engine"
     @interpreter
   end
 
@@ -48,13 +41,13 @@ class HarpInterpreter
     @created = []
     @destroyed = []
     @updated = []
+    @resourcer = Harp::Resourcer.new
   end
 
   # Accept the resources from a template and add to the dictionary of resources
   # available to the template.
   def consume(template)
-    # TODO: handle URL
-    @@logger.info "Consume template: #{template.length.to_s}"
+    @resourcer.consume(template)
     return self
   end
 

@@ -10,8 +10,8 @@ class RootApp < Sinatra::Base
   end
 
   configure :development do
-    base_logger = Logging.logger(STDOUT)
-    #Logging.logger.root.level = :debug
+    Logging.logger.root.add_appenders(Logging.appenders.stdout)
+    Logging.logger.root.level = :debug
   end
 
   before do
