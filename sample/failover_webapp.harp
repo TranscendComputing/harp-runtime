@@ -1,0 +1,23 @@
+# This template shows configuration of a basic 2-tier webapp.
+
+engine.consume("http://localhost:9393/harps/common_config.json")
+engine.consume("http://localhost:9393/harps/web_resources.json")
+
+def create()
+    # Security groups created implicitly, since referenced
+    engine.createParallel("dbPrimary", "dbSecondary").onFail( "DIE");
+    engine.create("webScalingGroup")
+    engine.create("frontLoadBalancer")
+end
+
+def deploy()
+    # TODO: show deploy
+end
+
+def destroy()
+    # TODO: make a DB snapshot
+    engine.create("maintenanceInstance")
+    engine.update("frontLoadBalancer", "frontLoadBalancer[Offline]")
+    engine.destroy("webScalingGroup")
+    engine.destroyParallel("dbPrimary", "dbSecondary")
+end

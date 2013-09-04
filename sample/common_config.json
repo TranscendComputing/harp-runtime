@@ -1,0 +1,36 @@
+{
+    "Config": {
+        "micro": {
+            "type": "t1.micro",
+            "ami" :  "ami-f570b19c",
+        },
+        "small": {
+            "type": "m1.small",
+            "ami":  "ami-f170b198",
+        }
+        "availabilityZones": {
+            "primary": "us-west-1",
+            "failover":  "us-east-1",
+        }
+    },
+    "Environments": {
+        "dev1": {
+            "type": "development"
+        },
+        "dev2": {
+            "type": "development"
+        },
+        "qa": {
+            "type": "test"
+        },
+        "stage": {
+            "type": "staging"
+        },
+        "prod1": {
+            "type": "production"
+        },
+        "failover": {
+            "type": "production"
+        },
+    }
+}

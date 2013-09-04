@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=US-ASCII" http-equiv="Content-Type">
+
+<title>module Harp - RDoc Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="module">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/harp-runtime/interpreter.rb
+    <li>lib/harp-runtime/lifecycle.rb
+    <li>lib/harp-runtime/logger.rb
+    <li>lib/harp-runtime/version.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    
+    
+    
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./Gemfile.html">Gemfile</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./Rakefile.html">Rakefile</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Harp.html">Harp</a>
+  
+    <li><a href="./Harp/HarpInterpreter.html">Harp::HarpInterpreter</a>
+  
+    <li><a href="./Harp/Lifecycle.html">Harp::Lifecycle</a>
+  
+    <li><a href="./Harp/Logger.html">Harp::Logger</a>
+  
+    <li><a href="./Harp/Runtime.html">Harp::Runtime</a>
+  
+    <li><a href="./HarpApiApp.html">HarpApiApp</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./RootApp.html">RootApp</a>
+  
+    <li><a href="./SandboxModule.html">SandboxModule</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="module">module Harp</h1>
+
+  <div id="description" class="description">
+    
+<h4 id="label-Public+Harp+Logger+API">Public <a href="Harp.html">Harp</a> <a href="Harp/Logger.html">Logger</a> API</h4>
+
+<p>To replace an existing logger with a new one:</p>
+
+<pre>Harp::Logger.set_log(log{String, IO},level{Symbol, String})</pre>
+
+<p>Available logging levels are</p>
+
+<pre>Harp::Logger::{ Fatal, Error, Warn, Info, Debug }</pre>
+
+<p>Logging via:</p>
+
+<pre>Harp.logger.fatal(message&lt;String&gt;,&amp;block)
+Harp.logger.error(message&lt;String&gt;,&amp;block)
+Harp.logger.warn(message&lt;String&gt;,&amp;block)
+Harp.logger.info(message&lt;String&gt;,&amp;block)
+Harp.logger.debug(message&lt;String&gt;,&amp;block)</pre>
+
+<p>Logging with autoflush:</p>
+
+<pre>Harp.logger.fatal!(message&lt;String&gt;,&amp;block)
+Harp.logger.error!(message&lt;String&gt;,&amp;block)
+Harp.logger.warn!(message&lt;String&gt;,&amp;block)
+Harp.logger.info!(message&lt;String&gt;,&amp;block)
+Harp.logger.debug!(message&lt;String&gt;,&amp;block)</pre>
+
+<p>Flush the buffer to</p>
+
+<pre>Harp.logger.flush</pre>
+
+<p>Remove the current log object</p>
+
+<pre>Harp.logger.close</pre>
+
+<h4 id="label-Private+Harp+Logger+API">Private <a href="Harp.html">Harp</a> <a href="Harp/Logger.html">Logger</a> API</h4>
+
+<p>To initialize the logger you create a new object, proxies to set_log.</p>
+
+<pre>Harp::Logger.new(log{String, IO},level{Symbol, String})</pre>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+    <!-- Attributes -->
+    <section id="attribute-method-details" class="method-section section">
+      <h3 class="section-header">Attributes</h3>
+
+      
+      <div id="attribute-c-logger" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">logger</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+    </section><!-- attribute-method-details -->
+    
+
+    <!-- Methods -->
+    
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
