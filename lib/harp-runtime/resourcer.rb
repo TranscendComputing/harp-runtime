@@ -19,7 +19,7 @@ module Harp
     def consume(template_or_uri)
       # TODO: handle URL
       @@logger.info "Consume template: #{template_or_uri.length.to_s}"
-      JSON.parse(template_or_uri)
+      digest(template_or_uri)
     end
 
     # Create a resource and wait for the resource to become available.
@@ -27,6 +27,11 @@ module Harp
       @@logger.debug "Looking for resource: #{resource_name}."
     end
 
+    private
+
+    def digest(content)
+      JSON.parse(content)
+    end
   end
 
 end

@@ -1,0 +1,12 @@
+    "invoked": "<%= lifecycle %>",
+    "results": [
+        <% last = results.pop %>
+        <% results.each do |result| %>
+        {
+            "result": "<%= result %>"
+        },
+        <% end %>
+        {
+            "result": "<%= last %>"
+        }
+    ]

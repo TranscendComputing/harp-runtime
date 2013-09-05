@@ -19,9 +19,14 @@ class RootApp < Sinatra::Base
   end
 
   # Routes for Swagger UI to gather web resources
-  get %r{([^.]+).json} do |file|
-    puts "Matched regex for #{file}."
-    send_file(File.join('docs', "#{file}.json"), {:type=>"json"})
+  get '/api-docs/' do
+    send_file(File.join('public/docs', "harp-runtime.json"), {:type=>"json"})
+  end
+
+  # Routes for Swagger UI to gather web resources
+  get %r{\/api-docs\/([^.]+).json} do |file|
+    puts "Matched regex for #{file}, serving 'public/docs/#{file}.json'"
+    send_file(File.join('public/docs', "#{file}.json"), {:type=>"json"})
   end
 
   get '/:lifecycle' do

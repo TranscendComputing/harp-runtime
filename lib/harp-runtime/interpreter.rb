@@ -2,7 +2,6 @@
 # Copyright:: Copyright (c) 2013 Transcend Computing
 # License::   ASLV2
 require "shikashi"
-require "logging"
 
 module SandboxModule
   extend self
@@ -37,11 +36,13 @@ class HarpInterpreter
 
   @@logger = Logging.logger[self]
 
-  def initialize
+  def initialize(context)
     @created = []
     @destroyed = []
     @updated = []
     @resourcer = Harp::Resourcer.new
+    @access = context[:access]
+    @secret = context[:secret]
   end
 
   # Accept the resources from a template and add to the dictionary of resources
@@ -106,10 +107,15 @@ class HarpInterpreter
     return self
   end
 
-  def play(harp_file, lifecycle)
+  def play(lifecycle, options)
 
-    file = File.open(harp_file, "rb")
-    harp_contents = file.read
+    harp_file = options[:harp_file] || nil
+    harp_contents = options[:harp_contents] || nil
+
+    if harp_file != nil
+      file = File.open(harp_file, "rb")
+      harp_contents = file.read
+    end
 
     s = Sandbox.new
     priv = Privileges.new
