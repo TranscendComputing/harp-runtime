@@ -5,15 +5,15 @@ template = <<END
     "Config": {
         "micro": {
             "type": "t1.micro",
-            "ami" :  "ami-f570b19c",
+            "ami" :  "ami-f570b19c"
         },
         "small": {
             "type": "m1.small",
-            "ami":  "ami-f170b198",
-        }
+            "ami":  "ami-f170b198"
+        },
         "availabilityZones": {
             "primary": "us-west-1",
-            "failover":  "us-east-1",
+            "failover":  "us-east-1"
         }
     },
     "Resources": {
@@ -21,13 +21,13 @@ template = <<END
             "type": "Std::SecurityGroup",
             "ingress": [ {
                 "port": 22,
-                "protocol": "tcp"
+                "protocol": "tcp",
                 "cidr": "0.0.0.0/0"
             }, {
                 "port": 80,
-                "protocol": "tcp"
+                "protocol": "tcp",
                 "cidr": "0.0.0.0/0"
-            } ],
+            } ]
         },
         "dbSecurityGroup": {
             "type": "Std::SecurityGroup",
@@ -37,9 +37,9 @@ template = <<END
                 "cidr": "0.0.0.0/0"
             }, {
                 "port": 3306,
-                "protocol": "tcp"
+                "protocol": "tcp",
                 "cidr": "0.0.0.0/0"
-            } ],
+            } ]
         },
         "webServerPrototype": {
             "type": "Std::LaunchConfiguration",
@@ -61,7 +61,7 @@ template = <<END
         },
         "webScalingGroup": {
             "type": "Std::AutoScaleGroup",
-            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "availabilityZones": { "ref": "Config::availabilityZones::primary" },
             "desiredCapacity": 5,
             "maxSize": 10,
             "minSize": 1,
@@ -72,7 +72,7 @@ template = <<END
         "frontLoadBalancer": {
             "type": "Std::LoadBalancer",
             "appCookieStickinessPolicy": [],
-            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "availabilityZones": { "ref": "Config::availabilityZones::primary" },
             "HealthCheck": {
                 "healthyThreshold": 2,
                 "interval": 30,
@@ -91,7 +91,7 @@ template = <<END
         "frontLoadBalancer[Offline]": {
             "type": "Std::LoadBalancer",
             "appCookieStickinessPolicy": [],
-            "availabilityZones", { "ref": "Config::availabilityZones::primary" },
+            "availabilityZones": { "ref": "Config::availabilityZones::primary" },
             "HealthCheck": {
                 "healthyThreshold": 2,
                 "interval": 30,
@@ -113,7 +113,7 @@ template = <<END
             "imageId": { "ref": "Config::tiny::ami" },
             "instanceType": { "ref": "Config::tiny::type" },
             "securityGroups": [ { "ref" : "webSecurityGroup" } ]
-        },
+        }
     }
 }
 END
@@ -121,9 +121,9 @@ END
 engine.consume(template)
 
 def create()
-  engine.createParallel("dbPrimary", "dbSecondary").onFail(die)
-  .create("webScalingGroup")
-  .create("frontLoadBalancer")
+    engine.createParallel("dbPrimary", "dbSecondary").onFail(die)
+    engine.create("webScalingGroup")
+    engine.create("frontLoadBalancer")
 end
 
 def deploy()
@@ -131,10 +131,8 @@ def deploy()
 end
 
 def destroy()
-    # TODO: make a DB snapshot
-    # Transition load balancer to serve maintenance instance
     engine.updateTo("frontLoadBalancer", "frontLoadBalancer[Offline]")
-    .create("maintenanceInstance")
-    .destroy("webScalingGroup")
-    .destroyParallel("dbPrimary", "dbSecondary")
+    engine.create("maintenanceInstance")
+    engine.destroy("webScalingGroup")
+    engine.destroyParallel("dbPrimary", "dbSecondary")
 end
