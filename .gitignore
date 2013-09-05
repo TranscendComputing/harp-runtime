@@ -11,6 +11,7 @@ doc/
 public/doc/
 public/docs/*.json
 public/docs/images/
+public/docs/js/
 lib/bundler/man
 pkg
 rdoc
