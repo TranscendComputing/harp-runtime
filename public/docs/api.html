@@ -7,9 +7,10 @@
   <link href='css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
   <script type="text/javascript" src="lib/shred.bundle.js" /></script>
   <script src='lib/jquery-1.10.2.min.js' type='text/javascript'></script>
+  <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
   <script src='lib/jquery.slideto.min.js' type='text/javascript'></script>
-  <script src='lib/jquery.wiggle.min.js' type='text/javascript'></script>
   <script src='lib/jquery.ba-bbq.min.js' type='text/javascript'></script>
+  <script src='lib/jquery.wiggle.min.js' type='text/javascript'></script>
   <script src='lib/handlebars-1.0.0.js' type='text/javascript'></script>
   <script src='lib/underscore-min.js' type='text/javascript'></script>
   <script src='lib/backbone-min.js' type='text/javascript'></script>
@@ -29,6 +30,10 @@
           $('input[name="secret"]').on("click", function(evt) {
              $(evt.target).attr("type", "password");
           });
+          $('#logo').on("click", function(evt) {
+              window.location = window.location.origin + window.location.pathname;
+              return false;
+           });
 
         }
         $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
@@ -58,7 +63,7 @@
 <body>
 <div id='header'>
   <div class="swagger-ui-wrap">
-    <a id="logo" href="javascript://window.location.href.split('#')[0]">harp swagger</a>
+    <a id="logo" href="/">harp swagger</a>
 
     <form id='api_selector'>
     <!--
