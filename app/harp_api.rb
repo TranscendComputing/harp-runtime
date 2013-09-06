@@ -17,6 +17,7 @@ class HarpApiApp < ApiBase
   ##~ op.nickname = "run_create"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "harp_location", :description => "Harp script location (URI)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :message => "Invocation successful", :code => 200
   ##~ op.errorResponses.add :message => "Invocation successfully begun", :code => 202
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
@@ -25,13 +26,14 @@ class HarpApiApp < ApiBase
   get '/create' do
     access = params[:access] || ""
     secret = params[:secret] || ""
+    harp_location = params[:harp_location] || ""
     script = request.body.read
 
     context = { :access => access, :secret => secret }
+    context[:cloud_type] = :aws # for the moment, assume AWS cloud
     interpreter = Harp::HarpInterpreter.new(context)
 
-    # TODO: supply POST body as script.
-    context[:harp_file] = "sample/basic_webapp.harp"
+    context[:harp_location] = harp_location
     results = interpreter.play(Harp::Lifecycle::CREATE, context)
     erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
   end
@@ -47,6 +49,7 @@ class HarpApiApp < ApiBase
   ##~ op.parameters.add :name => "lifecycle", :description => "Lifecycle action to take (create, etc.)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "harp_location", :description => "Harp script location (URI)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :message => "Invocation successful", :code => 200
   ##~ op.errorResponses.add :message => "Invocation successfully begun", :code => 202
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
@@ -55,16 +58,16 @@ class HarpApiApp < ApiBase
   get '/:lifecycle' do
     access = params[:access] || ""
     secret = params[:secret] || ""
-    script = request.body.read
+    harp_location = params[:harp_location] || ""
     if params.key?("lifecycle")
       puts "Got #{params[:lifecycle]}"
     end
 
     context = { :access => access, :secret => secret }
+    context[:cloud_type] = :aws # for the moment, assume AWS cloud
     interpreter = Harp::HarpInterpreter.new(context)
 
-    # TODO: supply POST body as script.
-    context[:harp_file] = "sample/basic_webapp.harp"
+    context[:harp_location] = harp_location
     results = interpreter.play(params[:lifecycle], context)
     erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
   end
@@ -78,6 +81,7 @@ class HarpApiApp < ApiBase
   ##~ op.parameters.add :name => "lifecycle", :description => "Lifecycle action to take (create, etc.)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "harp", :description => "Harp script content", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :message => "Invocation successful", :code => 200
   ##~ op.errorResponses.add :message => "Invocation successfully begun", :code => 202
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
@@ -89,14 +93,17 @@ class HarpApiApp < ApiBase
     secret = params[:secret] || ""
     script = request.body.read
     if params.key?("lifecycle")
-      puts "Got #{params[:lifecycle]}"
+      puts "post: Got #{params[:lifecycle]}"
     end
 
     context = { :access => access, :secret => secret }
+    context[:cloud_type] = :aws # for the moment, assume AWS cloud
     interpreter = Harp::HarpInterpreter.new(context)
 
-    # TODO: supply POST body as script.
-    context[:harp_file] = "sample/basic_webapp.harp"
+    context[:harp_contents] = script
+    if script != nil and script.length < 1000
+      logger.debug("Got harp script: #{script}")
+    end
     results = interpreter.play(params[:lifecycle], context)
     erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
   end

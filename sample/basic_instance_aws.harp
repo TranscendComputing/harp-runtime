@@ -1,0 +1,21 @@
+# Create a single instance on AWS
+
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "anInstance": {
+            "type": "Std::Instance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "m1.micro"
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("anInstance")
+end

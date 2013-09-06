@@ -5,6 +5,14 @@ require 'bundler'
 
 Bundler.require
 
+if ENV['RACK_ENV'] == 'production'
+  # production config / requires
+else
+  # development or testing only
+  require 'pry'
+  use Rack::ShowExceptions
+end
+
 # require the dependencies
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require File.join(File.dirname(__FILE__), 'app', 'init')

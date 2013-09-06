@@ -2,6 +2,7 @@
 # Copyright:: Copyright (c) 2013 Transcend Computing
 # License::   ASLV2
 require "shikashi"
+require "harp-runtime/cloud/cloud_mutator"
 
 module SandboxModule
   extend self
@@ -41,8 +42,7 @@ class HarpInterpreter
     @destroyed = []
     @updated = []
     @resourcer = Harp::Resourcer.new
-    @access = context[:access]
-    @secret = context[:secret]
+    @mutator = Harp::Cloud::CloudMutator.new(context)
   end
 
   # Accept the resources from a template and add to the dictionary of resources
@@ -53,9 +53,11 @@ class HarpInterpreter
   end
 
   # Create a resource and wait for the resource to become available.
-  def create(resource)
-    @@logger.debug "Launching resource: #{resource}."
-    @created.push(resource)
+  def create(resource_name)
+    @@logger.debug "Launching resource: #{resource_name}."
+    resource = @resourcer.get resource_name
+    @mutator.create(resource_name, resource)
+    @created.push(resource_name)
     return self
   end
 
@@ -125,8 +127,6 @@ class HarpInterpreter
     priv.allow_method :die
 
     priv.instances_of(HarpInterpreter).allow_all
-
-    #SandboxModule.interpreter = self
 
     SandboxModule.set_engine(self)
     s.run(priv, harp_contents, :base_namespace => SandboxModule)

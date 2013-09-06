@@ -12,6 +12,8 @@ module Harp
     @@logger = Logging.logger[self]
 
     def initialize
+      @resources = nil
+      @config = nil
     end
 
     # Accept the resources from a source and add to the dictionary of resources
@@ -22,15 +24,18 @@ module Harp
       digest(template_or_uri)
     end
 
-    # Create a resource and wait for the resource to become available.
-    def find(resource_name)
+    # Retrieve a resource definition from the set
+    def get(resource_name)
       @@logger.debug "Looking for resource: #{resource_name}."
+      @resources[resource_name]
     end
 
     private
 
     def digest(content)
-      JSON.parse(content)
+      json = JSON.parse(content)
+      @config = json.has_key?("Config") ? json["Config"] : nil
+      @resources = json.has_key?("Resources") ? json["Resources"] : nil
     end
   end
 

@@ -1,0 +1,20 @@
+# This template is a very minimal harp script (other than completely empty)
+
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    # handle creation
+end
+
+def destroy()
+    # handle destroy
+end

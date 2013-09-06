@@ -10,8 +10,10 @@ coverage
 doc/
 public/doc/
 public/docs/*.json
+public/docs/*.html
 public/docs/images/
 public/docs/js/
+public/docs/*
 lib/bundler/man
 pkg
 rdoc
