@@ -40,7 +40,11 @@ module Harp
       end
 
       def args_from_resource(resource_def)
-        return {}
+        args = {}
+        resource_def.keys.each do |arg_key|
+          args[arg_key] = resource_def[arg_key]
+        end
+        args
       end
 
     end

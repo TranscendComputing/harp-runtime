@@ -8,7 +8,7 @@ template = <<END
         "anInstance": {
             "type": "Std::Instance",
             "imageId": "ami-d0f89fb9",
-            "instanceType": "m1.micro"
+            "instanceType": "t1.micro"
         }
     }
 }
