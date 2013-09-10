@@ -38,7 +38,7 @@ module Harp
         end
         resource.populate(resource_def)
         service = establish_connect(resource)
-        created = resource.create(service)
+        #TEMP: comment for debugging created = resource.create(service)
       end
 
       def from_resource(resource_name, resource_def)

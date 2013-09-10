@@ -29,17 +29,6 @@ class RootApp < Sinatra::Base
     send_file(File.join('public/docs', "#{file}.json"), {:type=>"json"})
   end
 
-  get '/:lifecycle' do
-    logger.info "Root handler"
-    interpreter = Harp::HarpInterpreter.new
-    if params.key?("lifecycle")
-      puts "Got #{params[:lifecycle]}"
-    end
-
-    results = interpreter.play("sample/basic_webapp.harp", params[:lifecycle])
-    erb :default, :locals => {:lifecycle => params[:lifecycle], :results => results}
-  end
-
   get '/' do
     erb :welcome
   end

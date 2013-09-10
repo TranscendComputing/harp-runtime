@@ -1,12 +1,16 @@
-# -*- encoding: utf-8 -*-
-require File.expand_path('../lib/harp-runtime/version', __FILE__)
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'harp-runtime/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ["John Gardner"]
   gem.email         = ["jgardner@transcendcomputing.com"]
   gem.description   = %q{Spins up infrastructure and services across clouds.}
   gem.summary       = %q{Harp includes both a language for specifying orchestrations and runtime to invoke the language.}
-  gem.homepage      = ""
+  gem.homepage      = "http://www.transcendcomputing.com"
+  gem.license       = "ASLV2"
+
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

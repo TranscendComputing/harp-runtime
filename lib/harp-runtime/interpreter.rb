@@ -41,19 +41,25 @@ class HarpInterpreter
     @created = []
     @destroyed = []
     @updated = []
+    @navigate = []
     @resourcer = Harp::Resourcer.new
     @mutator = Harp::Cloud::CloudMutator.new(context)
+    @program_counter = 0
+    @is_debug = (context.include? :debug) ? true : false
+    @break_at = (context.include? :break) ? context[:break] : nil
   end
 
   # Accept the resources from a template and add to the dictionary of resources
   # available to the template.
   def consume(template)
+    if ! advance() then return self end
     @resourcer.consume(template)
     return self
   end
 
   # Create a resource and wait for the resource to become available.
   def create(resource_name)
+    if ! advance() then return self end
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
     @mutator.create(resource_name, resource)
@@ -64,6 +70,7 @@ class HarpInterpreter
   # Create a set of resources; all resources must will be complete before
   # processing continues.
   def createParallel(*resources)
+    if ! advance() then return self end
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
     @created += resources
     return self
@@ -71,6 +78,7 @@ class HarpInterpreter
 
   # Update a resource to a new resource definition.
   def update(resource)
+    if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource}."
     @updated.push(resource)
     return self
@@ -78,6 +86,7 @@ class HarpInterpreter
 
   # Update a set of resources in parallel to new resource definitions.
   def updateParallel(*resources)
+    if ! advance() then return self end
     @@logger.debug "Updating resource(s) in parallel #{resources.join(',')}."
     @updated += resources
     return self
@@ -85,6 +94,7 @@ class HarpInterpreter
 
   # Update a resource to an alternate definition.
   def updateTo(resource_start, resource_finish)
+    if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource_start} to #{resource_finish}."
     @updated.push(resource_finish)
     return self
@@ -92,6 +102,7 @@ class HarpInterpreter
 
   # Destroy a named resource.
   def destroy(resource)
+    if ! advance() then return self end
     @@logger.debug "Destroying resource: #{resource}."
     @destroyed.push resource
     return self
@@ -99,13 +110,42 @@ class HarpInterpreter
 
   # Destroy a named resource.
   def destroyParallel(*resources)
+    if ! advance() then return self end
     @@logger.debug "Destroying resource(s) in parallel #{resources.join(',')}."
     @destroyed += resources
     return self
   end
 
   def onFail(*fails)
+    if ! advance() then return self end
     @@logger.debug "Handle fail action: #{fails.join(',')}"
+    return self
+  end
+
+  # Interpreter debug operation; break at current line.
+  def break
+    if ! advance() then return self end
+    @@logger.debug "Handle break."
+    @navigate.push "Break at line #{@program_counter}"
+    @break_at = @program_counter
+    return self
+  end
+
+  # Interpreter debug operation; continue running from a break.
+  def continue
+    if ! advance() then return self end
+    @@logger.debug "Handle continue."
+    @navigate.push "Continue at line #{@program_counter}"
+    @break_at = nil
+    return self
+  end
+
+  # Interpreter debug operation; step over a single operation.
+  def step
+    if ! advance() then return self end
+    @@logger.debug "Handle step."
+    @navigate.push "Step at line #{@program_counter}"
+    @break_at += 1
     return self
   end
 
@@ -143,6 +183,8 @@ class HarpInterpreter
     respond
   end
 
+  private
+
   def respond
     done = []
     @created.each do |createe|
@@ -154,7 +196,21 @@ class HarpInterpreter
     @destroyed.each do |destroyee|
       done.push "destroyed #{destroyee}"
     end
+    @navigate.each do |nav|
+      done.push "#{nav}"
+    end
     done
+  end
+
+  # Advance the program counter to the next instruction.
+  def advance
+    if ! @break_at.nil?
+      if @break_at >= @program_counter
+        return false
+      end
+    end
+    @program_counter += 1
+    return true
   end
 
 end
