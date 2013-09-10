@@ -54,8 +54,9 @@ module Harp
       register_resource :compute_instance, RESOURCES_COMPUTE
 
       def create(service)
-        service.servers.create(self)
+        service.servers.create(self.attribs)
       end
+
     end
   end
 end

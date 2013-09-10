@@ -36,14 +36,9 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
+        resource.populate(resource_def)
         service = establish_connect(resource)
         created = resource.create(service)
-        #case resource
-        #when Harp::Resources::COMPUTE_INSTANCE
-        #  args = from_resource(resource_name, resource_def)
-        #  args[:name] = resource_name
-        #  server = @compute.servers.create(args)
-        #end
       end
 
       def from_resource(resource_name, resource_def)

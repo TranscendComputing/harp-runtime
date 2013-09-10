@@ -19,7 +19,6 @@ module Harp
       register_resource :security_group, RESOURCES_COMPUTE
 
       def create(service)
-        binding.pry
         service.security_groups.new(self.attribs)
       end
 

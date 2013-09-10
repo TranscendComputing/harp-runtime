@@ -7,25 +7,12 @@ require 'fog/core/model'
 
 module Harp
   module Resources
-    AUTOSCALE_GROUP = :autoScaleGroup
-    LAUNCH_CONFIGURATION = :launchConfiguration
-    COMPUTE_INSTANCE = "Std::ComputeInstance"
-    AUTOSCALE_POLICY = :autoScalePolicy
 
-    RESOURCES_AUTOSCALE = Set.new [ AUTOSCALE_GROUP, LAUNCH_CONFIGURATION  ]
+    # Set to contain all resources for auto scale
+    RESOURCES_AUTOSCALE = Set.new
 
-    RESOURCES_COMPUTE = Set.new [ COMPUTE_INSTANCE  ]
-
-    def Resources.included(base)
-      puts "Adding #{self},#{base} as a resource"
-    end
-
-    def to_type(resource_type_name, resource_type)
-      std_resource = resource_type_name [/^Std::(\w+)/, 1]
-      if std_resource
-        puts "Create class of type:" + resource_type
-      end
-    end
+    # Set to contain all compute resources
+    RESOURCES_COMPUTE = Set.new
 
     class AvailableResource < Fog::Model
       @@subclasses = { }
@@ -39,6 +26,8 @@ module Harp
         end
       end
 
+      # Subclasses call to categorize themselves by service (compute, dns, etc.)
+      # and to register as the JSON type to which they respond.
       def self.register_resource name, service
         @@subclasses[name] = self
         puts "Adding #{self} as a resource #{name}"
@@ -47,6 +36,7 @@ module Harp
         end
       end
 
+      # Build the subclass by the JSON type supplied as input.
       def self.from_name name
         std_resource = name [/^Std::(\w+)/, 1]
         if std_resource
@@ -55,13 +45,31 @@ module Harp
         end
       end
 
-      def attribs
-        binding.pry
-        hash = {}
-        self.instance_variables.each {|var| hash[var[1..-1].to_sym] = self.instance_variable_get(var) }
-        self.instance_variables.each_with_object({}) { |var,hash|
-          hash[var.to_s.delete("@")] = self.instance_variable_get(var)
+      # Flesh out this resource's instance variables from supplied JSON.
+      def populate resource
+        resource.each { |name,value|
+          if ! ["type"].include?(name)
+            if self.class.aliases.include?(name)
+              aliased = self.class.aliases[name]
+              puts "Setting var: #{aliased} to #{value}"
+              send("#{aliased}=", value)
+            else
+              puts "Setting var: #{name} to #{value}"
+              send("#{name}=", value)
+            end
+          end
         }
+      end
+
+      # Extract attributes into a hash of variables to supply to engine.
+      def attribs
+        hash = {}
+        #self.instance_variables.each {|var| hash[var[1..-1].to_sym] = self.instance_variable_get(var) }
+        self.instance_variables.each_with_object({}) { |var,hash|
+          hash[var.to_s[1..-1].to_sym] = self.instance_variable_get(var)
+        }
+        hash.delete(:service)
+        hash
       end
 
     end
