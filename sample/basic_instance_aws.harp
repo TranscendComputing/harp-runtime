@@ -5,8 +5,8 @@ template = <<END
     "Config": {
     },
     "Resources": {
-        "anInstance": {
-            "type": "Std::Instance",
+        "computeInstance": {
+            "type": "Std::ComputeInstance",
             "imageId": "ami-d0f89fb9",
             "instanceType": "t1.micro"
         }
@@ -17,5 +17,5 @@ END
 engine.consume(template)
 
 def create()
-    engine.create("anInstance")
+    engine.create("computeInstance")
 end

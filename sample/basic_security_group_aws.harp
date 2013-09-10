@@ -1,0 +1,28 @@
+# Create a single instance on AWS
+
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "securityGroup": {
+            "type": "Std::SecurityGroup",
+            "ingress": [ {
+                "port": 22,
+                "protocol": "tcp",
+                "cidr": "0.0.0.0/0"
+            }, {
+                "port": 80,
+                "protocol": "tcp",
+                "cidr": "0.0.0.0/0"
+            } ]
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("securityGroup")
+end

@@ -3,17 +3,80 @@
 # License::   ASLV2
 
 require 'set'
+require 'fog/core/model'
 
 module Harp
   module Resources
     AUTOSCALE_GROUP = :autoScaleGroup
     LAUNCH_CONFIGURATION = :launchConfiguration
-    COMPUTE_INSTANCE = "Std::computeInstance"
+    COMPUTE_INSTANCE = "Std::ComputeInstance"
     AUTOSCALE_POLICY = :autoScalePolicy
 
     RESOURCES_AUTOSCALE = Set.new [ AUTOSCALE_GROUP, LAUNCH_CONFIGURATION  ]
 
     RESOURCES_COMPUTE = Set.new [ COMPUTE_INSTANCE  ]
+
+    def Resources.included(base)
+      puts "Adding #{self},#{base} as a resource"
+    end
+
+    def to_type(resource_type_name, resource_type)
+      std_resource = resource_type_name [/^Std::(\w+)/, 1]
+      if std_resource
+        puts "Create class of type:" + resource_type
+      end
+    end
+
+    class AvailableResource < Fog::Model
+      @@subclasses = { }
+      @@service = { }
+      def self.create type
+        cs = @@subclasses[type]
+        if cs
+          cs.new
+        else
+          raise "Bad resource type: #{type}"
+        end
+      end
+
+      def self.register_resource name, service
+        @@subclasses[name] = self
+        puts "Adding #{self} as a resource #{name}"
+        if ! service.nil?
+          service.add(self)
+        end
+      end
+
+      def self.from_name name
+        std_resource = name [/^Std::(\w+)/, 1]
+        if std_resource
+          puts "Create class of type: #{std_resource.underscore}"
+          create std_resource.underscore.to_sym
+        end
+      end
+
+      def attribs
+        binding.pry
+        hash = {}
+        self.instance_variables.each {|var| hash[var[1..-1].to_sym] = self.instance_variable_get(var) }
+        self.instance_variables.each_with_object({}) { |var,hash|
+          hash[var.to_s.delete("@")] = self.instance_variable_get(var)
+        }
+      end
+
+    end
+  end
+end
+
+require "harp-runtime/resources/compute/types"
+
+class String
+  def underscore
+    self.gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+    gsub(/([a-z\d])([A-Z])/,'\1_\2').
+    tr("-", "_").
+    downcase
   end
 end
 

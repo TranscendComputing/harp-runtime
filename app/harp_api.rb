@@ -104,8 +104,13 @@ class HarpApiApp < ApiBase
     if script != nil and script.length < 1000
       logger.debug("Got harp script: #{script}")
     end
-    results = interpreter.play(params[:lifecycle], context)
-    erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
+    begin
+      results = interpreter.play(params[:lifecycle], context)
+      erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
+    rescue => e
+      logger.error("Error running script: #{e}")
+      erb :harp_api_error,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :error => "An error occurred."}
+  end
   end
 
 end
