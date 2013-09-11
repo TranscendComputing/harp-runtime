@@ -101,6 +101,7 @@ class HarpApiApp < ApiBase
 
     access = params[:access] || ""
     secret = params[:secret] || ""
+    harp_location = params[:harp_location] || nil
     script = request.body.read
     if params.key?("lifecycle")
       puts "post: Got #{params[:lifecycle]}"

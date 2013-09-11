@@ -1,12 +1,15 @@
     "invoked": "<%= lifecycle %>",
     "results": [
         <% last = results.pop %>
+
         <% results.each do |result| %>
         {
             "result": { <% result.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
         },
         <% end %>
+        <% if last %>
         {
             "result": { <% last.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
         }
+        <% end %>
     ]
