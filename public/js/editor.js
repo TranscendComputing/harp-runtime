@@ -1,13 +1,14 @@
 $(function() {
 	$("#go_debug").click(function() {
 		debugIt(editor.getValue());
+		return false;
 	})
 });
 
 function debugIt(data) {
     $.ajax({
         type: "POST",
-        url: "/api/v1/harp-debug/create?access=1234&secret=5678",
+        url: "/api/v1/harp-debug/create?access=1234&secret=5678&mock=y",
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",
