@@ -47,6 +47,8 @@ class HarpInterpreter
     @program_counter = 0
     @is_debug = (context.include? :debug) ? true : false
     @break_at = (context.include? :break) ? context[:break] : nil
+    @navigate.push "[Mock mode]" if (context.include? :mock)
+
   end
 
   # Accept the resources from a template and add to the dictionary of resources

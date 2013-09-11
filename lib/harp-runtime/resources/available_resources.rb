@@ -15,6 +15,7 @@ module Harp
     RESOURCES_COMPUTE = Set.new
 
     class AvailableResource < Fog::Model
+      @@logger = Logging.logger[self]
       @@subclasses = { }
       @@service = { }
       def self.create type
@@ -30,7 +31,7 @@ module Harp
       # and to register as the JSON type to which they respond.
       def self.register_resource name, service
         @@subclasses[name] = self
-        puts "Adding #{self} as a resource #{name}"
+        @@logger.debug "Adding #{self} as a resource #{name}"
         if ! service.nil?
           service.add(self)
         end
@@ -40,7 +41,7 @@ module Harp
       def self.from_name name
         std_resource = name [/^Std::(\w+)/, 1]
         if std_resource
-          puts "Create class of type: #{std_resource.underscore}"
+          @@logger.debug "Create class of type: #{std_resource.underscore}"
           create std_resource.underscore.to_sym
         end
       end
@@ -51,10 +52,10 @@ module Harp
           if ! ["type"].include?(name)
             if self.class.aliases.include?(name)
               aliased = self.class.aliases[name]
-              puts "Setting var: #{aliased} to #{value}"
+              @@logger.debug "Setting var: #{aliased} to #{value}"
               send("#{aliased}=", value)
             else
-              puts "Setting var: #{name} to #{value}"
+              @@logger.debug "Setting var: #{name} to #{value}"
               send("#{name}=", value)
             end
           end
@@ -64,7 +65,6 @@ module Harp
       # Extract attributes into a hash of variables to supply to engine.
       def attribs
         hash = {}
-        #self.instance_variables.each {|var| hash[var[1..-1].to_sym] = self.instance_variable_get(var) }
         self.instance_variables.each_with_object({}) { |var,hash|
           hash[var.to_s[1..-1].to_sym] = self.instance_variable_get(var)
         }

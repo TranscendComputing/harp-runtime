@@ -16,14 +16,22 @@ For local testing, you can invoke the app with Shotgun.
 
 Browse to the local server at http://localhost:9393.
 
-Currently, a single script is invoked; different lifecycle events on the script
-may be run by supplying different URLs.
+### Generate documentation, invoke API
 
-Try:
+The API documentation is generated form source, and includes the ability to 
+invoke the API from the documentation.  Type the following to generate documentation:
 
-    http://localhost:9393/create
-    or
-    http://localhost:9393/destroy
+    # If you haven't already, bundle
+    bundle install
+    ./script/document
+
+After generating the documentation, the live API documents are available.
+
+    http://localhost:9393/docs/api.html
+    
+Ruby RDoc is available as well:
+
+    http://localhost:9393/docs/index.html
 
 ### To use as a Gem
 

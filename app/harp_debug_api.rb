@@ -28,7 +28,7 @@ class HarpDebugApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/create' do
-    super if defined?(super)
+
     access = params[:access] || ""
     secret = params[:secret] || ""
     harp_location = params[:harp_location] || nil
@@ -37,6 +37,7 @@ class HarpDebugApiApp < ApiBase
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
     context[:debug] = true
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?
@@ -74,7 +75,7 @@ class HarpDebugApiApp < ApiBase
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
     context[:debug] = true
-
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?
@@ -115,6 +116,7 @@ class HarpDebugApiApp < ApiBase
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
     context[:debug] = true
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?

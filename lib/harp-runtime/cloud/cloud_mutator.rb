@@ -17,6 +17,7 @@ module Harp
         @secret = options[:secret]
         @cloud_type = options[:cloud_type]
         @compute = nil
+        @mock = (options.include? :mock) ? true : false
       end
 
       def establish_connect(resource_type)
@@ -37,8 +38,10 @@ module Harp
           return
         end
         resource.populate(resource_def)
-        service = establish_connect(resource)
-        #TEMP: comment for debugging created = resource.create(service)
+        if ! @mock
+          service = establish_connect(resource)
+          created = resource.create(service)
+        end
       end
 
       def from_resource(resource_name, resource_def)

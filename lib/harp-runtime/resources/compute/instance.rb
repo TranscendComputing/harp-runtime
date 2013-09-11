@@ -7,7 +7,7 @@ module Harp
     class ComputeInstance < AvailableResource
 
       include Harp::Resources
-
+    
       attribute  :id,                       :aliases => 'instanceId'
 
       attr_accessor :architecture

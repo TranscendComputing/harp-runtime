@@ -32,7 +32,7 @@ class HarpApiApp < ApiBase
 
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    context[:debug] = true
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?
@@ -69,6 +69,7 @@ class HarpApiApp < ApiBase
 
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?
@@ -77,45 +78,6 @@ class HarpApiApp < ApiBase
       context[:harp_location] = harp_location
     end      
     results = interpreter.play(Harp::Lifecycle::DESTROY, context)
-    erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
-  end
-
-  ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/harp/{lifecycle}"
-  ##~ a.description = "Harp runtime invocation"
-
-  ##~ op = a.operations.add
-  ##~ op.set :httpMethod => "GET"
-  ##~ op.summary = "List lifecycle stages supported"
-  ##~ op.nickname = "get_lifecycle"
-  ##~ op.parameters.add :name => "lifecycle", :description => "Lifecycle action to take (create, etc.)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
-  ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "harp", :description => "Harp script content", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "body"
-  ##~ op.parameters.add :name => "harp_location", :description => "Harp script location (URI)", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
-  ##~ op.errorResponses.add :message => "Invocation successful", :code => 200
-  ##~ op.errorResponses.add :message => "Invocation successfully begun", :code => 202
-  ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
-  ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
-  ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
-  get '/:lifecycle' do
-    access = params[:access] || ""
-    secret = params[:secret] || ""
-    harp_location = params[:harp_location] || nil
-    if params.key?("lifecycle")
-      puts "Got #{params[:lifecycle]}"
-    end
-
-    context = { :access => access, :secret => secret }
-    context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    interpreter = Harp::HarpInterpreter.new(context)
-
-    if harp_location.nil?
-      context[:harp_contents] = script
-    else
-      context[:harp_location] = harp_location
-    end      
-    results = interpreter.play(params[:lifecycle], context)
     erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => params[:lifecycle], :results => results}
   end
 
@@ -146,6 +108,7 @@ class HarpApiApp < ApiBase
 
     context = { :access => access, :secret => secret }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    context[:mock] = true if params.key?("mock")
     interpreter = Harp::HarpInterpreter.new(context)
 
     if harp_location.nil?
