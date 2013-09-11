@@ -171,6 +171,8 @@ class HarpInterpreter
     SandboxModule.set_engine(self)
     s.run(priv, harp_contents, :base_namespace => SandboxModule)
 
+    # Now, instrument the script for debugging.
+
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
       @@logger.debug "Invoking lifecycle: #{lifecycle.inspect}."
@@ -188,16 +190,19 @@ class HarpInterpreter
   def respond
     done = []
     @created.each do |createe|
-      done.push "created #{createe}"
+      done.push ({ "create" => "created #{createe}" })
     end
     @updated.each do |updatee|
-      done.push "updated #{updatee}"
+      done.push ({ "update" => "updated #{updatee}" })
     end
     @destroyed.each do |destroyee|
-      done.push "destroyed #{destroyee}"
+      done.push ({ "destroy" => "destroyed #{destroyee}" })
     end
     @navigate.each do |nav|
-      done.push "#{nav}"
+      done.push ({ "nav" => "#{nav}" })
+    end
+    if @is_debug
+      done.push ({ "token" => "pc:#{@program_counter}" })
     end
     done
   end

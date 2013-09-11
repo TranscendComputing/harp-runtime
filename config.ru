@@ -20,12 +20,24 @@ require 'app/root'
 require 'app/api_base'
 require 'app/harp_api'
 require 'app/harp_debug_api'
+require 'app/editor'
 
 # Following are Swagger directives, for REST API documentation.
 ##~ sapi = source2swagger.namespace("harp-runtime")
 ##~ sapi.swaggerVersion = "1.2"
 ##~ sapi.apiVersion = "0.1.0"
 ##~ auth = sapi.authorizations.add :apiKey => { :type => "apiKey", :passAs => "header" }
+
+#
+# Harp Debug API
+#
+##~ a = sapi.apis.add
+##
+##~ a.set :path => "/harp-debug.{format}", :format => "json"
+##~ a.description = "Harp runtime invocation for debugging."
+map "/api/v1/harp-debug" do
+  run HarpDebugApiApp
+end
 
 #
 # Harp API
@@ -38,15 +50,8 @@ map "/api/v1/harp" do
   run HarpApiApp
 end
 
-#
-# Harp Debug API
-#
-##~ a = sapi.apis.add
-##
-##~ a.set :path => "/harp-debug.{format}", :format => "json"
-##~ a.description = "Harp runtime invocation for debugging."
-map "/api/v1/harp-debug" do
-  run HarpDebugApiApp
+map "/edit" do
+  run EditorApp
 end
 
 map '/' do

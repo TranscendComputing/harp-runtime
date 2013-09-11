@@ -8,8 +8,92 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <!-- link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" -->
+    <link href="/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css">
+    <link href="//getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="/css/main.css" rel="stylesheet" media="screen">
+<% if @css %>
+  <% @css.each do |stylesheet| %>
+    <%= "<link href=\"/css/#{stylesheet}\" rel=\"stylesheet\">" %>
+  <% end %>
+<% end %>
+  <style type="text/css" media="screen">
+
+  </style>
 </head>
 <body>
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="../" class="navbar-brand">Harp Runtime</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+          	<!--
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Themes <span class="caret"></span></a>
+              <ul class="dropdown-menu" aria-labelledby="themes">
+                <li><a tabindex="-1" href="../default/">Default</a></li>
+                <li class="divider"></li>
+                <li><a tabindex="-1" href="../amelia/">Amelia</a></li>
+                <li><a tabindex="-1" href="../cerulean/">Cerulean</a></li>
+                <li><a tabindex="-1" href="../cosmo/">Cosmo</a></li>
+                <li><a tabindex="-1" href="../cyborg/">Cyborg</a></li>
+                <li><a tabindex="-1" href="../flatly/">Flatly</a></li>
+                <li><a tabindex="-1" href="../journal/">Journal</a></li>
+                <li><a tabindex="-1" href="../readable/">Readable</a></li>
+                <li><a tabindex="-1" href="../simplex/">Simplex</a></li>
+                <li><a tabindex="-1" href="../slate/">Slate</a></li>
+                <li><a tabindex="-1" href="../spacelab/">Spacelab</a></li>
+                <li><a tabindex="-1" href="../united/">United</a></li>
+              </ul>
+            </li>
+        -->
+            <li>
+              <a href="#">Help</a>
+            </li>
+            <li>
+              <a href="#"><i class="icon-step-forward icon-white"></i> Step</a>
+            </li>
+            <li>
+              <a href="#"><i class="icon-play icon-white"></i> Continue</a>
+            </li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="http://transcendcomputing.com/" target="_blank">Brought to you by Transcend Computing</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
   <%= yield %>
+    </div> <!-- /container -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<% if @bottom_js %>
+  <% @bottom_js.each do |script| %>
+    <%= "<script src=\"/js/#{script}.js\"></script>" %>
+  <% end %>
+<% end %>
 </body>
 </html>

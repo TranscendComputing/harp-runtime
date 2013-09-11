@@ -3,7 +3,7 @@ require 'rubygems'
 # The Harp Debug API provides operations to step through a harp script and 
 # verify operations are correct, in the style of an Integrated Development
 # Environment (IDE)
-class HarpDebugApiApp < HarpApiApp
+class HarpDebugApiApp < ApiBase
   ##~ sapi = source2swagger.namespace("harp-debug")
   ##~ sapi.swaggerVersion = "1.2"
   ##~ sapi.apiVersion = "0.1.0"
@@ -54,7 +54,7 @@ class HarpDebugApiApp < HarpApiApp
 
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
-  ##~ op.summary = "Invoke normal destroy lifecycle"
+  ##~ op.summary = "Invoke normal destroy lifecycle, under debug"
   ##~ op.nickname = "run_debug_destroy"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
@@ -90,7 +90,7 @@ class HarpDebugApiApp < HarpApiApp
   ##~ a.set :path => "/api/v1/harp-debug/{lifecycle}"
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
-  ##~ op.summary = "Invoke a particular lifecycle operation on a harp script."
+  ##~ op.summary = "Invoke a particular lifecycle operation on a harp script, under debug."
   ##~ op.nickname = "run_debug_lifecycle"
   ##~ op.parameters.add :name => "lifecycle", :description => "Lifecycle action to take (create, etc.)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"

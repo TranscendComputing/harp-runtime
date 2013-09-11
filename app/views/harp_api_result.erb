@@ -3,10 +3,10 @@
         <% last = results.pop %>
         <% results.each do |result| %>
         {
-            "result": "<%= result %>"
+            "result": { <% result.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
         },
         <% end %>
         {
-            "result": "<%= last %>"
+            "result": { <% last.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
         }
     ]

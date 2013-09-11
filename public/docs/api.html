@@ -26,10 +26,8 @@
       onComplete: function(swaggerApi, swaggerUi){
         if(console) {
           console.log("Loaded SwaggerUI")
-          // Ensure credentials aren't displayed.
-          $('input[name="secret"]').on("click", function(evt) {
-             $(evt.target).attr("type", "password");
-          });
+          // Ensure credentials aren't displayed
+          $('input[name="secret"]').attr("type", "password");
           $('#logo').on("click", function(evt) {
               window.location = window.location.origin + window.location.pathname;
               return false;

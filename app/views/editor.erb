@@ -1,0 +1,87 @@
+<div id="editor_frame">
+<div id="editor"># Create some instances on AWS
+
+template = &lt;&lt;END
+{
+    "Config": {
+    },
+    "Resources": {
+        "computeInstance1": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro"
+        },
+        "computeInstance2": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro"
+        },
+        "computeInstance3": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro"
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("computeInstance1")
+    engine.create("computeInstance2")
+    engine.break
+    engine.create("computeInstance3")
+end
+</div>
+</div>
+<!-- Forms
+================================================== -->
+<div id="control_panel_frame">
+<div id="control_panel">
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="well">
+      <form class="form-horizontal">
+        <fieldset>
+          <div class="form-group">
+            <label for="breakAtLine" class="col-lg-4 control-label">Break At:</label>
+            <div class="col-lg-8">
+              <input type="text" class="form-control input-sm" id="breakAtLine" placeholder="Line #">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-8 col-lg-offset-4">
+              <button id="go_debug" class="btn btn-default">Debug</button> 
+              <button type="submit" class="btn btn-primary">Stop</button> 
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-6">
+        <form>
+		<div class="form-group">
+			<label for="textArea" class="col-lg-2 control-label">Output</label>
+			<div class="col-lg-10">
+				<div>
+					<pre id="script_output" >
+					</pre>
+				</div>
+			  <!-- textarea  class="form-control" rows="5" cols="40" id="textArea" disabled></textarea -->
+			  <span class="help-block">Output from harp script run will appear above.</span>
+			</div>
+		</div>
+      </form>
+  </div>
+</div>
+</div>
+</div><%# /control_panel_frame %>
+<script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/vibrant_ink");
+    editor.getSession().setMode("ace/mode/ruby");
+</script>

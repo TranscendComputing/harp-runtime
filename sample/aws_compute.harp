@@ -45,7 +45,7 @@ deprecate :ip_address, :public_ip_address
         attribute :virtualization_type,      :aliases => 'virtualizationType'
         attribute :vpc_id,                   :aliases => 'vpcId'
 
-AWS server:
+OpenStack server:
                 identity :id
         attribute :instance_name, :aliases => 'OS-EXT-SRV-ATTR:instance_name'
 
