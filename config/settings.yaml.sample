@@ -1,0 +1,10 @@
+# --
+# Harp Runtime Configuration
+# --
+# This is a sample settings file; Harp will use a file named "settings.yaml" in # the current directory.  
+---
+# The default credentials will be picked up if auth="default_creds" is passed.
+# In fact, any yaml label can be supplied to select credentials.
+default_creds:
+  access: 12345
+  secret: 67890

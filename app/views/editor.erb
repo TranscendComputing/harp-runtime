@@ -32,6 +32,19 @@ def create()
     engine.create("computeInstance2")
     engine.create("computeInstance3")
 end
+
+def destroy()
+    engine.destroy("computeInstance3")
+    engine.destroy("computeInstance2")
+    engine.destroy("computeInstance1")
+end
+
+def custom()
+    engine.destroy("computeInstance3")
+    engine.destroy("computeInstance2")
+    engine.destroy("computeInstance1")
+end
+
 </div>
 </div>
 <!-- Forms
@@ -45,15 +58,35 @@ end
       <form class="form-horizontal">
         <fieldset>
           <div class="form-group">
-            <label for="breakAtLine" class="col-lg-4 control-label">Break At:</label>
+            <div class="col-lg-4">
+	           	<div class="btn-group">
+	           		<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+    					Lifecycle: <span id="lifecycle">Create</span>
+    					<span class="caret"></span>
+  					</a>
+  					<ul id="invokeables" class="dropdown-menu">
+    					<!-- dropdown menu links -->
+    					<li><a class="change_lifecycle" href="#">Create</a></li>
+    					<li><a class="change_lifecycle" href="#">Destroy</a></li>
+  					</ul>
+				</div>
+            </div>
+
             <div class="col-lg-8">
-              <input type="text" class="form-control input-sm" id="breakAtLine" placeholder="Line #">
+	           	<div class="btn-group">
+	           		<a class="btn btn-default dropdown-toggle invoke" href="#">
+    					<i class="icon-play-circle icon-white"></i> Invoke
+  					</a>
+		          <a id="step" href="#" class="btn btn-default"><i class="icon-step-forward icon-white"></i> Step</a>
+		          <a id="continue" href="#" class="btn btn-default"><i class="icon-play icon-white"></i> Continue</a>
+		          <a id="drop" href="#" class="btn btn-default"><i class="icon-circle-arrow-down icon-white"></i> Drop Frame</a>
+        	    </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-lg-8 col-lg-offset-4">
-              <button id="go_debug" class="btn btn-default">Debug</button> 
-              <button type="submit" class="btn btn-primary">Stop</button> 
+            <label for="breakAtLine" class="col-lg-4 control-label">Break At:</label>
+            <div class="col-lg-8">
+              <input type="text" class="form-control input-sm" id="breakAtLine" placeholder="Line #">
             </div>
           </div>
         </fieldset>

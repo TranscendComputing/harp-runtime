@@ -1,14 +1,23 @@
+String.prototype.toCamelCase = function(){
+	return this.replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
+};
+
 $(function() {
-	$("#go_debug").click(function() {
-		debugIt(editor.getValue());
-		return false;
+	$("a.invoke").click(function(evt) {
+		var lifecycle = $("#lifecycle").text().toLowerCase();
+		debugIt(lifecycle, editor.getValue());
+	})
+	$(".change_lifecycle").click(function(evt) {
+		var lifecycle = $(evt.target).text();
+		$("#lifecycle").text(lifecycle);
 	})
 });
 
-function debugIt(data) {
+function debugIt(lifecycle, data) {
+	$("#script_output").html("");
     $.ajax({
         type: "POST",
-        url: "/api/v1/harp-debug/create?access=1234&secret=5678&mock=y",
+        url: "/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&mock=y&auth=default_creds",
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",
@@ -20,27 +29,22 @@ function debugIt(data) {
 }
 
 function dumpIt(data) {
-	msg = "";
-	if ('invoked' in data) {
-		$.each(data.results, function (key, val) { 
-    		$.each(val.result, function (key, val) { 
-    			if (/create|update|delete|break/.test(key)) {
-	    			msg += val + "\n" 
-    			}
-    		});
-        });
-	}
-	$("#script_output").html(msg);
+	$("#script_output").text(prettyResult(data));
 }
 
-function addIt(data) {
-	msg = "";
+function prettyResult(data) {
+	var msg = "", verb;
 	if ('invoked' in data) {
 		$.each(data.results, function (key, val) { 
     		$.each(val.result, function (key, val) { 
-    			msg += val + "\n" 
+    			if (/create|update|destroy|break/.test(key)) {
+    				verb = key.toCamelCase();
+    				verb += (verb.charAt(verb.length-1) == 'e')? "d":"ed";
+	    			msg += verb + ": " + val + ".\n" 
+	    		}
     		});
         });
 	}
+	return msg;
 	$("#script_output").html().append(msg);
 }

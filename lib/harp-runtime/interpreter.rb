@@ -36,6 +36,10 @@ module SandboxModule
     @breakpoint = true
   end
 
+  def breakpoint()
+    @interpreter.break
+  end
+
   def die()
     return DIE
   end
@@ -94,9 +98,9 @@ class HarpInterpreter
   end
 
   # Update a resource to a new resource definition.
-  def update(resource)
+  def update(resource_name)
     if ! advance() then return self end
-    @@logger.debug "Updating resource: #{resource}."
+    @@logger.debug "Updating resource: #{resource_name}."
     @events.push({ "update" => resource_name})
     return self
   end
@@ -118,9 +122,9 @@ class HarpInterpreter
   end
 
   # Destroy a named resource.
-  def destroy(resource)
+  def destroy(resource_name)
     if ! advance() then return self end
-    @@logger.debug "Destroying resource: #{resource}."
+    @@logger.debug "Destroying resource: #{resource_name}."
     @events.push({ "destroy" => resource_name})
     return self
   end
@@ -185,6 +189,7 @@ class HarpInterpreter
     priv.allow_method :engine
     priv.allow_method :line_mark
     priv.allow_method :die
+    priv.allow_method :breakpoint
 
     priv.instances_of(HarpInterpreter).allow_all
 

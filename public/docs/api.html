@@ -28,6 +28,40 @@
           console.log("Loaded SwaggerUI")
           // Ensure credentials aren't displayed
           $('input[name="secret"]').attr("type", "password");
+          $('input[name="lifecycle"]').val("create");
+          $('input[name="auth"]').val("default_creds");
+          $('textarea[name="harp"]').text('# Create a single instance on AWS\n\
+\n\
+template = <<END\n\
+{\n\
+    "Config": {\n\
+    },\n\
+    "Resources": {\n\
+        "anInstance1": {\n\
+            "type": "Std::computeInstance",\n\
+            "imageId": "ami-3202f25b",\n\
+            "instanceType": "m1.micro"\n\
+        },\n\
+        "anInstance2": {\n\
+            "type": "Std::computeInstance",\n\
+            "imageId": "ami-3202f25b",\n\
+            "instanceType": "m1.micro"\n\
+        }\n\
+    }\n\
+}\n\
+END\n\
+\n\
+engine.consume(template)\n\
+\n\
+def create()\n\
+    engine.create("anInstance1")\n\
+    engine.create("anInstance2")\n\
+end\n\
+def destroy()\n\
+    engine.destroy("anInstance2")\n\
+    engine.destroy("anInstance1")\n\
+end\n\
+');
           $('#logo').on("click", function(evt) {
               window.location = window.location.origin + window.location.pathname;
               return false;
