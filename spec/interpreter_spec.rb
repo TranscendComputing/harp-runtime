@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
-require File.dirname(__FILE__) + '/../lib/harp_runtime'
+require "rubygems"
+require "harp_runtime"
+require "evalhook"
 
 # A sample script
 
@@ -53,6 +55,13 @@ describe Harp::HarpInterpreter, "#play" do
     context[:harp_contents] = script
     results = interpreter.play("create", context)
     expect(results).not_to be_empty
+    #results.each do |result|  puts result end
+    breakpoint = 0
+    break_event = nil
+    results.each do |result| 
+      break_event = result["break"] if result.include? ("break")
+    end
+    break_event.should match ".*32$" # Should have broken at line 32
 
   end
 end

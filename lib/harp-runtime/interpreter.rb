@@ -9,6 +9,8 @@ module SandboxModule
 
   DIE = "die"
   @interpreter = nil
+  @line_count = 0
+  @breakpoint = false
 
   def set_engine(engine)
     @interpreter = engine
@@ -16,6 +18,22 @@ module SandboxModule
 
   def engine()
     @interpreter
+  end
+
+  def line_mark(line)
+    @line_count = line unless @breakpoint
+  end
+
+  def line_count()
+    @line_count
+  end
+
+  def at_breakpoint?
+    @breakpoint
+  end
+
+  def set_break()
+    @breakpoint = true
   end
 
   def die()
@@ -38,16 +56,13 @@ class HarpInterpreter
   @@logger = Logging.logger[self]
 
   def initialize(context)
-    @created = []
-    @destroyed = []
-    @updated = []
-    @navigate = []
+    @events = []
     @resourcer = Harp::Resourcer.new
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
     @is_debug = (context.include? :debug) ? true : false
     @break_at = (context.include? :break) ? context[:break] : nil
-    @navigate.push "[Mock mode]" if (context.include? :mock)
+    @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
 
   end
 
@@ -65,7 +80,7 @@ class HarpInterpreter
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
     @mutator.create(resource_name, resource)
-    @created.push(resource_name)
+    @events.push({ "create" => resource_name})
     return self
   end
 
@@ -74,7 +89,7 @@ class HarpInterpreter
   def createParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
-    @created += resources
+    resources.each do |resource| @events.push( { "create" => resource }) end
     return self
   end
 
@@ -82,7 +97,7 @@ class HarpInterpreter
   def update(resource)
     if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource}."
-    @updated.push(resource)
+    @events.push({ "update" => resource_name})
     return self
   end
 
@@ -90,7 +105,7 @@ class HarpInterpreter
   def updateParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Updating resource(s) in parallel #{resources.join(',')}."
-    @updated += resources
+    resources.each { |resource| @events.push( { "update" => resource })}
     return self
   end
 
@@ -98,7 +113,7 @@ class HarpInterpreter
   def updateTo(resource_start, resource_finish)
     if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource_start} to #{resource_finish}."
-    @updated.push(resource_finish)
+    @events.push({ "update" => resource_name})
     return self
   end
 
@@ -106,7 +121,7 @@ class HarpInterpreter
   def destroy(resource)
     if ! advance() then return self end
     @@logger.debug "Destroying resource: #{resource}."
-    @destroyed.push resource
+    @events.push({ "destroy" => resource_name})
     return self
   end
 
@@ -114,7 +129,7 @@ class HarpInterpreter
   def destroyParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Destroying resource(s) in parallel #{resources.join(',')}."
-    @destroyed += resources
+    resources.each { |resource| @events.push( { "destroy" => resource })}
     return self
   end
 
@@ -128,8 +143,9 @@ class HarpInterpreter
   def break
     if ! advance() then return self end
     @@logger.debug "Handle break."
-    @navigate.push "Break at line #{@program_counter}"
-    @break_at = @program_counter
+    @events.push({ "break" => "Break at line #{SandboxModule::line_count}"})
+    SandboxModule::set_break
+    @break_at = SandboxModule::line_count
     return self
   end
 
@@ -137,7 +153,7 @@ class HarpInterpreter
   def continue
     if ! advance() then return self end
     @@logger.debug "Handle continue."
-    @navigate.push "Continue at line #{@program_counter}"
+    @events.push({ "continue" => "Continue at line #{SandboxModule::line_count}"})
     @break_at = nil
     return self
   end
@@ -146,7 +162,7 @@ class HarpInterpreter
   def step
     if ! advance() then return self end
     @@logger.debug "Handle step."
-    @navigate.push "Step at line #{@program_counter}"
+    @events.push({ "step" => "Step at line #{SandboxModule::line_count}"})
     @break_at += 1
     return self
   end
@@ -160,12 +176,14 @@ class HarpInterpreter
       file = File.open(harp_file, "rb")
       harp_contents = file.read
     end
+    harp_contents = instrument_for_debug harp_contents
 
     s = Sandbox.new
     priv = Privileges.new
     priv.allow_method :print
     priv.allow_method :puts
     priv.allow_method :engine
+    priv.allow_method :line_mark
     priv.allow_method :die
 
     priv.instances_of(HarpInterpreter).allow_all
@@ -190,21 +208,9 @@ class HarpInterpreter
   private
 
   def respond
-    done = []
-    @created.each do |createe|
-      done.push ({ "create" => "created #{createe}" })
-    end
-    @updated.each do |updatee|
-      done.push ({ "update" => "updated #{updatee}" })
-    end
-    @destroyed.each do |destroyee|
-      done.push ({ "destroy" => "destroyed #{destroyee}" })
-    end
-    @navigate.each do |nav|
-      done.push ({ "nav" => "#{nav}" })
-    end
+    done = @events
     if @is_debug
-      done.push ({ "token" => "pc:#{@program_counter}" })
+      done.push ({ "token" => "l:#{SandboxModule::line_count}:pc:#{@program_counter}" })
     end
     done
   end
@@ -212,12 +218,34 @@ class HarpInterpreter
   # Advance the program counter to the next instruction.
   def advance
     if ! @break_at.nil?
-      if @break_at >= @program_counter
+      if @break_at >= SandboxModule::line_count
         return false
       end
     end
+    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
     @program_counter += 1
     return true
+  end
+
+  # Decorate script with line number tags, to enable breakpoints.
+  def instrument_for_debug harp_contents
+    if ! @is_debug 
+      return harp_contents
+    end
+    new_harp, line_count, in_here_doc = "", 0, false
+    harp_contents.each_line do |line|
+      line_count += 1
+      if not in_here_doc
+        new_harp << "line_mark(#{line_count});#{line}"
+        in_here_doc = line[/.*\w+\s*=\s*<<-*([\w]+)/, 1]
+      else
+        new_harp << line        
+        if line[/^#{in_here_doc}/] 
+          in_here_doc = false
+        end
+      end
+    end
+    new_harp
   end
 
 end

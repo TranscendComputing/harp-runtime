@@ -24,7 +24,7 @@ function dumpIt(data) {
 	if ('invoked' in data) {
 		$.each(data.results, function (key, val) { 
     		$.each(val.result, function (key, val) { 
-    			if (/create|update|delete|nav/.test(key)) {
+    			if (/create|update|delete|break/.test(key)) {
 	    			msg += val + "\n" 
     			}
     		});

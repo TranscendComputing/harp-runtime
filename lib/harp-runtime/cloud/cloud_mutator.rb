@@ -44,23 +44,6 @@ module Harp
         end
       end
 
-      def from_resource(resource_name, resource_def)
-        std_resource = resource_name [/^Std::(\w+)/, 1]
-        args = {}
-        resource_def.keys.each do |arg_key|
-          args[arg_key] = resource_def[arg_key]
-        end
-        args
-      end
-
-      def typify(resource_name, resource_def)
-        std_resource = resource_name [/^Std::(\w+)/, 1]
-        args = {}
-        resource_def.keys.each do |arg_key|
-          args[arg_key] = resource_def[arg_key]
-        end
-        args
-      end
     end
   end
 end
