@@ -8,4 +8,5 @@ group :test do
   gem "rake"
 
   gem "json",      :platform => :jruby
+  gem "jslint"
 end
