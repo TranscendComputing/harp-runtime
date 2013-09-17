@@ -64,8 +64,9 @@ class HarpInterpreter
     @resourcer = Harp::Resourcer.new
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
+    @current_line = 0
     @is_debug = (context.include? :debug) ? true : false
-    @break_at = (context.include? :break) ? context[:break] : nil
+    @break_at = (context.include? :break) ? context[:break].to_i : nil
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
 
   end
@@ -201,7 +202,6 @@ class HarpInterpreter
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
       @@logger.debug "Invoking lifecycle: #{lifecycle.inspect}."
-      @@logger.debug "Invoking: #{SandboxModule.method(lifecycle)}."
       SandboxModule.method(lifecycle).call()
     else
       raise "No lifecycle method #{lifecycle.inspect} defined in harp."
@@ -215,20 +215,21 @@ class HarpInterpreter
   def respond
     done = @events
     if @is_debug
-      done.push ({ "token" => "l:#{SandboxModule::line_count}:pc:#{@program_counter}" })
+      done.push ({ "token" => "l:#{@current_line}:pc:#{@program_counter}" })
     end
     done
   end
 
   # Advance the program counter to the next instruction.
   def advance
-    if ! @break_at.nil?
-      if @break_at >= SandboxModule::line_count
+    if @break_at > 0
+      if @break_at <= SandboxModule::line_count
         return false
       end
     end
     @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
     @program_counter += 1
+    @current_line = SandboxModule::line_count
     return true
   end
 

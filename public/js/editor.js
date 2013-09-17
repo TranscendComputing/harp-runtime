@@ -14,10 +14,20 @@ $(function() {
 });
 
 function debugIt(lifecycle, data) {
+	var index = 0, breakpoint, args = "";
 	$("#script_output").html("");
+
+	$.each(editor.session.getBreakpoints(), function(key, val) {
+		if (val && (!breakpoint || key < breakpoint)) {
+			breakpoint = key+1;
+		} 
+	});
+	if (breakpoint) {
+		args = "&break=" + breakpoint;
+	}
     $.ajax({
         type: "POST",
-        url: "/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&mock=y&auth=default_creds",
+        url: "/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&mock=y&auth=default_creds"+args,
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",

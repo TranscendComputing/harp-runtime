@@ -30,7 +30,8 @@ class HarpApiApp < ApiBase
     end      
     if script != nil and script.length < 1000
       logger.debug("Got harp script: #{script}")
-    end   
+    end
+    context[:break] = params[:break] || nil
     context
   end
 

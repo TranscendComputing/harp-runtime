@@ -32,3 +32,10 @@ body {
     height: 200px;   
     border-top: 1px solid gray; 
 }
+
+.breakpoint:after {
+    content: "*";
+    color:red;
+    position: absolute;
+    left: 7px;
+}
