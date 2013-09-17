@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "fog"
   gem.add_runtime_dependency "rgl"
   gem.add_runtime_dependency "evalhook", '> 0.5.2'
-  gem.add_runtime_dependency "configliere"
+  gem.add_runtime_dependency "json"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "shotgun"
