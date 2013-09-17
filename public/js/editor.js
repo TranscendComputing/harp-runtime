@@ -45,14 +45,23 @@ function dumpIt(data) {
 function prettyResult(data) {
 	var msg = "", verb;
 	if ('invoked' in data) {
-		$.each(data.results, function (key, val) { 
-    		$.each(val.result, function (key, val) { 
-    			if (/create|update|destroy|break/.test(key)) {
-    				verb = key.toCamelCase();
-    				verb += (verb.charAt(verb.length-1) == 'e')? "d":"ed";
-	    			msg += verb + ": " + val + ".\n" 
+		$.each(data.results, function (index, val) { 
+			console.debug("Got:", index, val);
+			$.each(val, function (action, desc) { 
+				console.debug("Got desc:", desc);
+    			if (/create|update|destroy|break/.test(action)) {
+    				verb = action.toCamelCase();
+    				if (verb = "break") {
+    					verb = "broken";
+    				} else {
+	    				verb += (verb.charAt(verb.length-1) == 'e')? "d":"ed";
+    				}
+	    			msg += verb + ": " + desc + ".\n" 
 	    		}
-    		});
+	    		if (action === "break") {
+	    			
+	    		}
+	    	});
         });
 	}
 	return msg;

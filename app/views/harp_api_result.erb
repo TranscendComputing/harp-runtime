@@ -4,12 +4,12 @@
 
         <% results.each do |result| %>
         {
-            "result": { <% result.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
+            <% result.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>
         },
         <% end %>
         <% if last %>
         {
-            "result": { <% last.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>}
+            <% last.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>
         }
         <% end %>
     ]

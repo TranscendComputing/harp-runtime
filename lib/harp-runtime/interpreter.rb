@@ -64,9 +64,9 @@ class HarpInterpreter
     @resourcer = Harp::Resourcer.new
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
-    @current_line = 0
+    @current_line = 1
     @is_debug = (context.include? :debug) ? true : false
-    @break_at = (context.include? :break) ? context[:break].to_i : nil
+    @break_at = (context.include? :break) ? context[:break].to_i : 0
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
 
   end
@@ -148,7 +148,6 @@ class HarpInterpreter
   def break
     if ! advance() then return self end
     @@logger.debug "Handle break."
-    @events.push({ "break" => "Break at line #{SandboxModule::line_count}"})
     SandboxModule::set_break
     @break_at = SandboxModule::line_count
     return self
@@ -214,8 +213,9 @@ class HarpInterpreter
 
   def respond
     done = @events
-    if @is_debug
+    if @is_debug && @break_at > 0
       done.push ({ "token" => "l:#{@current_line}:pc:#{@program_counter}" })
+      done.push ({ "break" => "Break at line #{@break_at}" })
     end
     done
   end
