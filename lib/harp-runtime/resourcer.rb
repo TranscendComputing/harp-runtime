@@ -1,10 +1,9 @@
 # Author::    John Gardner
 # Copyright:: Copyright (c) 2013 Transcend Computing
 # License::   ASLV2
+require 'JSON'
 
 module Harp
-
-  require 'JSON'
 
   # Resourcer keeps track of defined resources and provides lookup over them.
   class Resourcer
