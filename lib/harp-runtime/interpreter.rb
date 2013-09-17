@@ -85,7 +85,7 @@ class HarpInterpreter
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
     @mutator.create(resource_name, resource)
-    @events.push({ "create" => resource_name})
+    @events.push({ :create => resource_name})
     return self
   end
 
@@ -94,7 +94,7 @@ class HarpInterpreter
   def createParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
-    resources.each do |resource| @events.push( { "create" => resource }) end
+    resources.each do |resource| @events.push( { :create => resource }) end
     return self
   end
 
@@ -102,7 +102,7 @@ class HarpInterpreter
   def update(resource_name)
     if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource_name}."
-    @events.push({ "update" => resource_name})
+    @events.push({ :update => resource_name})
     return self
   end
 
@@ -110,7 +110,7 @@ class HarpInterpreter
   def updateParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Updating resource(s) in parallel #{resources.join(',')}."
-    resources.each { |resource| @events.push( { "update" => resource })}
+    resources.each { |resource| @events.push( { :update => resource })}
     return self
   end
 
@@ -118,7 +118,7 @@ class HarpInterpreter
   def updateTo(resource_start, resource_finish)
     if ! advance() then return self end
     @@logger.debug "Updating resource: #{resource_start} to #{resource_finish}."
-    @events.push({ "update" => resource_name})
+    @events.push({ :update => resource_name})
     return self
   end
 
@@ -126,7 +126,7 @@ class HarpInterpreter
   def destroy(resource_name)
     if ! advance() then return self end
     @@logger.debug "Destroying resource: #{resource_name}."
-    @events.push({ "destroy" => resource_name})
+    @events.push({ :destroy => resource_name})
     return self
   end
 
@@ -157,7 +157,7 @@ class HarpInterpreter
   def continue
     if ! advance() then return self end
     @@logger.debug "Handle continue."
-    @events.push({ "continue" => "Continue at line #{SandboxModule::line_count}"})
+    @events.push({ :continue => "Continue at line #{SandboxModule::line_count}"})
     @break_at = nil
     return self
   end
@@ -166,7 +166,7 @@ class HarpInterpreter
   def step
     if ! advance() then return self end
     @@logger.debug "Handle step."
-    @events.push({ "step" => "Step at line #{SandboxModule::line_count}"})
+    @events.push({ :step => "Step at line #{SandboxModule::line_count}"})
     @break_at += 1
     return self
   end
