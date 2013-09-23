@@ -31,6 +31,7 @@ def create()
     engine.create("computeInstance1")
     engine.create("computeInstance2")
     engine.create("computeInstance3")
+    engine.command("computeInstance1", "service apache2 restart")
 end
 
 def destroy()
@@ -123,9 +124,6 @@ end
           e.editor.session.clearBreakpoint(row);
           return;
       }
-      if (!editor.isFocused()) {
-          return;
-      }
       if (e.clientX > 25 + target.getBoundingClientRect().left) {
           return;
       }
@@ -144,7 +142,7 @@ end
 if (annyang) {
   // Let's define a command.
   var commands = {
-    'harp step': function() { $('#step').click(); }
+    'step': function() { $('#step').click(); }
   };
 
   // Initialize annyang with our commands

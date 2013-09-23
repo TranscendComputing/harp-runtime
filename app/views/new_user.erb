@@ -1,0 +1,25 @@
+
+
+<div class="row well">
+  <div class="col-lg-12">
+    <h2>Harp New User</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Paste the following into settings.yaml to configure access for the new user (under "users:")
+      </div>
+      <div class="panel-body">
+        <pre>
+            <%= api_key %>:
+              aws:
+                access: {cloud-access-key}
+                secret: {cloud-secret-key}
+        </pre>
+      </div>
+    </div>
+  </div>
+</div>
+

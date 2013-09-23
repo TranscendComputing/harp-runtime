@@ -13,14 +13,16 @@ class HarpApiApp < ApiBase
     if auth
       access = settings.send(params[:auth])[:access]
       secret = settings.send(params[:auth])[:secret]
+      keys = settings.send(params[:auth])[:keys]
     else
       access = params[:access] || ""
       secret = params[:secret] || ""
+      keys = nil
     end
     harp_location = params[:harp_location] || nil
     script = request.body.read
 
-    context = { :access => access, :secret => secret }
+    context = { :access => access, :secret => secret, :keys => keys }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
     context[:mock] = true if params.key?("mock")
     if harp_location.nil?
@@ -32,6 +34,8 @@ class HarpApiApp < ApiBase
       logger.debug("Got harp script: #{script}")
     end
     context[:break] = params[:break] || nil
+    context[:step] = params[:step] if params[:step]
+    context[:continue] = params[:continue] || nil
     context
   end
 

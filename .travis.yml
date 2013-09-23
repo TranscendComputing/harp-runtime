@@ -3,9 +3,11 @@ bundler_args: --without development
 rvm:
   - "1.9.2"
   - "1.9.3"
-#  - jruby-19mode # JRuby in 1.9 mode - getsource uses C extension.
+  - jruby-19mode # JRuby in 1.9 mode - getsource uses C extension.
   - rbx-19mode
+matrix:
+  allow_failures:
+    - rvm: jruby-19mode
 before_script:
   - mongo harp_test --eval 'db.addUser("harp", "harp");'
-#script: bundle exec rspec spec
 services: mongodb

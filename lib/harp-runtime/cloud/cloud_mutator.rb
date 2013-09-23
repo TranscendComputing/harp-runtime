@@ -44,6 +44,15 @@ module Harp
         end
       end
 
+      def get_state(resource_name)
+        resource = Harp::Resources::AvailableResource.from_name resource_def['type']
+        if resource.nil?
+          @@logger.error "No resource type #{resource_def['type']}"
+          return
+        end
+        # TODO: fetch state of resource.
+      end
+
     end
   end
 end

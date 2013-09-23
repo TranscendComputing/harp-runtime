@@ -64,8 +64,7 @@ module Harp
 
       # Extract attributes into a hash of variables to supply to engine.
       def attribs
-        hash = {}
-        self.instance_variables.each_with_object({}) { |var,hash|
+        hash = self.instance_variables.each_with_object({}) { |var,hash|
           hash[var.to_s[1..-1].to_sym] = self.instance_variable_get(var)
         }
         hash.delete(:service)

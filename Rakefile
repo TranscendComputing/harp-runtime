@@ -14,6 +14,8 @@ task :jslint do
   paths = paths.reject{|path| path =~ /public\/js\/ace\//}
   paths = paths.reject{|path| path =~ /public\/js\/annyang.*/}
   paths = paths.reject{|path| path =~ /public\/js\/console.*/}
+  paths = paths.reject{|path| path =~ /public\/js\/enc-base64-min.*/}
+  paths = paths.reject{|path| path =~ /public\/js\/hmac-sha256.*/}
   paths.each do |fname|
     cmd = "jslint #{fname}"
     results = %x{#{cmd}}

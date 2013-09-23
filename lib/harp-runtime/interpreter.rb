@@ -54,6 +54,7 @@ module Harp
 # with the scope of the template.  All resource operations are proxied through
 # this object.
 class HarpInterpreter
+  attr_accessor :mutator
 
   include Shikashi
 
@@ -67,14 +68,19 @@ class HarpInterpreter
     @current_line = 1
     @is_debug = (context.include? :debug) ? true : false
     @break_at = (context.include? :break) ? context[:break].to_i : 0
+    @continue = (context.include? :continue) ? true : false
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
-
+    if (context.include? :step)
+      @desired_pc = context[:step][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
+    else
+      @desired_pc = nil
+    end
   end
 
   # Accept the resources from a template and add to the dictionary of resources
   # available to the template.
   def consume(template)
-    if ! advance() then return self end
+    # Consume is always performed, otherwise resources aren't available.
     @resourcer.consume(template)
     return self
   end
@@ -153,24 +159,6 @@ class HarpInterpreter
     return self
   end
 
-  # Interpreter debug operation; continue running from a break.
-  def continue
-    if ! advance() then return self end
-    @@logger.debug "Handle continue."
-    @events.push({ :continue => "Continue at line #{SandboxModule::line_count}"})
-    @break_at = nil
-    return self
-  end
-
-  # Interpreter debug operation; step over a single operation.
-  def step
-    if ! advance() then return self end
-    @@logger.debug "Handle step."
-    @events.push({ :step => "Step at line #{SandboxModule::line_count}"})
-    @break_at += 1
-    return self
-  end
-
   def play(lifecycle, options)
 
     harp_file = options[:harp_file] || nil
@@ -180,6 +168,7 @@ class HarpInterpreter
       file = File.open(harp_file, "rb")
       harp_contents = file.read
     end
+    # Now, instrument the script for debugging.
     harp_contents = instrument_for_debug harp_contents
 
     s = Sandbox.new
@@ -196,8 +185,6 @@ class HarpInterpreter
     SandboxModule.set_engine(self)
     s.run(priv, harp_contents, :base_namespace => SandboxModule)
 
-    # Now, instrument the script for debugging.
-
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
       @@logger.debug "Invoking lifecycle: #{lifecycle.inspect}."
@@ -209,6 +196,18 @@ class HarpInterpreter
     respond
   end
 
+  def method_missing(meth, *args, &block)
+    if ! advance() then return self end
+    @@logger.debug "Invoking: #{meth}"
+    begin
+      require "harp-runtime/lang/#{meth}" 
+      instruction = Harp::Lang.const_get("#{meth}".camel_case()).new(self, args)
+      instruction.run()
+    rescue => e
+      @@logger.debug "Unable to invoke: #{meth}", e
+    end
+  end
+
   private
 
   def respond
@@ -216,24 +215,34 @@ class HarpInterpreter
     if @is_debug && @break_at > 0
       done.push ({ "token" => "l:#{@current_line}:pc:#{@program_counter}" })
       done.push ({ "break" => "Break at line #{@break_at}" })
+    else
+      done.push ({ "end" => "Harp played successfully." })
     end
     done
   end
 
   # Advance the program counter to the next instruction.
   def advance
+    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
     if @break_at > 0
       if @break_at <= SandboxModule::line_count
         return false
       end
     end
-    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
     @program_counter += 1
     @current_line = SandboxModule::line_count
+    if @desired_pc && @program_counter != @desired_pc
+      return false
+    end
+    if @desired_pc && @program_counter == @desired_pc
+      @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}" 
+      @break_at = @current_line
+      return true
+    end
     return true
   end
 
-  # Decorate script with line number tags, to enable breakpoints.
+  # Decorate script with line number tags, to enable line number tracking for breakpoints.
   def instrument_for_debug harp_contents
     if ! @is_debug 
       return harp_contents

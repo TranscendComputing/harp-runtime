@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra/base'
 require 'lib/harp_runtime'
 require 'logging'
+require 'securerandom'
 
 class RootApp < Sinatra::Base
 
@@ -27,6 +28,11 @@ class RootApp < Sinatra::Base
   get %r{\/api-docs\/([^.]+).json} do |file|
     puts "Matched regex for #{file}, serving 'public/docs/#{file}.json'"
     send_file(File.join('public/docs', "#{file}.json"), {:type=>"json"})
+  end
+
+  get '/user/create/' do
+    api_key = SecureRandom.hex(20)
+    erb :new_user, :locals => {:api_key => api_key}
   end
 
   get '/' do

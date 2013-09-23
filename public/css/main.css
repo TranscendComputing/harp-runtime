@@ -39,3 +39,10 @@ body {
     position: absolute;
     left: 7px;
 }
+
+.current_line:before {
+    content: "[  ]";
+    color:yellow;
+    position: absolute;
+    left: 0px;
+}

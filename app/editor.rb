@@ -8,7 +8,6 @@ class EditorApp < Sinatra::Base
   end
 
   get '/' do
-    #@css = ["bootstrap.min.css"]
     @bottom_js = ["main","editor"]
     @editor = true
     erb :editor
