@@ -15,9 +15,22 @@ module Harp
     RESOURCES_COMPUTE = Set.new
 
     class AvailableResource < Fog::Model
+
+      class << self
+        attr_accessor :keeps
+        attr_accessor :prunes
+      end
+
+      attr_accessor :name
+      @name = nil
+      @keeps = nil
+      @prunes = nil
+      @output = false
+
       @@logger = Logging.logger[self]
       @@subclasses = { }
       @@service = { }
+
       def self.create type
         cs = @@subclasses[type]
         if cs
@@ -69,6 +82,40 @@ module Harp
         }
         hash.delete(:service)
         hash
+      end
+
+      # Return persistable attributes with only desired attributes to keep 
+      def keep(persist_attribs)
+        if self.class.keeps
+          return persist_attribs.select{ |attrib| attrib =~ self.class.keeps }
+        end
+        persist_attribs
+      end
+
+      # Return persistable attributes, pruning undesirable attributes.
+      # The default implementation also prunes attribute with nil values, since
+      # those are likely to default in persistence.
+      # Either keeps or prunes are typically set, possibly both.
+      def prune(persist_attribs)
+        if self.class.prunes
+          return persist_attribs.reject{ |attrib,value| attrib =~ self.class.prunes || value.nil? }
+        end
+        persist_attribs
+      end
+
+      # Persist a virtual resource
+      def make_persistable(resource)
+        persist_attribs = resource.attributes
+        persist_attribs = self.keep(persist_attribs)
+        persist_attribs = self.prune(persist_attribs)
+        persisted = self.class.persistent_type().new(persist_attribs)
+        persisted.live_resource = self
+        persisted
+      end
+
+      # Return a token to signify output from the current action
+      def output_token(args={})
+        nil
       end
 
     end

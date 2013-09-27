@@ -29,11 +29,15 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "evalhook", '> 0.5.2'
   gem.add_runtime_dependency "json"
   gem.add_runtime_dependency "extlib"
+  gem.add_runtime_dependency "dm-mysql-adapter"
+  gem.add_runtime_dependency "net-ssh"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "shotgun"
   gem.add_development_dependency "racksh"
   gem.add_development_dependency "pry-debugger"
   gem.add_development_dependency "source2swagger"
+  gem.add_development_dependency "sqlite3-ruby"
+  gem.add_development_dependency "dm-sqlite-adapter"
 
 end

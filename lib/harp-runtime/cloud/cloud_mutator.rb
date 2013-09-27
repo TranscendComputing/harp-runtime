@@ -25,6 +25,9 @@ module Harp
           if ! @compute.nil?
             return @compute
           end
+          if @mock
+            Fog.mock!
+          end
           @compute = Fog::Compute.new(:provider => 'AWS',
             :aws_access_key_id => @access, :aws_secret_access_key => @secret)
           return @compute
@@ -38,10 +41,13 @@ module Harp
           return
         end
         resource.populate(resource_def)
-        if ! @mock
-          service = establish_connect(resource)
-          created = resource.create(service)
-        end
+        resource.name = resource_name
+        service = establish_connect(resource)
+        created = resource.create(service)
+        created = resource.make_persistable(created)
+        created.name = resource_name
+        @@logger.debug "Created resource #{created.inspect}"
+        created
       end
 
       def get_state(resource_name)

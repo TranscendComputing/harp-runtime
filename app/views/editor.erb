@@ -9,17 +9,20 @@ template = &lt;&lt;END
         "computeInstance1": {
             "type": "Std::ComputeInstance",
             "imageId": "ami-d0f89fb9",
-            "instanceType": "t1.micro"
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
         },
         "computeInstance2": {
             "type": "Std::ComputeInstance",
             "imageId": "ami-d0f89fb9",
-            "instanceType": "t1.micro"
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
         },
         "computeInstance3": {
             "type": "Std::ComputeInstance",
             "imageId": "ami-d0f89fb9",
-            "instanceType": "t1.micro"
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
         }
     }
 }
@@ -82,12 +85,6 @@ end
 		          <a id="continue" href="#" class="btn btn-default"><i class="icon-play icon-white"></i> Continue</a>
 		          <a id="drop" href="#" class="btn btn-default"><i class="icon-circle-arrow-down icon-white"></i> Drop Frame</a>
         	    </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="breakAtLine" class="col-lg-4 control-label">Break At:</label>
-            <div class="col-lg-8">
-              <input type="text" class="form-control input-sm" id="breakAtLine" placeholder="Line #">
             </div>
           </div>
         </fieldset>

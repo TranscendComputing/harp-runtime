@@ -4,12 +4,20 @@
 
         <% results.each do |result| %>
         {
-            <% result.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>
+            <% i = 1 %>
+            <% result.each do |key, val| %>"<%= key %>": "<%= val %>"<% if i < result.length %>,
+            <% i = i + 1 %>
+            <% end %>
+            <% end %>
         },
         <% end %>
         <% if last %>
         {
-            <% last.each do |key, val| %>"<%= key %>": "<%= val %>" <% end %>
+            <% i = 1 %>
+            <% last.each do |key, val| %>"<%= key %>": "<%= val %>"<% if i < last.length %>,
+            <% i = i + 1 %>
+            <% end %>
+            <% end %>
         }
         <% end %>
     ]

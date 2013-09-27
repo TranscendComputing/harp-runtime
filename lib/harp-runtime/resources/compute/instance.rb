@@ -1,5 +1,6 @@
 require 'set'
 require 'fog/core/model'
+require 'harp-runtime/models/compute'
 
 module Harp
   module Resources
@@ -53,8 +54,30 @@ module Harp
 
       register_resource :compute_instance, RESOURCES_COMPUTE
 
+      # Only keeping a few properties, simplest define keeps.
+      @keeps = /key_name|^id$|^state$|^.*_ip_address/
+
+      @output = true
+
+      def self.persistent_type()
+        ::ComputeInstance
+      end
+
       def create(service)
-        service.servers.create(self.attribs)
+        create_attribs = self.attribs
+        tags = {"Name" => @name}
+        create_attribs[:tags] = tags
+        server = service.servers.create(create_attribs)
+      end
+
+      # Return a token to signify output from the current action
+      def output_token(args={})
+        if args[:action] == :create
+          return "#{name}:#{key_name}"
+        end
+        if args[:action] == :destroy
+          return "#{name}"
+        end
       end
 
     end

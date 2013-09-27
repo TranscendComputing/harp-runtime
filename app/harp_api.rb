@@ -40,13 +40,13 @@ class HarpApiApp < ApiBase
   end
 
   def run_lifecycle(lifecycle, interpreter, context)
-    begin
+    #begin
       results = interpreter.play(lifecycle, context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
-    rescue => e
-      logger.error("Error running script: #{e}")
-      erb :harp_api_error,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :error => "An error occurred."}
-    end
+    #rescue => e
+    #  logger.error("Error running script: #{e}")
+    #  erb :harp_api_error,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :error => "An error occurred."}
+    #end
   end
 
   ##~ sapi = source2swagger.namespace("harp")

@@ -90,8 +90,15 @@ class HarpInterpreter
     if ! advance() then return self end
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
-    @mutator.create(resource_name, resource)
-    @events.push({ :create => resource_name})
+    created = @mutator.create(resource_name, resource)
+    created.harp_script = @harp_script
+    result = {:create => resource_name}
+    args = {:action => :create}
+    if created.output? (args)
+      result[:output] = created.make_output_token(args)
+    end
+    @events.push(result)
+    created.save
     return self
   end
 
@@ -100,7 +107,18 @@ class HarpInterpreter
   def createParallel(*resources)
     if ! advance() then return self end
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
-    resources.each do |resource| @events.push( { :create => resource }) end
+    resources.each do |resource|
+      resource = @resourcer.get resource_name
+      created = @mutator.create(resource_name, resource)
+      created.harp_script = @harp_script
+      result = {:create => resource_name}
+      args = {:action => :create}
+      if created.output? (args)
+        result[:output] = created.make_output_token(args)
+      end
+      @events.push(result)
+      created.save
+    end
     return self
   end
 
@@ -167,6 +185,9 @@ class HarpInterpreter
     if harp_file != nil
       file = File.open(harp_file, "rb")
       harp_contents = file.read
+      harp_location = "file:///#{harp_file}"
+    else
+      harp_location = "inline"
     end
     # Now, instrument the script for debugging.
     harp_contents = instrument_for_debug harp_contents
@@ -183,6 +204,9 @@ class HarpInterpreter
     priv.instances_of(HarpInterpreter).allow_all
 
     SandboxModule.set_engine(self)
+    @harp_script = ::HarpScript.new(:location => harp_location, :version => "1.0")
+    @harp_script.save
+
     s.run(priv, harp_contents, :base_namespace => SandboxModule)
 
     # Call create/delete etc., as defined in harp file

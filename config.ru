@@ -21,6 +21,17 @@ require 'app/api_base'
 require 'app/harp_api'
 require 'app/harp_debug_api'
 require 'app/editor'
+require 'data_mapper'
+
+DataMapper::Logger.new($stdout, :debug)
+DataMapper::Model.raise_on_save_failure = true  # globally across all models
+DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/dev.db")
+
+require 'harp-runtime/models/base'
+require 'harp-runtime/models/compute'
+
+DataMapper.finalize
+DataMapper.auto_upgrade!
 
 # Following are Swagger directives, for REST API documentation.
 ##~ sapi = source2swagger.namespace("harp-runtime")

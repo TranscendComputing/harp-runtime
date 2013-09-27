@@ -18,6 +18,13 @@ module Harp
 
       register_resource :security_group, RESOURCES_COMPUTE
 
+      # Only keeping a few properties, simplest define keeps.
+      @keeps = /name|description/
+
+      def self.persistent_type()
+        ::SecurityGroup
+      end
+
       def create(service)
         service.security_groups.new(self.attribs)
       end
