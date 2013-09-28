@@ -8,3 +8,8 @@ class ComputeInstance < HarpResource
   property :public_ip_address, String
   property :private_ip_address, String
 end
+
+class SecurityGroup < HarpResource
+  property :name, String
+  property :description, String
+end

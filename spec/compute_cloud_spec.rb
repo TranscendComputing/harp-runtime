@@ -26,9 +26,9 @@ describe Harp::Cloud::CloudMutator, "#create" do
     context[:secret] = "test"
     mutator = Harp::Cloud::CloudMutator.new(context)
 
-    resource_name = "blah"
     result = mutator.create("test_inst1", instance_resource)
-    expect(result).to eq(nil)
+    expect(result.class).to eq(ComputeInstance)
+    expect(result.name).to eq("test_inst1")
   end
 
   it "creates a security group" do
@@ -40,9 +40,9 @@ describe Harp::Cloud::CloudMutator, "#create" do
     context[:secret] = "test"
     mutator = Harp::Cloud::CloudMutator.new(context)
 
-    resource_name = "blah"
     result = mutator.create("test_sg1", security_group_resource)
-    expect(result).to eq(nil)
+    expect(result.class).to eq(SecurityGroup)
+    expect(result.name).to eq("test_sg1")
   end
 
 end

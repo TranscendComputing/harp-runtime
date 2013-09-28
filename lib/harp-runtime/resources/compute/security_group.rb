@@ -1,5 +1,6 @@
 require 'set'
 require 'fog/core/model'
+require 'harp-runtime/models/compute'
 
 module Harp
   module Resources
