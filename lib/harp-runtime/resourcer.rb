@@ -36,6 +36,7 @@ module Harp
       json = JSON.parse(content)
       @config = json.has_key?("Config") ? json["Config"] : nil
       @resources = json.has_key?("Resources") ? json["Resources"] : nil
+      # TODO: parse into graph and determine dependencies.
     end
   end
 

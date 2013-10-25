@@ -58,24 +58,23 @@ end
 
 <div class="row">
   <div class="col-lg-6">
-    <div class="well">
+    <div class="well row">
       <form class="form-horizontal">
         <fieldset>
-          <div class="form-group">
+          <div class="form-group row">
             <div class="col-lg-4">
 	           	<div class="btn-group">
-	           		<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
-    					Lifecycle: <span id="lifecycle">Create</span>
-    					<span class="caret"></span>
-  					</a>
-  					<ul id="invokeables" class="dropdown-menu">
-    					<!-- dropdown menu links -->
-    					<li><a class="change_lifecycle" href="#">Create</a></li>
-    					<li><a class="change_lifecycle" href="#">Destroy</a></li>
-  					</ul>
-				</div>
+	           	  <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+    					   Lifecycle: <span id="lifecycle">Create</span>
+    					   <span class="caret"></span>
+                </a>
+                <ul id="invokeables" class="dropdown-menu">
+                  <!-- dropdown menu links -->
+                  <li><a class="change_lifecycle" href="#">Create</a></li>
+                  <li><a class="change_lifecycle" href="#">Destroy</a></li>
+                </ul>
+              </div>
             </div>
-
             <div class="col-lg-8">
 	           	<div class="btn-group">
 	           		<a class="btn btn-default dropdown-toggle invoke" href="#">
@@ -87,6 +86,19 @@ end
         	    </div>
             </div>
           </div>
+
+          <div class="form-group row">
+            <div class="col-lg-12">
+              <label for="harpId" class="col-lg-4 control-label">Harp ID</label>
+              <div class="col-lg-8">
+                <input type="text" class="form-control" id="harpId">
+              </div>
+              <div class="col-lg-8 col-lg-offset-4">
+                <p class="help-block">Existing Harp ID, for update/destroy.</p>
+              </div>
+            </div>
+          </div>
+
         </fieldset>
       </form>
     </div>

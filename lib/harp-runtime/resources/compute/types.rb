@@ -8,7 +8,7 @@ module Harp
     extend self
 
     def Resources.included(base)
-      puts "xxxAdding #{self},#{base} as a resource"
+      puts "Adding #{self},#{base} as a resource"
     end
 
     def self.method_added(method_name)

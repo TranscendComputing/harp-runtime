@@ -7,7 +7,8 @@
 var editor = ace.edit("editor"), 
     break_pattern = /.*l:(\d+):.*$/,
     current_line = 0,
-    current_token;
+    current_token,
+    harp_id;
 
 editor.setTheme("ace/theme/vibrant_ink");
 editor.getSession().setMode("ace/mode/ruby");
@@ -33,7 +34,7 @@ String.prototype.toCamelCase = function(){
     return this.replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
 };
 
-function setLine(token) {
+function setExecutionLine(token) {
     var line = parseInt(break_pattern.exec(token)[1], 10);
     if (line !== undefined) {
         current_line = line+1;
@@ -42,10 +43,14 @@ function setLine(token) {
     }
 }
 
-function clearLine() {
+function clearExecutionLine() {
     editor.session.removeGutterDecoration(current_line-1, "current_line");
     current_line = 0;
     current_token = undefined;
+}
+
+function setHarpId(harp_id) {
+    $("#harpId").val(harp_id);
 }
 
 function prettyResult(data) {
@@ -62,12 +67,20 @@ function prettyResult(data) {
                     }
                     msg += verb + ": " + desc + ".\n";
                 }
+                if (action === "output") {
+                    clearExecutionLine();
+                }
+                if (action === "harp_id") {
+                    msg += "Harp ID: " + desc + "\n";
+                    harp_id = desc;
+                    setHarpId(harp_id);
+                }
                 if (action === "token") {
-                    clearLine();
-                    setLine(desc);
+                    clearExecutionLine();
+                    setExecutionLine(desc);
                 }
                 if (action === "end") {
-                    clearLine();
+                    clearExecutionLine();
                 }
             });
         });
@@ -80,21 +93,27 @@ function prettyResult(data) {
     return msg;
 }
 
-function dumpIt(data) {
+function processResponse(data) {
     var text = prettyResult(data);
     $("#script_output").text(text);
 }
 
 function invokeLifecycle(lifecycle, data, args) {
+    var id;
     $("#script_output").html("");
     args = args + "&mock=y";
+    if (lifecycle !== "create") {
+        lifecycle = lifecycle + "/" + harp_id;
+    }
     $.ajax({
         type: "POST",
         url: "/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&auth=default_creds"+args,
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",
-        success: function (data) { dumpIt(data); },
+        success: function (data) { 
+            processResponse(data);
+        },
         failure: function (errMsg) {
             console.error(errMsg);
         }
@@ -136,14 +155,9 @@ $(function() {
         var lifecycle = $(evt.target).text();
         $("#lifecycle").text(lifecycle);
     });
-    /*
-    var hash = CryptoJS.HmacSHA256("Message", "Secret Passphrase");
-    console.log(hash);
-    console.log(""+hash);
-    console.log(hash.toString(CryptoJS.enc.Base64));
-    console.log(hash.toString(CryptoJS.enc.Hex));
-    console.log(CryptoJS.enc.Base64.stringify(hash));
-    */
+    $("#harpId").change(function(evt) {
+        harp_id = $(evt.target).text();
+    });
 });
 
 }());

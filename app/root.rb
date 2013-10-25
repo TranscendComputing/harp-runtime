@@ -2,9 +2,11 @@ require 'rubygems'
 require 'sinatra/base'
 require 'lib/harp_runtime'
 require 'logging'
-require 'securerandom'
 
 class RootApp < Sinatra::Base
+
+  configure { set :server, :puma }
+  set :public_folder, Proc.new { File.join(root, "../public") }
 
   configure :production, :development do
     enable :logging
@@ -26,7 +28,6 @@ class RootApp < Sinatra::Base
 
   # Routes for Swagger UI to gather web resources
   get %r{\/api-docs\/([^.]+).json} do |file|
-    puts "Matched regex for #{file}, serving 'public/docs/#{file}.json'"
     send_file(File.join('public/docs', "#{file}.json"), {:type=>"json"})
   end
 

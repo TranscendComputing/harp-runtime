@@ -1,7 +1,7 @@
 # Represents a harp script.
 class HarpScript
   include DataMapper::Resource
-  property :id, Serial
+  property :id, String, :key => true
 
   property :location, String, :length => 255, :required => true 
   property :version, String, :required => true 

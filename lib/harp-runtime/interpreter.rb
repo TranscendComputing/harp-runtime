@@ -96,6 +96,7 @@ class HarpInterpreter
     args = {:action => :create}
     if created.output? (args)
       result[:output] = created.make_output_token(args)
+      result[:line] = @current_line
     end
     @events.push(result)
     created.save
@@ -115,6 +116,7 @@ class HarpInterpreter
       args = {:action => :create}
       if created.output? (args)
         result[:output] = created.make_output_token(args)
+        result[:line] = @current_line
       end
       @events.push(result)
       created.save
@@ -192,7 +194,7 @@ class HarpInterpreter
     # Now, instrument the script for debugging.
     harp_contents = instrument_for_debug harp_contents
 
-    s = Sandbox.new
+    sandbox = Sandbox.new
     priv = Privileges.new
     priv.allow_method :print
     priv.allow_method :puts
@@ -204,10 +206,16 @@ class HarpInterpreter
     priv.instances_of(HarpInterpreter).allow_all
 
     SandboxModule.set_engine(self)
-    @harp_script = ::HarpScript.new(:location => harp_location, :version => "1.0")
+    if lifecycle.to_sym == Harp::Lifecycle::CREATE
+      options[:harp_id] = SecureRandom.urlsafe_base64(16)
+    end
+
+    @harp_script = ::HarpScript.first_or_new({:id => options[:harp_id]},
+      {:location => harp_location, :version => "1.0"})
     @harp_script.save
 
-    s.run(priv, harp_contents, :base_namespace => SandboxModule)
+    @events.push({ :harp_id => options[:harp_id]})
+    sandbox.run(priv, harp_contents, :base_namespace => SandboxModule)
 
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
@@ -261,7 +269,6 @@ class HarpInterpreter
     if @desired_pc && @program_counter == @desired_pc
       @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}" 
       @break_at = @current_line
-      return true
     end
     return true
   end

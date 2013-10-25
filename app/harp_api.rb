@@ -1,4 +1,5 @@
 require "sinatra/config_file"
+require 'securerandom'
 
 # The Harp API provides operations to deposit and invoke Harp scripts on the 
 # Harp runtime.
@@ -36,6 +37,7 @@ class HarpApiApp < ApiBase
     context[:break] = params[:break] || nil
     context[:step] = params[:step] if params[:step]
     context[:continue] = params[:continue] || nil
+    context[:harp_id] = params[:harp_id] || nil
     context
   end
 
@@ -101,6 +103,47 @@ class HarpApiApp < ApiBase
     context = prepare_context(params)
     interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(Harp::Lifecycle::DESTROY, interpreter, context)
+  end
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/harp/output/{harp_id}/{output_token}"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Request the output for some step taken during execution of a harp script."
+  ##~ op.nickname = "get_output"
+  ##~ op.parameters.add :name => "harp_id", :description => "Harp script execution ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "output_token", :description => "Token from action which produced some output", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "auth", :description => "Cloud credential set to use, configured on server", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :message => "Request successful", :code => 200
+  ##~ op.errorResponses.add :message => "Harp, output not found", :code => 404
+  ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
+  ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
+  get '/output/:harp_id/:output_token' do
+    context = prepare_context(params)
+    interpreter = Harp::HarpInterpreter.new(context)
+    run_lifecycle("FIXME", interpreter, context)
+  end
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/harp/status/{harp_id}"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Get the status of a harp script."
+  ##~ op.nickname = "get_status"
+  ##~ op.parameters.add :name => "harp_id", :description => "Harp script execution ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "auth", :description => "Cloud credential set to use, configured on server", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :message => "Request successful", :code => 200
+  ##~ op.errorResponses.add :message => "Harp not found", :code => 404
+  ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
+  ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
+  get '/status/:harp_id' do
+    context = prepare_context(params)
+    interpreter = Harp::HarpInterpreter.new(context)
+    run_lifecycle("FIXME", interpreter, context)
   end
 
   ##~ a = sapi.apis.add

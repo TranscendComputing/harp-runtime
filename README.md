@@ -52,6 +52,10 @@ Or install it yourself as:
 Some sample harp scripts are included in the /sample directory.  Check out the
 samples for intended usage.
 
+## Development
+
+The Harp runtime uses DataMapper for persistence; the default development engine is SQLite.
+
 ## Contributing
 
 1. Fork it

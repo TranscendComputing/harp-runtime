@@ -46,3 +46,8 @@ body {
     position: absolute;
     left: 0px;
 }
+
+#script_output {
+    height: 10em;
+    overflow: scroll;
+}

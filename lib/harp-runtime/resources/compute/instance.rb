@@ -68,17 +68,24 @@ module Harp
         tags = {"Name" => @name}
         create_attribs[:tags] = tags
         server = service.servers.create(create_attribs)
+        @id = server.id
+        return server
       end
 
       # Return a token to signify output from the current action
       def output_token(args={})
         if args[:action] == :create
-          return "#{name}:#{key_name}"
+          return "#{name}:#{@id}:#{key_name}"
         end
         if args[:action] == :destroy
-          return "#{name}"
+          return "#{name}:#{@id}:#{key_name}"
         end
       end
+
+      def get_output(service)
+        server = service.servers.get_console_output(create_attribs)
+      end
+
 
     end
   end
