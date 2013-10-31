@@ -42,13 +42,36 @@ class HarpApiApp < ApiBase
   end
 
   def run_lifecycle(lifecycle, interpreter, context)
-    #begin
+    begin
       results = interpreter.play(lifecycle, context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
-    #rescue => e
-    #  logger.error("Error running script: #{e}")
-    #  erb :harp_api_error,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :error => "An error occurred."}
-    #end
+    rescue => e
+      logger.error("Error running script: #{e}")
+      logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
+      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => lifecycle, :error => "An error occurred."}
+    end
+  end
+
+  def get_status(resource, interpreter, context)
+    begin
+      results = interpreter.status(resource, context)
+      erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
+    rescue => e
+      logger.error("Error retrieving status: #{e}")
+      logger.error("Error retrieving status: #{e.backtrace[1..-1].join("\n")}")
+      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => lifecycle, :error => "An error occurred."}
+    end
+  end
+
+  def get_output(output_token, interpreter, context)
+    begin
+      results = interpreter.get_output(output_token, context)
+      erb :harp_api_result,  :layout => :layout_api, :locals => {:results => results}
+    rescue => e
+      logger.error("Error running script: #{e}")
+      logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
+      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => "get_output", :error => "An error occurred."}
+    end
   end
 
   ##~ sapi = source2swagger.namespace("harp")
@@ -82,13 +105,14 @@ class HarpApiApp < ApiBase
   end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/harp/destroy"
+  ##~ a.set :path => "/api/v1/harp/destroy/{harp_id}"
   ##~ a.description = "Harp runtime invocation of destroy"
 
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Invoke normal destroy lifecycle"
   ##~ op.nickname = "run_destroy"
+  ##~ op.parameters.add :name => "harp_id", :description => "Harp script execution ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "auth", :description => "Cloud credential set to use, configured on server", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
@@ -99,7 +123,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
-  post '/destroy' do
+  post '/destroy/:harp_id' do
     context = prepare_context(params)
     interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(Harp::Lifecycle::DESTROY, interpreter, context)
@@ -123,7 +147,7 @@ class HarpApiApp < ApiBase
   get '/output/:harp_id/:output_token' do
     context = prepare_context(params)
     interpreter = Harp::HarpInterpreter.new(context)
-    run_lifecycle("FIXME", interpreter, context)
+    get_output(params[:output_token], interpreter, context)
   end
 
   ##~ a = sapi.apis.add
@@ -147,12 +171,13 @@ class HarpApiApp < ApiBase
   end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/harp/{lifecycle}"
+  ##~ a.set :path => "/api/v1/harp/{lifecycle}/{harp_id}"
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Invoke a particular lifecycle operation on a harp script."
   ##~ op.nickname = "run_lifecycle"
   ##~ op.parameters.add :name => "lifecycle", :description => "Lifecycle action to take (create, etc.)", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "harp_id", :description => "Harp script execution ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "auth", :description => "Cloud credential set to use, configured on server", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
@@ -163,7 +188,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
-  post '/:lifecycle' do
+  post '/:lifecycle/:harp_id' do
     context = prepare_context(params)
     interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(params[:lifecycle], interpreter, context)

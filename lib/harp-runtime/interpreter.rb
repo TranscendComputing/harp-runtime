@@ -62,7 +62,7 @@ class HarpInterpreter
 
   def initialize(context)
     @events = []
-    @resourcer = Harp::Resourcer.new
+    @resourcer = Harp::Resourcer.new(context[:harp_id])
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
     @current_line = 1
@@ -152,7 +152,16 @@ class HarpInterpreter
   def destroy(resource_name)
     if ! advance() then return self end
     @@logger.debug "Destroying resource: #{resource_name}."
-    @events.push({ :destroy => resource_name})
+    result = {:destroy => resource_name}
+    args = {:action => :destroy}
+    resource = @resourcer.get_existing(resource_name)
+    destroyed = @mutator.destroy(resource_name, resource)
+    destroyed.harp_script = @harp_script
+    if destroyed.output? (args)
+      result[:output] = destroyed.make_output_token(args)
+      result[:line] = @current_line
+    end
+    @events.push(result)
     return self
   end
 
@@ -191,8 +200,6 @@ class HarpInterpreter
     else
       harp_location = "inline"
     end
-    # Now, instrument the script for debugging.
-    harp_contents = instrument_for_debug harp_contents
 
     sandbox = Sandbox.new
     priv = Privileges.new
@@ -212,8 +219,11 @@ class HarpInterpreter
 
     @harp_script = ::HarpScript.first_or_new({:id => options[:harp_id]},
       {:location => harp_location, :version => "1.0"})
+    @harp_script.content = harp_contents
     @harp_script.save
 
+    # Now, instrument the script for debugging.
+    harp_contents = instrument_for_debug(harp_contents)
     @events.push({ :harp_id => options[:harp_id]})
     sandbox.run(priv, harp_contents, :base_namespace => SandboxModule)
 
@@ -228,13 +238,30 @@ class HarpInterpreter
     respond
   end
 
+  def get_output(output_token, options)
+
+    @harp_script = ::HarpScript.get(options[:harp_id])
+
+    @events.push({ :harp_id => options[:harp_id]})
+    @events.push({ :output => "Hello."})
+    respond
+  end
+
   def method_missing(meth, *args, &block)
     if ! advance() then return self end
     @@logger.debug "Invoking: #{meth}"
     begin
       require "harp-runtime/lang/#{meth}" 
       instruction = Harp::Lang.const_get("#{meth}".camel_case()).new(self, args)
-      instruction.run()
+      run_result = instruction.run()
+      run_result.harp_script = @harp_script
+      result = {meth => meth}
+      if run_result.output?
+        result[:output] = run_result.make_output_token(args)
+        result[:line] = @current_line
+      end
+      @events.push(result)
+      run_result.save
     rescue => e
       @@logger.debug "Unable to invoke: #{meth}", e
     end

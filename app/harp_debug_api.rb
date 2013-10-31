@@ -37,13 +37,14 @@ class HarpDebugApiApp < HarpApiApp
   end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/harp-debug/destroy"
+  ##~ a.set :path => "/api/v1/harp-debug/destroy/{harp_id}""
   ##~ a.description = "Harp runtime invocation of destroy"
 
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Invoke normal destroy lifecycle, under debug"
   ##~ op.nickname = "run_debug_destroy"
+  ##~ op.parameters.add :name => "harp_id", :description => "Harp script execution ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.parameters.add :name => "access", :description => "Cloud credential information, access key or user", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "secret", :description => "Secret key or password", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.parameters.add :name => "auth", :description => "Cloud credential set to use, configured on server", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
@@ -54,7 +55,7 @@ class HarpDebugApiApp < HarpApiApp
   ##~ op.errorResponses.add :message => "Bad syntax in script", :code => 400
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
-  post '/destroy' do
+  post '/destroy/:harp_id' do
     context = prepare_context(params)
     context[:debug] = true
     interpreter = Harp::HarpInterpreter.new(context)

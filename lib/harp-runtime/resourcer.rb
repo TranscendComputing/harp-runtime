@@ -11,7 +11,8 @@ module Harp
 
     @@logger = Logging.logger[self]
 
-    def initialize
+    def initialize(harp_id)
+      @harp_id = harp_id
       @resources = nil
       @config = nil
     end
@@ -26,6 +27,12 @@ module Harp
 
     # Retrieve a resource definition from the set
     def get(resource_name)
+      @@logger.debug "Looking for resource: #{resource_name}."
+      @resources[resource_name]
+    end
+
+    # Retrieve a resource definition from the set
+    def get_existing(resource_name)
       @@logger.debug "Looking for resource: #{resource_name}."
       @resources[resource_name]
     end

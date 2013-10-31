@@ -1,3 +1,5 @@
+require 'securerandom'
+
 # Represents a harp script.
 class HarpScript
   include DataMapper::Resource
@@ -5,6 +7,7 @@ class HarpScript
 
   property :location, String, :length => 255, :required => true 
   property :version, String, :required => true 
+  property :content, Text, :required => true 
 
   has n, :harp_resources
   has n, :harp_plays, :through => Resource 
@@ -35,10 +38,15 @@ class HarpResource
   property :state, String
   property :type, Discriminator
   property :output_token, String
+  property :value, Text
 
   belongs_to :harp_script
 
   @live_resource
+
+  def self.auto_id
+    SecureRandom.urlsafe_base64(16)
+  end
 
   def output?(args={})
     return live_resource.output_token(args)

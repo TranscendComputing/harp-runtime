@@ -1,4 +1,4 @@
-    "invoked": "<%= lifecycle %>",
+    <% if defined? lifecycle %>"invoked": "<%= lifecycle %>",<% end %>
     "results": [
         <% last = results.pop %>
 

@@ -7,12 +7,12 @@ module Harp
 
     require 'fog'
 
-    # CloudMutator creates and changes resources on a cloud.
-    class CloudMutator
+    # StateMachine maintains state about the current instances.
+    class StateMachine
 
       @@logger = Logging.logger[self]
 
-      def initialize(options)
+      def initialize(mutator, options)
         @access = options[:access]
         @secret = options[:secret]
         @cloud_type = options[:cloud_type]
@@ -24,9 +24,6 @@ module Harp
         if Harp::Resources::RESOURCES_COMPUTE.include? resource_type.class
           if ! @compute.nil?
             return @compute
-          end
-          if @mock
-            Fog.mock!
           end
           @compute = Fog::Compute.new(:provider => 'AWS',
             :aws_access_key_id => @access, :aws_secret_access_key => @secret)
@@ -41,29 +38,10 @@ module Harp
           return
         end
         resource.populate(resource_def)
-        resource.name = resource_name
-        service = establish_connect(resource)
-        created = resource.create(service)
-        created = resource.make_persistable(created)
-        created.name = resource_name
-        @@logger.debug "Created resource #{created.inspect}"
-        created
-      end
-
-      def destroy(resource_name, resource_def)
-        resource = Harp::Resources::AvailableResource.from_name resource_def['type']
-        if resource.nil?
-          @@logger.error "No resource type #{resource_def['type']}"
-          return
+        if ! @mock
+          service = establish_connect(resource)
+          created = resource.create(service)
         end
-        resource.populate(resource_def)
-        resource.name = resource_name
-        service = establish_connect(resource)
-        destroyed = resource.create(service)
-        destroyed = resource.make_persistable(destroyed)
-        destroyed.name = resource_name
-        @@logger.debug "Destroyed resource #{destroyed.inspect}"
-        destroyed
       end
 
       def get_state(resource_name)
@@ -72,7 +50,11 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
-        # TODO: fetch state of resource.
+        resource.populate(resource_def)
+        if ! @mock
+          service = establish_connect(resource)
+          created = resource.create(service)
+        end
       end
 
     end
