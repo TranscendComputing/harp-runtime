@@ -1,4 +1,4 @@
-/*global $:true, ace:true, console:true */
+/*global $:true, ace:true, console:true, Spinner:true, document:true */
 /*jshint forin:false */
 
 (function(){
@@ -8,7 +8,26 @@ var editor = ace.edit("editor"),
     break_pattern = /.*l:(\d+):.*$/,
     current_line = 0,
     current_token,
-    harp_id;
+    harp_id,
+    spinner,
+    spinner_opts = {
+    lines: 13, // The number of lines to draw
+    length: 20, // The length of each line
+    width: 10, // The line thickness
+    radius: 30, // The radius of the inner circle
+    corners: 1, // Corner roundness (0..1)
+    rotate: 0, // The rotation offset
+    direction: 1, // 1: clockwise, -1: counterclockwise
+    color: '#FFFACD', // #rgb or #rrggbb
+    speed: 1, // Rounds per second
+    trail: 60, // Afterglow percentage
+    shadow: false, // Whether to render a shadow
+    hwaccel: false, // Whether to use hardware acceleration
+    className: 'spinner', // The CSS class to assign to the spinner
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    top: 'auto', // Top position relative to parent in px
+    left: 'auto' // Left position relative to parent in px
+};
 
 editor.setTheme("ace/theme/vibrant_ink");
 editor.getSession().setMode("ace/mode/ruby");
@@ -98,16 +117,18 @@ function processResponse(data) {
     $("#script_output").text(text);
 }
 
-function invokeLifecycle(lifecycle, data, args) {
-    var id;
+function invoke(url, data) {
+    var id, spin_target;
     $("#script_output").html("");
-    args = args + "&mock=y";
-    if (lifecycle !== "create") {
-        lifecycle = lifecycle + "/" + harp_id;
+    $("#working").show();
+    if (!spinner) {
+        spin_target = document.getElementById("working");
+        spinner = new Spinner(spinner_opts).spin(spin_target);
     }
+
     $.ajax({
         type: "POST",
-        url: "/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&auth=default_creds"+args,
+        url: url,
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",
@@ -117,7 +138,18 @@ function invokeLifecycle(lifecycle, data, args) {
         failure: function (errMsg) {
             console.error(errMsg);
         }
+    }).always(function() {
+        spinner.stop();
+        $("#working").hide();
     });
+}
+
+function invokeLifecycle(lifecycle, data, args) {
+    args = args + "&mock=y";
+    if (lifecycle !== "create") {
+        lifecycle = lifecycle + "/" + harp_id;
+    }
+    return invoke("/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&auth=default_creds"+args, data);
 }
 
 function debugIt(lifecycle, data) {
