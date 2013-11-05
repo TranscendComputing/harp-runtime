@@ -35,6 +35,7 @@ class HarpResource
   property :id, String, :key => true
 
   property :name, String
+  property :description, String
   property :state, String
   property :type, Discriminator
   property :output_token, String

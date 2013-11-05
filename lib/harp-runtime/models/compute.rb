@@ -10,6 +10,4 @@ class ComputeInstance < HarpResource
 end
 
 class SecurityGroup < HarpResource
-  property :name, String
-  property :description, String
 end
