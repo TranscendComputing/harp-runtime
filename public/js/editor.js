@@ -152,7 +152,7 @@ function invokeLifecycle(lifecycle, data, args) {
     return invoke("/api/v1/harp-debug/"+lifecycle+"?access=1234&secret=5678&auth=default_creds"+args, data);
 }
 
-function debugIt(lifecycle, data) {
+function runDebug(lifecycle, data) {
     var index = 0, breakpoint, args = "";
 
     $.each(editor.session.getBreakpoints(), function(line, val) {
@@ -168,20 +168,30 @@ function debugIt(lifecycle, data) {
     invokeLifecycle(lifecycle, data, args);
 }
 
-function stepIt(lifecycle, data) {
+function runStep(lifecycle, data) {
     var index = 0, breakpoint, args = "";
     args = args + "&step=" + current_token;
+    invokeLifecycle(lifecycle, data, args);
+}
+
+function runContinue(lifecycle, data) {
+    var index = 0, args = "";
+    args = args + "&continue=" + current_token;
     invokeLifecycle(lifecycle, data, args);
 }
 
 $(function() {
     $("a.invoke").click(function(evt) {
         var lifecycle = $("#lifecycle").text().toLowerCase();
-        debugIt(lifecycle, editor.getValue());
+        runDebug(lifecycle, editor.getValue());
     });
     $("a#step").click(function(evt) {
         var lifecycle = $("#lifecycle").text().toLowerCase();
-        stepIt(lifecycle, editor.getValue());
+        runStep(lifecycle, editor.getValue());
+    });
+    $("a#continue").click(function(evt) {
+        var lifecycle = $("#lifecycle").text().toLowerCase();
+        runContinue(lifecycle, editor.getValue());
     });
     $(".change_lifecycle").click(function(evt) {
         var lifecycle = $(evt.target).text();

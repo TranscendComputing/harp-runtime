@@ -36,7 +36,7 @@ class HarpApiApp < ApiBase
     end
     context[:break] = params[:break] || nil
     context[:step] = params[:step] if params[:step]
-    context[:continue] = params[:continue] || nil
+    context[:continue] = params[:continue] if params[:continue]
     context[:harp_id] = params[:harp_id] || nil
     context
   end
