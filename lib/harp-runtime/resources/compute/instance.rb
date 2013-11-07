@@ -1,6 +1,7 @@
 require 'set'
 require 'fog/core/model'
 require 'harp-runtime/models/compute'
+require 'json'
 
 module Harp
   module Resources
@@ -82,8 +83,18 @@ module Harp
         end
       end
 
-      def get_output(service)
-        server = service.servers.get_console_output(create_attribs)
+      def get_output(service, persisted)
+        binding.pry
+        output = ""
+        response = service.get_console_output(persisted.id)
+        if response.status == 200
+          output = response.body['output']
+          output = output.gsub('"', '\\"')
+          output = output.gsub("\r", '')
+          output = output.gsub("\n", '\\n')
+          output = output.gsub("\e", 'ESC')
+        end
+        output
       end
 
 

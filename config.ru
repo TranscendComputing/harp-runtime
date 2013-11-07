@@ -10,6 +10,7 @@ if ENV['RACK_ENV'] == 'production'
 else
   # development or testing only
   require 'pry'
+  require 'awesome_print'
   use Rack::ShowExceptions
 end
 

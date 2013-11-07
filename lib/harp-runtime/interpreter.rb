@@ -3,6 +3,8 @@
 # License::   ASLV2
 require "shikashi"
 require "harp-runtime/cloud/cloud_mutator"
+require "harp-runtime/lang/command"
+require "harp-runtime/lang/copy"
 
 module SandboxModule
   extend self
@@ -72,6 +74,8 @@ class HarpInterpreter
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
     if (context.include? :step)
       @desired_pc = context[:step][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
+    elsif (context.include? :continue)
+      @desired_pc = context[:continue][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
     else
       @desired_pc = nil
     end
@@ -188,6 +192,23 @@ class HarpInterpreter
     return self
   end
 
+  def parse(content)
+    sandbox = Sandbox.new
+    priv = Privileges.new
+    priv.allow_method :print
+    priv.allow_method :puts
+    priv.allow_method :engine
+    priv.allow_method :line_mark
+    priv.allow_method :die
+    priv.allow_method :breakpoint
+
+    priv.instances_of(HarpInterpreter).allow_all
+
+    SandboxModule.set_engine(self)
+
+    sandbox.run(priv, content, :base_namespace => SandboxModule)
+  end
+
   def play(lifecycle, options)
 
     harp_file = options[:harp_file] || nil
@@ -201,18 +222,6 @@ class HarpInterpreter
       harp_location = "inline"
     end
 
-    sandbox = Sandbox.new
-    priv = Privileges.new
-    priv.allow_method :print
-    priv.allow_method :puts
-    priv.allow_method :engine
-    priv.allow_method :line_mark
-    priv.allow_method :die
-    priv.allow_method :breakpoint
-
-    priv.instances_of(HarpInterpreter).allow_all
-
-    SandboxModule.set_engine(self)
     if lifecycle.to_sym == Harp::Lifecycle::CREATE
       options[:harp_id] = SecureRandom.urlsafe_base64(16)
     end
@@ -225,7 +234,8 @@ class HarpInterpreter
     # Now, instrument the script for debugging.
     harp_contents = instrument_for_debug(harp_contents)
     @events.push({ :harp_id => options[:harp_id]})
-    sandbox.run(priv, harp_contents, :base_namespace => SandboxModule)
+
+    parse(harp_contents)
 
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
@@ -243,7 +253,17 @@ class HarpInterpreter
     @harp_script = ::HarpScript.get(options[:harp_id])
 
     @events.push({ :harp_id => options[:harp_id]})
-    @events.push({ :output => "Hello."})
+
+    parse(@harp_script.content)
+
+    resources = @harp_script.harp_resources
+    found = resources.select {|resource| resource.output_token == output_token}
+    if found
+      persisted = found[0]
+      resource = @resourcer.get(persisted.name)
+      output = @mutator.get_output(resource, persisted)
+      @events.push({ :output => output })
+    end
     respond
   end
 
@@ -284,18 +304,24 @@ class HarpInterpreter
   def advance
     @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
     if @break_at > 0
+      @@logger.debug "Waiting for l:#{@break_at}, at l:#{SandboxModule::line_count}" 
       if @break_at <= SandboxModule::line_count
         return false
       end
     end
     @program_counter += 1
     @current_line = SandboxModule::line_count
-    if @desired_pc && @program_counter != @desired_pc
+    if @desired_pc && @program_counter < @desired_pc
+      @@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}" 
       return false
     end
     if @desired_pc && @program_counter == @desired_pc
       @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}" 
-      @break_at = @current_line
+      if @continue
+        @desired_pc = nil
+      else
+        @break_at = @current_line
+      end
     end
     return true
   end

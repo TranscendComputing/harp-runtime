@@ -66,6 +66,16 @@ module Harp
         destroyed
       end
 
+      def get_output(resource, persisted)
+        resource = Harp::Resources::AvailableResource.from_name resource['type']
+        if resource.nil?
+          @@logger.error "No resource type #{resource_def['type']}"
+          return
+        end
+        service = establish_connect(resource)
+        output = resource.get_output(service, persisted)
+      end
+
       def get_state(resource_name)
         resource = Harp::Resources::AvailableResource.from_name resource_def['type']
         if resource.nil?

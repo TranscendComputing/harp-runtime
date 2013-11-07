@@ -38,8 +38,9 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "shotgun"
   gem.add_development_dependency "racksh"
   gem.add_development_dependency "pry-debugger"
+  gem.add_development_dependency "awesome_print"
   gem.add_development_dependency "source2swagger"
-  gem.add_development_dependency "sqlite3-ruby"
+  gem.add_development_dependency "sqlite3"
   gem.add_development_dependency "dm-sqlite-adapter"
 
 end
