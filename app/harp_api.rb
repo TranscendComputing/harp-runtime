@@ -9,7 +9,15 @@ class HarpApiApp < ApiBase
 
   config_file File.join(File.dirname(__FILE__), '../config/settings.yaml')
 
-  def prepare_context(params)
+  def set_or_default(params, key, context, default)
+    if params[key]
+      context[key] = params[key]
+    else
+      context[key] = default
+    end
+  end
+
+  def fetch_auth(params)
     auth = params[:auth] || nil
     if auth
       access = settings.send(params[:auth])[:access]
@@ -20,10 +28,14 @@ class HarpApiApp < ApiBase
       secret = params[:secret] || ""
       keys = nil
     end
+    context = { :access => access, :secret => secret, :keys => keys }
+  end
+
+  def prepare_context(params)
+    context = fetch_auth(params)
     harp_location = params[:harp_location] || nil
     script = request.body.read
 
-    context = { :access => access, :secret => secret, :keys => keys }
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
     context[:mock] = true if params.key?("mock")
     if harp_location.nil?
@@ -52,14 +64,14 @@ class HarpApiApp < ApiBase
     end
   end
 
-  def get_status(resource, interpreter, context)
+  def get_status(interpreter, context)
     begin
-      results = interpreter.status(resource, context)
+      results = interpreter.get_status(context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
     rescue => e
       logger.error("Error retrieving status: #{e}")
       logger.error("Error retrieving status: #{e.backtrace[1..-1].join("\n")}")
-      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => lifecycle, :error => "An error occurred."}
+      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => "get_status", :error => "An error occurred."}
     end
   end
 
@@ -167,7 +179,7 @@ class HarpApiApp < ApiBase
   get '/status/:harp_id' do
     context = prepare_context(params)
     interpreter = Harp::HarpInterpreter.new(context)
-    run_lifecycle("FIXME", interpreter, context)
+    get_status(interpreter, context)
   end
 
   ##~ a = sapi.apis.add

@@ -84,7 +84,6 @@ module Harp
       end
 
       def get_output(service, persisted)
-        binding.pry
         output = ""
         response = service.get_console_output(persisted.id)
         if response.status == 200

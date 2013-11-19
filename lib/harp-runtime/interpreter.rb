@@ -193,6 +193,7 @@ class HarpInterpreter
   end
 
   def parse(content)
+
     sandbox = Sandbox.new
     priv = Privileges.new
     priv.allow_method :print
@@ -233,8 +234,8 @@ class HarpInterpreter
 
     # Now, instrument the script for debugging.
     harp_contents = instrument_for_debug(harp_contents)
-    @events.push({ :harp_id => options[:harp_id]})
 
+    @events.push({ :harp_id => options[:harp_id]})
     parse(harp_contents)
 
     # Call create/delete etc., as defined in harp file
@@ -248,15 +249,17 @@ class HarpInterpreter
     respond
   end
 
-  def get_output(output_token, options)
+  def reconnect_existing(harp_id)
+    @harp_script = ::HarpScript.get(harp_id)
 
-    @harp_script = ::HarpScript.get(options[:harp_id])
-
-    @events.push({ :harp_id => options[:harp_id]})
+    @events.push({ :harp_id => harp_id})
 
     parse(@harp_script.content)
-
     resources = @harp_script.harp_resources
+  end
+
+  def get_output(output_token, options)
+    resources = reconnect_existing(options[:harp_id])
     found = resources.select {|resource| resource.output_token == output_token}
     if found
       persisted = found[0]
@@ -264,6 +267,12 @@ class HarpInterpreter
       output = @mutator.get_output(resource, persisted)
       @events.push({ :output => output })
     end
+    respond
+  end
+
+  def get_status(options)
+    resources = reconnect_existing(options[:harp_id])
+
     respond
   end
 
@@ -335,7 +344,7 @@ class HarpInterpreter
     harp_contents.each_line do |line|
       line_count += 1
       if not in_here_doc
-        new_harp << "line_mark(#{line_count});#{line}"
+        new_harp << "line_mark(#{line_count})\n#{line}"
         in_here_doc = line[/.*\w+\s*=\s*<<-*([\w]+)/, 1]
       else
         new_harp << line        
