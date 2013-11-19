@@ -26,13 +26,14 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "logging"
   gem.add_runtime_dependency "fog"
   gem.add_runtime_dependency "rgl"
-  gem.add_runtime_dependency "evalhook", '> 0.5.2'
   gem.add_runtime_dependency "json"
   gem.add_runtime_dependency "extlib"
   gem.add_runtime_dependency "dm-mysql-adapter"
   gem.add_runtime_dependency "dm-sqlite-adapter"
   gem.add_runtime_dependency "net-ssh"
   gem.add_runtime_dependency "puma"
+  gem.add_runtime_dependency "delayed_job"
+  gem.add_runtime_dependency "delayed_job_data_mapper"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "shotgun"
@@ -42,5 +43,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "source2swagger"
   gem.add_development_dependency "sqlite3"
   gem.add_development_dependency "dm-sqlite-adapter"
-
+  gem.add_development_dependency "coveralls"
+  gem.add_development_dependency "flog"
 end

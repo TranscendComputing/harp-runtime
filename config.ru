@@ -23,6 +23,7 @@ require 'app/harp_api'
 require 'app/harp_debug_api'
 require 'app/editor'
 require 'data_mapper'
+require 'delayed_job_data_mapper'
 
 DataMapper::Logger.new($stdout, :debug)
 DataMapper::Model.raise_on_save_failure = true  # globally across all models
@@ -33,6 +34,7 @@ require 'harp-runtime/models/compute'
 
 DataMapper.finalize
 DataMapper.auto_upgrade!
+Delayed::Worker.backend.auto_upgrade!
 
 # Following are Swagger directives, for REST API documentation.
 ##~ sapi = source2swagger.namespace("harp-runtime")
