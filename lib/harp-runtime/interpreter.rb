@@ -210,11 +210,7 @@ class HarpInterpreter
     sandbox.run(priv, content, :base_namespace => SandboxModule)
   end
 
-  def play(lifecycle, options)
-
-    harp_file = options[:harp_file] || nil
-    harp_contents = options[:harp_contents] || nil
-
+  def load_harp(harp_file, harp_contents, harp_id)
     if harp_file != nil
       file = File.open(harp_file, "rb")
       harp_contents = file.read
@@ -222,21 +218,26 @@ class HarpInterpreter
     else
       harp_location = "inline"
     end
+    @harp_script = ::HarpScript.first_or_new({:id => harp_id},
+      {:location => harp_location, :version => "1.0"})
+    @harp_script.content = harp_contents
+    @harp_script.save
+  end
+
+  def play(lifecycle, options)
+
+    harp_file = options[:harp_file] || nil
 
     if lifecycle.to_sym == Harp::Lifecycle::CREATE
       options[:harp_id] = SecureRandom.urlsafe_base64(16)
     end
 
-    @harp_script = ::HarpScript.first_or_new({:id => options[:harp_id]},
-      {:location => harp_location, :version => "1.0"})
-    @harp_script.content = harp_contents
-    @harp_script.save
+    load_harp(harp_file, options[:harp_contents], options[:harp_id])
 
     # Now, instrument the script for debugging.
-    harp_contents = instrument_for_debug(harp_contents)
+    harp_contents = parse(instrument_for_debug(@harp_script.content))
 
     @events.push({ :harp_id => options[:harp_id]})
-    parse(harp_contents)
 
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
@@ -280,7 +281,7 @@ class HarpInterpreter
     if ! advance() then return self end
     @@logger.debug "Invoking: #{meth}"
     begin
-      require "harp-runtime/lang/#{meth}" 
+      require "harp-runtime/lang/#{meth}"
       instruction = Harp::Lang.const_get("#{meth}".camel_case()).new(self, args)
       run_result = instruction.run()
       run_result.harp_script = @harp_script
@@ -311,9 +312,9 @@ class HarpInterpreter
 
   # Advance the program counter to the next instruction.
   def advance
-    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}" 
+    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}"
     if @break_at > 0
-      @@logger.debug "Waiting for l:#{@break_at}, at l:#{SandboxModule::line_count}" 
+      @@logger.debug "Waiting for l:#{@break_at}, at l:#{SandboxModule::line_count}"
       if @break_at <= SandboxModule::line_count
         return false
       end
@@ -321,11 +322,11 @@ class HarpInterpreter
     @program_counter += 1
     @current_line = SandboxModule::line_count
     if @desired_pc && @program_counter < @desired_pc
-      @@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}" 
+      @@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}"
       return false
     end
     if @desired_pc && @program_counter == @desired_pc
-      @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}" 
+      @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}"
       if @continue
         @desired_pc = nil
       else
@@ -337,7 +338,7 @@ class HarpInterpreter
 
   # Decorate script with line number tags, to enable line number tracking for breakpoints.
   def instrument_for_debug harp_contents
-    if ! @is_debug 
+    if ! @is_debug
       return harp_contents
     end
     new_harp, line_count, in_here_doc = "", 0, false
@@ -347,8 +348,8 @@ class HarpInterpreter
         new_harp << "line_mark(#{line_count})\n#{line}"
         in_here_doc = line[/.*\w+\s*=\s*<<-*([\w]+)/, 1]
       else
-        new_harp << line        
-        if line[/^#{in_here_doc}/] 
+        new_harp << line
+        if line[/^#{in_here_doc}/]
           in_here_doc = false
         end
       end

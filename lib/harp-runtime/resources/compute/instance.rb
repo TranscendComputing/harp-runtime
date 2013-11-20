@@ -9,7 +9,7 @@ module Harp
     class ComputeInstance < AvailableResource
 
       include Harp::Resources
-    
+
       attribute  :id,                       :aliases => 'instanceId'
 
       attr_accessor :architecture
@@ -70,6 +70,16 @@ module Harp
         create_attribs[:tags] = tags
         server = service.servers.create(create_attribs)
         @id = server.id
+        return server
+      end
+
+      def destroy(service)
+        destroy_attribs = self.attribs
+        if @id
+          server = service.servers.destroy(destroy_attribs)
+        else
+          puts "No ID set, cannot delete."
+        end
         return server
       end
 
