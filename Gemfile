@@ -6,7 +6,8 @@ gemspec
 group :test do
   gem "rspec"
   gem "rake"
-
+  gem "coveralls"
+  gem "flog"
   gem "json",      :platform => :jruby
   gem "jslint"
 end
