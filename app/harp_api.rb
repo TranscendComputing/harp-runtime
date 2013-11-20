@@ -1,7 +1,7 @@
 require "sinatra/config_file"
 require 'securerandom'
 
-# The Harp API provides operations to deposit and invoke Harp scripts on the 
+# The Harp API provides operations to deposit and invoke Harp scripts on the
 # Harp runtime.
 class HarpApiApp < ApiBase
 
@@ -42,15 +42,21 @@ class HarpApiApp < ApiBase
       context[:harp_contents] = script
     else
       context[:harp_location] = harp_location
-    end      
+    end
     if script != nil and script.length < 1000
       logger.debug("Got harp script: #{script}")
     end
-    context[:break] = params[:break] || nil
+    set_or_default(params, :break, context, nil)
     context[:step] = params[:step] if params[:step]
     context[:continue] = params[:continue] if params[:continue]
-    context[:harp_id] = params[:harp_id] || nil
+    set_or_default(params, :harp_id, context, nil)
     context
+  end
+
+  def handle_error(e, action)
+    logger.error("Error running script: #{e}")
+    logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
+    erb :harp_api_error,  :layout => :layout_api, :locals => {:action => action, :error => "An error occurred."}
   end
 
   def run_lifecycle(lifecycle, interpreter, context)
@@ -58,9 +64,7 @@ class HarpApiApp < ApiBase
       results = interpreter.play(lifecycle, context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
     rescue => e
-      logger.error("Error running script: #{e}")
-      logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
-      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => lifecycle, :error => "An error occurred."}
+      handle_error(e, lifecycle)
     end
   end
 
@@ -69,9 +73,7 @@ class HarpApiApp < ApiBase
       results = interpreter.get_status(context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:lifecycle => lifecycle, :results => results}
     rescue => e
-      logger.error("Error retrieving status: #{e}")
-      logger.error("Error retrieving status: #{e.backtrace[1..-1].join("\n")}")
-      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => "get_status", :error => "An error occurred."}
+      handle_error(e, "get_status")
     end
   end
 
@@ -80,10 +82,13 @@ class HarpApiApp < ApiBase
       results = interpreter.get_output(output_token, context)
       erb :harp_api_result,  :layout => :layout_api, :locals => {:results => results}
     rescue => e
-      logger.error("Error running script: #{e}")
-      logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
-      erb :harp_api_error,  :layout => :layout_api, :locals => {:action => "get_output", :error => "An error occurred."}
+      handle_error(e, "get_output")
     end
+  end
+
+  before do
+    context = prepare_context(params)
+    interpreter = Harp::HarpInterpreter.new(context)
   end
 
   ##~ sapi = source2swagger.namespace("harp")
@@ -111,8 +116,6 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/create' do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(Harp::Lifecycle::CREATE, interpreter, context)
   end
 
@@ -136,8 +139,6 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/destroy/:harp_id' do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(Harp::Lifecycle::DESTROY, interpreter, context)
   end
 
@@ -157,8 +158,6 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   get '/output/:harp_id/:output_token' do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
     get_output(params[:output_token], interpreter, context)
   end
 
@@ -177,8 +176,6 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   get '/status/:harp_id' do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
     get_status(interpreter, context)
   end
 
@@ -201,8 +198,6 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/:lifecycle/:harp_id' do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
     run_lifecycle(params[:lifecycle], interpreter, context)
   end
 
