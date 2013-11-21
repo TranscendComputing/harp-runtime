@@ -8,8 +8,8 @@
 
 <!--- [gem]: https://rubygems.org/gems/harp-runtime -->
 [travis]: http://travis-ci.org/TranscendComputing/harp-runtime
-[codeclimate]: https://codeclimate.com/github/TranscendComputing/harp-runtime
 [coveralls]: https://coveralls.io/r/TranscendComputing/harp-runtime
+<!-- mis-identified as JS: [codeclimate]: https://codeclimate.com/github/TranscendComputing/harp-runtime -->
 <!--- [gemnasium]: https://gemnasium.com/TranscendComputing/harp-runtime -->
 
 Spin up infrastructure and services in a cloud, virtualized, or baremetal
