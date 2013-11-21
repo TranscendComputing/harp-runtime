@@ -2,8 +2,8 @@
 
 <!--- [![Gem Version](https://badge.fury.io/rb/harp-runtime.png)][gem] -->
 [![Build Status](https://secure.travis-ci.org/TranscendComputing/harp-runtime.png?branch=master)][travis]
-[![Code Climate](https://codeclimate.com/github/TranscendComputing/harp-runtime.png)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/TranscendComputing/harp-runtime/badge.png?branch=master)][coveralls]
+<!-- mis-identified as JS [![Code Climate](https://codeclimate.com/github/TranscendComputing/harp-runtime.png)][codeclimate] -->
 <!---[![Dependency Status](https://gemnasium.com/TranscendComputing/harp-runtime.png?travis)][gemnasium] -->
 
 <!--- [gem]: https://rubygems.org/gems/harp-runtime -->
