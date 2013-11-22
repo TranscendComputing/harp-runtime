@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra/base'
-require 'lib/harp_runtime'
 require 'logging'
 
 class RootApp < Sinatra::Base
@@ -18,7 +17,7 @@ class RootApp < Sinatra::Base
   end
 
   before do
-    headers "Content-Type" => "text/html; charset=utf-8"
+    headers "Content-Type" => "text/html;charset=utf-8"
   end
 
   # Routes for Swagger UI to gather web resources

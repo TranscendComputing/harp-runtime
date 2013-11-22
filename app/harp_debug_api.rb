@@ -1,9 +1,14 @@
 require "sinatra/config_file"
 
-# The Harp Debug API provides operations to step through a harp script and 
+# The Harp Debug API provides operations to step through a harp script and
 # verify operations are correct, in the style of an Integrated Development
 # Environment (IDE)
 class HarpDebugApiApp < HarpApiApp
+
+  before do
+    @context[:debug] = true
+    @interpreter = Harp::HarpInterpreter.new(@context)
+  end
 
   ##~ sapi = source2swagger.namespace("harp-debug")
   ##~ sapi.swaggerVersion = "1.2"
@@ -30,10 +35,7 @@ class HarpDebugApiApp < HarpApiApp
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/create' do
-    context = prepare_context(params)
-    context[:debug] = true
-    interpreter = Harp::HarpInterpreter.new(context)
-    run_lifecycle(Harp::Lifecycle::CREATE, interpreter, context)
+    run_lifecycle(Harp::Lifecycle::CREATE, @interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -56,10 +58,7 @@ class HarpDebugApiApp < HarpApiApp
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/destroy/:harp_id' do
-    context = prepare_context(params)
-    context[:debug] = true
-    interpreter = Harp::HarpInterpreter.new(context)
-    run_lifecycle(Harp::Lifecycle::DESTROY, interpreter, context)
+    run_lifecycle(Harp::Lifecycle::DESTROY, @interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -80,10 +79,7 @@ class HarpDebugApiApp < HarpApiApp
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/:lifecycle' do
-    context = prepare_context(params)
-    context[:debug] = true
-    interpreter = Harp::HarpInterpreter.new(context)
-    run_lifecycle(params[:lifecycle], interpreter, context)
+    run_lifecycle(params[:lifecycle], @interpreter, @context)
   end
 
 end

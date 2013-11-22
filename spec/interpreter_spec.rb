@@ -3,55 +3,6 @@ require "rubygems"
 require "harp_runtime"
 require "evalhook"
 
-# A sample script
-
-script = <<OUTER
-# Create some instances on AWS
-
-template = <<END
-{
-  "Config": {
-  },
-  "Resources": {
-    "computeInstance1": {
-      "type": "Std::ComputeInstance",
-      "imageId": "ami-d0f89fb9",
-      "instanceType": "t1.micro"
-    },
-    "computeInstance2": {
-      "type": "Std::ComputeInstance",
-      "imageId": "ami-d0f89fb9",
-      "instanceType": "t1.micro"
-    },
-    "computeInstance3": {
-      "type": "Std::ComputeInstance",
-      "imageId": "ami-d0f89fb9",
-      "instanceType": "t1.micro"
-    }
-  }
-}
-END
-
-engine.consume(template)
-
-def create()
-  engine.create("computeInstance1")
-  engine.create("computeInstance2")
-  engine.break # should be line 32, from top of script
-  engine.create("computeInstance3")
-end
-
-def destroy()
-  engine.destroy("computeInstance1")
-  engine.destroy("computeInstance3")
-end
-
-def custom()
-  engine.destroy("computeInstance2")
-end
-
-OUTER
-
 describe Harp::HarpInterpreter, "#play" do
 	it "instruments for debug" do
 		context = {}
@@ -62,7 +13,7 @@ describe Harp::HarpInterpreter, "#play" do
     context[:secret] = "test"
     interpreter = Harp::HarpInterpreter.new(context)
 
-    context[:harp_contents] = script
+    context[:harp_contents] = VALID_SCRIPT
     results = interpreter.play("create", context)
     expect(results).not_to be_empty
     #results.each do |result|  puts result end
@@ -85,7 +36,7 @@ describe Harp::HarpInterpreter, "#play" do
     context[:break] = 38
     interpreter = Harp::HarpInterpreter.new(context)
 
-    context[:harp_contents] = script
+    context[:harp_contents] = VALID_SCRIPT
     results = interpreter.play("destroy", context)
     expect(results).not_to be_empty
     breakpoint = 0
@@ -106,7 +57,7 @@ describe Harp::HarpInterpreter, "#play" do
     context[:secret] = "test"
     interpreter = Harp::HarpInterpreter.new(context)
 
-    context[:harp_contents] = script
+    context[:harp_contents] = VALID_SCRIPT
     results = interpreter.play("custom", context)
     expect(results).not_to be_empty
     destroyed = nil

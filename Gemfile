@@ -10,4 +10,6 @@ group :test do
   gem "flog"
   gem "json",      :platform => :jruby
   gem "jslint"
+  gem 'database_cleaner'
+  gem 'factory_girl'
 end

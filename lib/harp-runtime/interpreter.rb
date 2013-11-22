@@ -220,8 +220,10 @@ class HarpInterpreter
     end
     @harp_script = ::HarpScript.first_or_new({:id => harp_id},
       {:location => harp_location, :version => "1.0"})
-    @harp_script.content = harp_contents
-    @harp_script.save
+    if !@harp_script.saved?
+      @harp_script.content = harp_contents
+      @harp_script.save
+    end
   end
 
   def play(lifecycle, options)

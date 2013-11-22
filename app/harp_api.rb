@@ -1,5 +1,6 @@
 require "sinatra/config_file"
 require 'securerandom'
+require 'harp_runtime'
 
 # The Harp API provides operations to deposit and invoke Harp scripts on the
 # Harp runtime.
@@ -86,9 +87,16 @@ class HarpApiApp < ApiBase
     end
   end
 
+  before "/:lifecycle/:harp_id" do
+    @context = prepare_context(params)
+    @interpreter = Harp::HarpInterpreter.new(@context)
+  end
+
   before do
-    context = prepare_context(params)
-    interpreter = Harp::HarpInterpreter.new(context)
+    if ! @context
+      @context = prepare_context(params)
+      @interpreter = Harp::HarpInterpreter.new(@context)
+    end
   end
 
   ##~ sapi = source2swagger.namespace("harp")
@@ -116,7 +124,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/create' do
-    run_lifecycle(Harp::Lifecycle::CREATE, interpreter, context)
+    run_lifecycle(Harp::Lifecycle::CREATE, @interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -139,7 +147,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/destroy/:harp_id' do
-    run_lifecycle(Harp::Lifecycle::DESTROY, interpreter, context)
+    run_lifecycle(Harp::Lifecycle::DESTROY, @interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -158,7 +166,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   get '/output/:harp_id/:output_token' do
-    get_output(params[:output_token], interpreter, context)
+    get_output(params[:output_token], @interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -176,7 +184,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   get '/status/:harp_id' do
-    get_status(interpreter, context)
+    get_status(@interpreter, @context)
   end
 
   ##~ a = sapi.apis.add
@@ -198,7 +206,7 @@ class HarpApiApp < ApiBase
   ##~ op.errorResponses.add :message => "Unable to authorize with supplied credentials", :code => 401
   ##~ op.errorResponses.add :message => "Fatal error invoking script", :code => 500
   post '/:lifecycle/:harp_id' do
-    run_lifecycle(params[:lifecycle], interpreter, context)
+    run_lifecycle(params[:lifecycle], @interpreter, @context)
   end
 
 end
