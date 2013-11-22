@@ -39,7 +39,7 @@ class HarpDebugApiApp < HarpApiApp
   end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/harp-debug/destroy/{harp_id}""
+  ##~ a.set :path => "/api/v1/harp-debug/destroy/{harp_id}"
   ##~ a.description = "Harp runtime invocation of destroy"
 
   ##~ op = a.operations.add

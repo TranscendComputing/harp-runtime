@@ -9,4 +9,5 @@ matrix:
     - rvm: jruby-19mode
 before_script:
   - mongo harp_test --eval 'db.addUser("harp", "harp");'
+  - ./script/document
 services: mongodb
