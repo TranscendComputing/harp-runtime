@@ -9,5 +9,6 @@ matrix:
     - rvm: jruby-19mode
 before_script:
   - mongo harp_test --eval 'db.addUser("harp", "harp");'
+  - gem install -g source2swagger
   - ./script/document
 services: mongodb
