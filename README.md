@@ -3,13 +3,13 @@
 <!--- [![Gem Version](https://badge.fury.io/rb/harp-runtime.png)][gem] -->
 [![Build Status](https://secure.travis-ci.org/TranscendComputing/harp-runtime.png?branch=master)][travis]
 [![Coverage Status](https://coveralls.io/repos/TranscendComputing/harp-runtime/badge.png?branch=master)][coveralls]
-<!-- mis-identified as JS [![Code Climate](https://codeclimate.com/github/TranscendComputing/harp-runtime.png)][codeclimate] -->
+[![Code Climate](https://codeclimate.com/github/TranscendComputing/harp-runtime.png)][codeclimate]
 <!---[![Dependency Status](https://gemnasium.com/TranscendComputing/harp-runtime.png?travis)][gemnasium] -->
 
 <!--- [gem]: https://rubygems.org/gems/harp-runtime -->
 [travis]: http://travis-ci.org/TranscendComputing/harp-runtime
 [coveralls]: https://coveralls.io/r/TranscendComputing/harp-runtime
-<!-- mis-identified as JS: [codeclimate]: https://codeclimate.com/github/TranscendComputing/harp-runtime -->
+[codeclimate]: https://codeclimate.com/github/TranscendComputing/harp-runtime
 <!--- [gemnasium]: https://gemnasium.com/TranscendComputing/harp-runtime -->
 
 Spin up infrastructure and services in a cloud, virtualized, or baremetal
