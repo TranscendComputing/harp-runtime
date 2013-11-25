@@ -68,6 +68,11 @@ map "/edit" do
   run EditorApp
 end
 
+# Serve swagger-ui from bower directory
+map "/swagger-ui" do
+    run Rack::Directory.new("./bower_components/swagger-ui/dist")
+end
+
 map '/' do
   run RootApp
 end
