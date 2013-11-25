@@ -21,10 +21,29 @@ This application is both a gem and a Sinatra application.
 
 ### Starting Up
 
+Harp requires Ruby 1.9.2 or 1.9.3.  We recommend installing RVM to keep a separate Ruby from your system Ruby.
+
+  http://rvm.io/
+
+Some client-side packages are required.  We use Node.JS and Bower for client packages.  
+Install Node.JS in the usual manner for your platform.
+
+  http://nodejs.org/#download
+
+With Node.JS installed, pull down the client packages as follows:
+
+```
+npm install -g bower
+npm install http-browserify
+bower install
+```
+
 For local testing, you can invoke the app with Shotgun.
 
-    bundle install
-    shotgun config.ru
+```
+bundle install
+shotgun config.ru
+```
 
 Browse to the local server at http://localhost:9393.
 
