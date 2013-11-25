@@ -10,5 +10,8 @@ matrix:
 before_script:
   - mongo harp_test --eval 'db.addUser("harp", "harp");'
   - gem install source2swagger
+  - npm install -g bower
+  - npm install http-browserify
+  - bower install
   - ./script/document
 services: mongodb

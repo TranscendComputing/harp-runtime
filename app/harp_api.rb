@@ -87,6 +87,11 @@ class HarpApiApp < ApiBase
     end
   end
 
+  before "/:verb/:harp_id/:output_token" do
+    @context = prepare_context(params)
+    @interpreter = Harp::HarpInterpreter.new(@context)
+  end
+
   before "/:lifecycle/:harp_id" do
     @context = prepare_context(params)
     @interpreter = Harp::HarpInterpreter.new(@context)

@@ -29,7 +29,7 @@ describe "HarpApiApp" do
     end
   end
 
-  pending "POST /destroy/:harp_id" do
+  describe "POST /destroy/:harp_id" do
     before :each do
       @harp_script = FactoryGirl.create(:harp_script)
       post "/destroy/#{@harp_script.id}"
@@ -44,8 +44,9 @@ describe "HarpApiApp" do
     end
 
     it "should return 404 if not found" do
-      get "/destroy/{@harp_script.id}_bogus_id"
-      last_response.status.should eq(NOT_FOUND)
+      get "/destroy/#{@harp_script.id}_bogus_id"
+      last_response.status.should eq(Rack::Utils.status_code(:not_found))
     end
   end
 end
+

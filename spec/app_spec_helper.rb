@@ -2,6 +2,7 @@
 require 'rspec'
 require 'spec_helper'
 require 'rack/test'
+require 'rack/utils'
 require 'sinatra'
 
 # gems
