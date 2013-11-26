@@ -1,10 +1,10 @@
-/*global $:true, ace:true, console:true, Spinner:true, document:true */
+/*global $:true, ace:true, console:true, Spinner:true, Opentip:true, document:true */
 /*jshint forin:false */
 
 (function(){
   "use strict";
 
-var editor = ace.edit("editor"), 
+var editor = ace.edit("editor"),
     break_pattern = /.*l:(\d+):.*$/,
     current_line = 0,
     current_token,
@@ -29,7 +29,7 @@ var editor = ace.edit("editor"),
     left: 'auto' // Left position relative to parent in px
 };
 
-editor.setTheme("ace/theme/vibrant_ink");
+editor.setTheme("ace/theme/textmate");
 editor.getSession().setMode("ace/mode/ruby");
 editor.on("guttermousedown", function(e){
     var target = e.domEvent.target, row = e.getDocumentPosition().row;
@@ -75,9 +75,9 @@ function setHarpId(harp_id) {
 function prettyResult(data) {
     var msg = "", verb, line;
     if (data.hasOwnProperty('invoked')) {
-        $.each(data.results, function (index, val) { 
+        $.each(data.results, function (index, val) {
             console.debug("Got:", index, val);
-            $.each(val, function (action, desc) { 
+            $.each(val, function (action, desc) {
                 console.debug("Got desc:", desc);
                 if (/create|update|destroy|break/.test(action)) {
                     verb = action.toCamelCase();
@@ -132,7 +132,7 @@ function invoke(url, data) {
         data: data,
         contentType: "application/x-harp; charset=utf-8",
         dataType: "json",
-        success: function (data) { 
+        success: function (data) {
             processResponse(data);
         },
         failure: function (errMsg) {
@@ -181,6 +181,42 @@ function runContinue(lifecycle, data) {
 }
 
 $(function() {
+    editor.addCompletionMarker = function(r) {
+        this.session.addMarker(r, "ace_snippet-buble", "text", true);
+
+        editor.on("click", function(e) {
+            var target = e.domEvent.target;
+            if (target.classList.contains("ace_snippet-buble")) {
+                editor.selection.setRange(r);
+            }
+        });
+    };
+    $( document ).on("click", "div.ace_snippet-buble", function(evt) {
+        var output_content = "No output available.",
+            output_window = new Opentip(evt.target, "Please Wait<br>Fetching output...", {
+            target: evt.target,
+            background: "#000",
+            hideTrigger: "closeButton",
+            showOn: null,
+            removeElementsOnHide: true
+        });
+        output_window.show();
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/harp/output/Lg8MKAl1OigH9ZSi_913MA/computeInstance3:i-d926d5a1:buildbot?access=1234&secret=5678&auth=default_creds",
+            contentType: "application/x-harp; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                output_content = data.results[1].output.replace(/\n/g, '<br />');
+            },
+            failure: function (errMsg) {
+                console.error(errMsg);
+            }
+        }).always(function() {
+            output_window.setContent(output_content);
+        });
+
+    });
     $("a.invoke").click(function(evt) {
         var lifecycle = $("#lifecycle").text().toLowerCase();
         runDebug(lifecycle, editor.getValue());
@@ -192,6 +228,15 @@ $(function() {
     $("a#continue").click(function(evt) {
         var lifecycle = $("#lifecycle").text().toLowerCase();
         runContinue(lifecycle, editor.getValue());
+    });
+    $("a#refresh").click(function(evt) {
+        var Range = ace.require("ace/range").Range,
+            r = new Range(32,4,32,37);
+        editor.addCompletionMarker(r);
+        r = new Range(33,4,33,37);
+        editor.addCompletionMarker(r);
+        r = new Range(34,4,34,37);
+        editor.addCompletionMarker(r);
     });
     $(".change_lifecycle").click(function(evt) {
         var lifecycle = $(evt.target).text();
