@@ -21,6 +21,7 @@ DataMapper.setup(:default, "sqlite::memory:")
 
 require 'harp-runtime/models/base'
 require 'harp-runtime/models/compute'
+require 'harp-runtime/models/rds'
 
 DataMapper.finalize
 DataMapper.auto_migrate!
