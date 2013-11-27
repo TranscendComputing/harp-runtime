@@ -25,10 +25,7 @@ module Harp
       # Return persistable attributes with only desired attributes to keep 
       def keep(persist_attribs)
         persist_attribs[:id] = persist_attribs[:group_id]
-        if self.class.keeps
-          return persist_attribs.select{ |attrib| attrib =~ self.class.keeps }
-        end
-        persist_attribs
+        super
       end
       
       @output = false
