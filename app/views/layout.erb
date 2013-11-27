@@ -78,7 +78,10 @@
   <% end %>
 <% end %>
 <% if @require_main %>
-  <%= "<script data-main=\"js/#{@require_main}\" src=\"bower_components/requirejs/require.js\">" %>
+<script src="/vendor/require.js"></script>
+<script>
+  require(['js/<%= "#{@require_main}" %>'], function (app) {});
+</script>
 <% end %>
 </body>
 </html>

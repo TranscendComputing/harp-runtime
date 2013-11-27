@@ -8,8 +8,7 @@ class EditorApp < Sinatra::Base
   end
 
   get '/' do
-    #@bottom_js = ["main","editor"]
-    @require_main = "edit"
+    @require_main = "editor"
     @editor = true
     erb :editor
   end

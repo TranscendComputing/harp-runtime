@@ -128,30 +128,6 @@ end
 </div><%# /control_panel_frame %>
 </div><%# /editor_all %>
 <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js" type="text/javascript" charset="utf-8"></script>
-<script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/vibrant_ink");
-    editor.getSession().setMode("ace/mode/ruby");
-    editor.on("guttermousedown", function(e){
-    var target = e.domEvent.target;
-      if (target.className.indexOf("ace_gutter-cell") == -1) {
-          var row = e.getDocumentPosition().row;
-          e.editor.session.clearBreakpoint(row);
-          return;
-      }
-      if (e.clientX > 25 + target.getBoundingClientRect().left) {
-          return;
-      }
-      var row = e.getDocumentPosition().row;
-      if (target.className.indexOf("breakpoint") == -1) {
-          e.editor.session.setBreakpoint(row, " breakpoint");
-          e.stop();
-      } else {
-          e.editor.session.clearBreakpoint(row);
-          return;
-      }
-	});
-</script>
 <script src="/js/annyang.min.js" type="text/javascript"></script>
 <script>
 if (annyang) {
