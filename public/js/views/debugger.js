@@ -12,9 +12,9 @@ define([
 
     events: {
       'click .change_lifecycle': 'changeLifecycle',
-      'click a.invoke': 'run',
-      'click a#step': 'step',
-      'click a#continue': 'continue'
+      'click a.invoke': 'play',
+      'click a#step': 'playStep',
+      'click a#continue': 'playConfinue'
     },
 
     break_pattern: /.*l:(\d+):.*$/,
@@ -57,7 +57,7 @@ define([
       this.lifecycle = this.lifecycle.toLowerCase();
     },
 
-    run: function() {
+    play: function() {
       var index = 0, breakpoint, args = "";
 
       $.each(this.editSession.getBreakpoints(), _.bind(function(line, val) {
@@ -73,12 +73,12 @@ define([
       this.invokeLifecycle(this.lifecycle, this.parentModel.get("content"), args);
     },
 
-    step: function() {
+    playStep: function() {
       var args = "&step=" + this.current_token;
       this.invokeLifecycle(this.lifecycle, this.parentModel.get("content"), args);
     },
 
-    continue: function() {
+    playConfinue: function() {
       var args = "&continue=" + this.current_token;
       this.invokeLifecycle(this.lifecycle, this.parentModel.get("content"), args);
     },
