@@ -44,7 +44,7 @@ module Harp
         resource.name = resource_name
         service = establish_connect(resource)
         created = resource.create(service)
-        persist_resource(resource_name, resource, "create")
+        persist_resource(resource_name, resource, created, "create")
       end
 
       def destroy(resource_name, resource_def)
@@ -57,7 +57,7 @@ module Harp
         resource.name = resource_name
         service = establish_connect(resource)
         destroyed = resource.destroy(service)
-        persist_resource(resource_name, resource, "destroy")
+        persist_resource(resource_name, resource, resource, "destroy")
       end
 
       def get_output(resource, persisted)
@@ -79,11 +79,13 @@ module Harp
         # TODO: fetch state of resource.
       end
       private
-          def persist_resource(resource_name, resource, action)
-            resource = resource.make_persistable(resource)
-            resource.name = resource_name
-            @@logger.debug "Perform: #{action} resource #{resource.inspect}"
-            resource
+          def persist_resource(resource_name, resource, live_resource, action)
+            if live_resource
+              persistable = resource.make_persistable(live_resource)
+              persistable.name = resource_name
+              @@logger.debug "Perform: #{action} resource #{persistable.inspect}"
+              persistable
+            end
           end
     end
   end
