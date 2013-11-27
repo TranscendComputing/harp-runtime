@@ -17,20 +17,31 @@ module Harp
         @secret = options[:secret]
         @cloud_type = options[:cloud_type]
         @compute = nil
+        @autoscale = nil
         @mock = (options.include? :mock) ? true : false
       end
 
       def establish_connect(resource_type)
+        if @mock
+            Fog.mock!
+        end
+
         if Harp::Resources::RESOURCES_COMPUTE.include? resource_type.class
           if ! @compute.nil?
             return @compute
           end
-          if @mock
-            Fog.mock!
-          end
           @compute = Fog::Compute.new(:provider => 'AWS',
             :aws_access_key_id => @access, :aws_secret_access_key => @secret)
           return @compute
+        end
+
+        if Harp::Resources::RESOURCES_AUTOSCALE.include? resource_type.class
+          if ! @autoscale.nil?
+            return @autoscale
+          end
+          @autoscale = Fog::AWS::AutoScaling.new(
+            :aws_access_key_id => @access, :aws_secret_access_key => @secret)
+          return @autoscale
         end
       end
 

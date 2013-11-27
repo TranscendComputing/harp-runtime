@@ -123,6 +123,7 @@ module Harp
 end
 
 require "harp-runtime/resources/compute/types"
+require "harp-runtime/resources/autoscaling/types"
 
 class String
   def underscore

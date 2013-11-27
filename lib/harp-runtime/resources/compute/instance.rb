@@ -68,6 +68,7 @@ module Harp
         create_attribs = self.attribs
         tags = {"Name" => @name}
         create_attribs[:tags] = tags
+        binding.pry
         server = service.servers.create(create_attribs)
         @id = server.id
         return server
