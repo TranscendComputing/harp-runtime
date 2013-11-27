@@ -1,5 +1,5 @@
 require 'data_mapper'
 require 'harp-runtime/models/base'
 
-class DbSecurityGroup < HarpResource
+class DBSecurityGroup < HarpResource
 end

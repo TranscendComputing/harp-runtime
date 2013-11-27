@@ -5,7 +5,7 @@ require 'harp-runtime/models/rds'
 module Harp
   module Resources
 
-    class DbSecurityGroup < AvailableResource
+    class DBSecurityGroup < AvailableResource
 
       include Harp::Resources
 
@@ -23,7 +23,7 @@ module Harp
       @output = false
 
       def self.persistent_type()
-        ::DbSecurityGroup
+        ::DBSecurityGroup
       end
 
       def create(service)

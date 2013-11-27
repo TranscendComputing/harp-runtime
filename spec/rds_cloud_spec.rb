@@ -4,7 +4,7 @@ require "harp_runtime"
 require "harp-runtime/cloud/cloud_mutator"
 
 db_security_group_resource = {
-  "type" => "Std::DbSecurityGroup",
+  "type" => "Std::DBSecurityGroup",
   "description" => "A web db security group"
 }
 
@@ -19,7 +19,7 @@ describe Harp::Cloud::CloudMutator, "#create" do
     mutator = Harp::Cloud::CloudMutator.new(context)
 
     result = mutator.create("test_db_sg1", db_security_group_resource)
-    expect(result.class).to eq(DbSecurityGroup)
+    expect(result.class).to eq(DBSecurityGroup)
     expect(result.name).to eq("test_db_sg1")
     
     expect(result.description).to eq("A web db security group")
