@@ -12,8 +12,7 @@ instance_resource = {
 security_group_resource = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group",
-  "description" => "A web security group",
-  "ip_permissions" => ""
+  "description" => "A web security group"
 }
 
 describe Harp::Cloud::CloudMutator, "#create" do
@@ -43,6 +42,8 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_sg1", security_group_resource)
     expect(result.class).to eq(SecurityGroup)
     expect(result.name).to eq("test_sg1")
+    
+    expect(result.description).to eq("A web security group")
   end
 
 end
