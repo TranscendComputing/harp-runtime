@@ -45,5 +45,4 @@ describe Harp::Cloud::CloudMutator, "#create" do
     
     expect(result.description).to eq("A web security group")
   end
-
 end
