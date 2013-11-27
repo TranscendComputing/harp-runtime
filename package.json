@@ -1,0 +1,41 @@
+{
+  "name": "harp-runtime",
+  "version": "0.1.0",
+  "devDependencies": {
+  },
+  "readmeFilename": "README.md",
+  "description": "Cloud orchestration platform",
+  "main": "Gruntfile.js",
+  "bugs": "https://github.com/TranscendComputing/harp-runtime/issues",
+  "directories": {
+    "js": "public/js"
+  },
+  "dependencies": {
+  },
+  "scripts": {
+    "test": "rake spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TranscendComputing/harp-runtime.git"
+  },
+  "keywords": [
+    "cloud",
+    "managment",
+    "ec2",
+    "openstack",
+    "aws"
+  ],
+  "author": "Transcend Computing",
+  "license": "Apache2",
+  "jam": {
+    "packageDir": "public/vendor",
+    "baseUrl": "public/js",
+    "dependencies": {
+      "jquery": "2.0.0",
+      "backbone.babysitter": null,
+      "backbone-relational-shim": null,
+      "backbone.epoxy": null
+    }
+  }
+}
