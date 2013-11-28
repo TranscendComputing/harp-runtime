@@ -16,6 +16,9 @@ module Harp
     
     # Set to contain all rds resources
     RESOURCES_RDS = Set.new
+    
+    # Set to contain all load_balancing resources
+    RESOURCES_ELASTIC_LOAD_BALANCING = Set.new
 
     class AvailableResource < Fog::Model
 
@@ -127,6 +130,7 @@ end
 
 require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/rds/types"
+require "harp-runtime/resources/elastic_load_balancing/types"
 
 class String
   def underscore

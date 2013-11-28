@@ -18,6 +18,7 @@ module Harp
         @cloud_type = options[:cloud_type]
         @compute = nil
         @rds = nil
+        @elb = nil
         @mock = (options.include? :mock) ? true : false
       end
 
@@ -41,6 +42,15 @@ module Harp
           end
           @rds = Fog::AWS::RDS.new({:aws_access_key_id => @access, :aws_secret_access_key => @secret})
           return @rds
+        elsif Harp::Resources::RESOURCES_ELASTIC_LOAD_BALANCING.include? resource_type.class
+          if ! @elb.nil?
+            return @elb
+          end
+          if @mock
+            Fog.mock!
+          end
+          @elb = Fog::AWS::ELB.new({:aws_access_key_id => @access, :aws_secret_access_key => @secret})
+          return @elb
         end
       end
 

@@ -22,6 +22,7 @@ DataMapper.setup(:default, "sqlite::memory:")
 require 'harp-runtime/models/base'
 require 'harp-runtime/models/compute'
 require 'harp-runtime/models/rds'
+require 'harp-runtime/models/elastic_load_balancing'
 
 DataMapper.finalize
 DataMapper.auto_migrate!
