@@ -38,11 +38,11 @@ module Harp
         def destroy(service)
         	destroy_attribs = self.attribs
         	if @id
-          	   group = service.groups.destroy(destroy_attribs)
+          	   policy = service.policies.destroy(destroy_attribs)
         	else
           	   puts "No ID set, cannot delete."
         	end
-        	return group
+        	return policy
         end
 
     end

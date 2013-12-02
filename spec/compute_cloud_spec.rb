@@ -9,6 +9,11 @@ instance_resource = {
   "instanceType" => "t1.micro"
 }
 
+elastic_ip_resource = {
+  "type" => "Std::ElasticIP",
+  "public_ip" => "123.4.5.6"
+}
+    
 security_group_resource = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group",
@@ -16,6 +21,21 @@ security_group_resource = {
 }
 
 describe Harp::Cloud::CloudMutator, "#create" do
+
+  it "creates elastic ip" do
+    context = {}
+    context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    context[:mock] = true
+    context[:debug] = true
+    context[:access] = "test"
+    context[:secret] = "test"
+    mutator = Harp::Cloud::CloudMutator.new(context)
+
+    result = mutator.create("test_eip1", elastic_ip_resource)
+    expect(result.class).to eq(ElasticIP)
+    expect(result.name).to eq("test_eip1")
+  end
+  
 	it "creates a cloud instance" do
 		context = {}
     context[:cloud_type] = :aws # for the moment, assume AWS cloud
@@ -45,4 +65,6 @@ describe Harp::Cloud::CloudMutator, "#create" do
     
     expect(result.description).to eq("A web security group")
   end
+
+
 end
