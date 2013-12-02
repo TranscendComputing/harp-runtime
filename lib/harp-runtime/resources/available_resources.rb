@@ -13,6 +13,9 @@ module Harp
 
     # Set to contain all compute resources
     RESOURCES_COMPUTE = Set.new
+    
+    # Set to contain all rds resources
+    RESOURCES_RDS = Set.new
 
     class AvailableResource < Fog::Model
 
@@ -124,6 +127,7 @@ end
 
 require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/autoscaling/types"
+require "harp-runtime/resources/rds/types"
 
 class String
   def underscore

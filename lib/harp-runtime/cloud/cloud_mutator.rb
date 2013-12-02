@@ -18,6 +18,7 @@ module Harp
         @cloud_type = options[:cloud_type]
         @compute = nil
         @autoscale = nil
+        @rds = nil
         @mock = (options.include? :mock) ? true : false
       end
 
@@ -33,6 +34,15 @@ module Harp
           @compute = Fog::Compute.new(:provider => 'AWS',
             :aws_access_key_id => @access, :aws_secret_access_key => @secret)
           return @compute
+        elsif Harp::Resources::RESOURCES_RDS.include? resource_type.class
+          if ! @rds.nil?
+            return @rds
+          end
+          if @mock
+            Fog.mock!
+          end
+          @rds = Fog::AWS::RDS.new({:aws_access_key_id => @access, :aws_secret_access_key => @secret})
+          return @rds
         end
 
         if Harp::Resources::RESOURCES_AUTOSCALE.include? resource_type.class
