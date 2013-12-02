@@ -59,10 +59,9 @@ begin
 
     namespace :flay do
       require 'flay_task'
-      #desc "Analyze code duplication with flay"
       FlayTask.new() do |t|
         t.verbose = true
-        t.threshold = 1000
+        t.threshold = 2000
       end
     end
   end
