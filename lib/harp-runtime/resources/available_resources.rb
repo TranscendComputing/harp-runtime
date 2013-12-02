@@ -87,7 +87,7 @@ module Harp
         hash
       end
 
-      # Return persistable attributes with only desired attributes to keep 
+      # Return persistable attributes with only desired attributes to keep
       def keep(persist_attribs)
         if self.class.keeps
           return persist_attribs.select{ |attrib| attrib =~ self.class.keeps }
