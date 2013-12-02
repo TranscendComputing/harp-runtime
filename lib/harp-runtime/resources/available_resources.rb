@@ -129,6 +129,7 @@ module Harp
 end
 
 require "harp-runtime/resources/compute/types"
+require "harp-runtime/resources/autoscaling/types"
 require "harp-runtime/resources/rds/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
 

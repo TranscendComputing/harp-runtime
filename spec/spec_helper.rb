@@ -19,6 +19,7 @@ require 'data_mapper'
 
 DataMapper.setup(:default, "sqlite::memory:")
 
+require 'harp-runtime/models/autoscale'
 require 'harp-runtime/models/base'
 require 'harp-runtime/models/compute'
 require 'harp-runtime/models/rds'
