@@ -11,6 +11,8 @@ module Harp
     class CloudMutator
 
       @@logger = Logging.logger[self]
+      DESTROYED = "DESTROYED"
+      CREATED = "CREATED"
 
       def initialize(options)
         @access = options[:access]
@@ -64,7 +66,9 @@ module Harp
         resource.name = resource_name
         service = establish_connect(resource)
         created = resource.create(service)
-        persist_resource(resource_name, resource, created, "create")
+        pr = persist_resource(resource_name, resource, created, "create")
+        pr.state = CREATED
+        return pr
       end
 
       def destroy(resource_name, resource_def)
@@ -77,7 +81,9 @@ module Harp
         resource.name = resource_name
         service = establish_connect(resource)
         destroyed = resource.destroy(service)
-        persist_resource(resource_name, resource, resource, "destroy")
+        pr = persist_resource(resource_name, resource, resource, "destroy")
+        pr.state = DESTROYED
+        return pr
       end
 
       def get_output(resource, persisted)
@@ -90,13 +96,16 @@ module Harp
         output = resource.get_output(service, persisted)
       end
 
-      def get_state(resource_name)
+      def get_state(resource_name,resource_def)
         resource = Harp::Resources::AvailableResource.from_name resource_def['type']
         if resource.nil?
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
-        # TODO: fetch state of resource.
+        resource.populate(resource_def)
+        resource.name = resource_name
+        service = establish_connect(resource)
+        return resource.get_state(service)
       end
       private
           def persist_resource(resource_name, resource, live_resource, action)
