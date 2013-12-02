@@ -6,3 +6,6 @@ end
 
 class LaunchConfiguration < HarpResource
 end
+
+class ScalingPolicy < HarpResource
+end
