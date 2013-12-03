@@ -23,31 +23,39 @@ define([
       this.editor.setTheme("ace/theme/vibrant_ink");
       //this.editor.setTheme("ace/theme/textmate");
       this.editor.getSession().setMode("ace/mode/ruby");
-      this.editor.on("guttermousedown", function(e){
-        var target = e.domEvent.target, row = e.getDocumentPosition().row;
-        if (target.className.indexOf("ace_gutter-cell") === -1) {
-          e.editor.session.clearBreakpoint(row);
-          return;
-        }
-        if (e.clientX > 25 + target.getBoundingClientRect().left) {
-          return;
-        }
-        if (target.className.indexOf("breakpoint") === -1) {
-          e.editor.session.setBreakpoint(row, " breakpoint");
-          e.stop();
-        } else {
-          e.editor.session.clearBreakpoint(row);
-          return;
-        }
-      });
       this.model.set("content", this.editor.getValue());
       this.childViews = new Backbone.ChildViewContainer();
       this.childViews.add(new DebuggerView({parentModel: this.model,
                                             editSession: this.editor.session
                                           }));
+      _.bindAll(this, "marginClick", "documentChanged");
+      this.editor.on("guttermousedown", this.marginClick);
+      this.editor.on("change", this.documentChanged);
     },
 
     render: function () {
+    },
+
+    marginClick: function(e) {
+      var target = e.domEvent.target, row = e.getDocumentPosition().row;
+      if (target.className.indexOf("ace_gutter-cell") === -1) {
+        e.editor.session.clearBreakpoint(row);
+        return;
+      }
+      if (e.clientX > 25 + target.getBoundingClientRect().left) {
+        return;
+      }
+      if (target.className.indexOf("breakpoint") === -1) {
+        e.editor.session.setBreakpoint(row, " breakpoint");
+        e.stop();
+      } else {
+        e.editor.session.clearBreakpoint(row);
+        return;
+      }
+    },
+
+    documentChanged: function () {
+      this.model.set("content", this.editor.getValue());
     }
   });
 
