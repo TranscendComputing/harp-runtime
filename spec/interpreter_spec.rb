@@ -15,8 +15,7 @@ describe Harp::HarpInterpreter do
       Harp::HarpInterpreter.new(interpreter_context())
     }
 
-    it "instruments for debug" do
-      results = interpreter.play("create", interpreter_context)
+    def find_break_event(results)
       expect(results).not_to be_empty
       #results.each do |result|  puts result end
       breakpoint = 0
@@ -24,19 +23,13 @@ describe Harp::HarpInterpreter do
       results.each do |result|
         break_event = result["break"] if result.include? ("break")
       end
+      break_event
+    end
+
+    it "instruments for debug" do
+      results = interpreter.play("create", interpreter_context)
+      break_event = find_break_event(results)
       break_event.should match ".*32$" # Should have broken at line 32
-    end
-
-    context 'invite is unacceptable' do
-      let(:invite) { create_invite }
-      # specs
-    end
-
-    context 'invite is for specific group' do
-      let(:invite) {
-        create_invite(:with_group, :email_address => 'test@mail.com')
-      }
-      # specs
     end
 
     context 'when in debug mode with breakpoint' do
@@ -53,12 +46,7 @@ describe Harp::HarpInterpreter do
 
       it "instruments for debug and accepts breakpoint" do
         results = interpreter.play("destroy", breakpoint_context)
-        expect(results).not_to be_empty
-        breakpoint = 0
-        break_event = nil
-        results.each do |result|
-          break_event = result["break"] if result.include? ("break")
-        end
+        break_event = find_break_event(results)
         break_event.should match ".*38$" # Should have broken at line 38
       end
     end

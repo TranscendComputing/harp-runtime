@@ -47,7 +47,7 @@ begin
       task :total do
         threshold = 10
         flog = FlogCLI.new
-        flog.flog %w(app lib)
+        flog.flog %w(app lib spec)
         average = flog.average.round(1)
         total_score = flog.total_score
         puts "Average complexity: #{flog.average.round(1)}"
