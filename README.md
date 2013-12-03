@@ -25,7 +25,7 @@ Harp requires Ruby 1.9.2 or 1.9.3.  We recommend installing RVM to keep a separa
 
   http://rvm.io/
 
-Some client-side packages are required.  We use Node.JS and Bower for client packages.  
+Some client-side packages are required.  We use Node.JS and Jam (jamjs.org) for client packages.  
 Install Node.JS in the usual manner for your platform.
 
   http://nodejs.org/#download
