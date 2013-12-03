@@ -94,6 +94,14 @@ class HarpInterpreter
     if ! advance() then return self end
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
+    #Iterate over values to check for refs
+    resource.each do |key, value|
+        if value.is_a?(Hash)
+            create(value["ref"])
+            resource[key] = "testLC"
+        end
+    end
+
     created = @mutator.create(resource_name, resource)
     created.harp_script = @harp_script
     result = {:create => resource_name}
