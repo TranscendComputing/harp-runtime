@@ -19,6 +19,14 @@ autoscaling_group_resource = {
   "min_size" => "1"
 }
 
+autoscaling_policy_resource = {
+  "type" => "Std::ScalingPolicy",
+  "id" => "testScalingPolicy",
+  "adjustment_type" => "PercentChangeInCapacity",
+  "auto_scaling_group_name" => "testASG",
+  "scaling_adjustment" => "0"
+}
+
 describe Harp::Cloud::CloudMutator, "#create" do
 	it "creates a launch configuration" do
 		context = {}
@@ -46,5 +54,19 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_as_group1", autoscaling_group_resource)
     expect(result.class).to eq(AutoScalingGroup)
     expect(result.name).to eq("test_as_group1")
+  end
+
+  it "creates AutoScaling Policy" do
+    context = {}
+    context[:cloud_type] = :aws # for the moment, ainstancessume AWS cloud
+    context[:mock] = true
+    context[:debug] = true
+    context[:access] = "test"
+    context[:secret] = "test"
+    mutator = Harp::Cloud::CloudMutator.new(context)
+
+    result = mutator.create("test_as_policy1", autoscaling_policy_resource)
+    expect(result.class).to eq(ScalingPolicy)
+    expect(result.name).to eq("test_as_policy1")
   end
 end
