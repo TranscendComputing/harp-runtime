@@ -28,43 +28,21 @@ autoscaling_policy_resource = {
 }
 
 describe Harp::Cloud::CloudMutator, "#create" do
-	it "creates a launch configuration" do
-		context = {}
-    context[:cloud_type] = :aws # for the moment, ainstancessume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
+  include_context "when have mutator"
 
+	it "creates a launch configuration" do
     result = mutator.create("test_lc1", launch_config_resource)
     expect(result.class).to eq(LaunchConfiguration)
     expect(result.name).to eq("test_lc1")
   end
 
   it "creates AS group" do
-    context = {}
-    context[:cloud_type] = :aws # for the moment, ainstancessume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
-
     result = mutator.create("test_as_group1", autoscaling_group_resource)
     expect(result.class).to eq(AutoScalingGroup)
     expect(result.name).to eq("test_as_group1")
   end
 
   it "creates AutoScaling Policy" do
-    context = {}
-    context[:cloud_type] = :aws # for the moment, ainstancessume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
-
     result = mutator.create("test_as_policy1", autoscaling_policy_resource)
     expect(result.class).to eq(ScalingPolicy)
     expect(result.name).to eq("test_as_policy1")

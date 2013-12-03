@@ -14,4 +14,7 @@ class ElasticIP < HarpResource
 end
 
 class SecurityGroup < HarpResource
+end
+
+class Volume < HarpResource
 end  

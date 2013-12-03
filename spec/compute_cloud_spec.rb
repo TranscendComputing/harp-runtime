@@ -20,6 +20,12 @@ security_group_resource = {
   "description" => "A web security group"
 }
 
+volume_resource = {
+  "type" => "Std::Volume",
+  "availability_zone" => "us-east-1",
+  "size" => 5
+}
+
 describe Harp::Cloud::CloudMutator, "#create" do
   include_context "when have mutator"
 
@@ -42,4 +48,11 @@ describe Harp::Cloud::CloudMutator, "#create" do
 
     expect(result.description).to eq("A web security group")
   end
+
+  it "creates a volume" do
+    result = mutator.create("test_vol1", volume_resource)
+    expect(result.class).to eq(Volume)
+    expect(result.name).to eq("test_vol1")
+  end
+
 end
