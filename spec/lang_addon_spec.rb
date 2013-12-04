@@ -18,11 +18,11 @@ template = <<END
       "type": "Std::LaunchConfiguration",
       "image_id": "ami-d0f89fb9",
       "instance_type": "t1.micro",
-      "id": "testLC"
+      "id": "langSpecLc"
     },
     "asg1": {
       "type": "Std::AutoScalingGroup",
-      "id": "testASG",
+      "id": "langSpecASG",
       "launch_configuration_name": {"ref": "lc1"},
       "availability_zones": "us-east-1",
       "max_size": "1",
