@@ -4,8 +4,8 @@ require "harp_runtime"
 require "evalhook"
 
 describe Harp::HarpInterpreter, "#play" do
-  let(:ref_script) {'
-template = <<END
+  let(:ref_script) {
+'template = <<END
 {
   "Config": {
   },
