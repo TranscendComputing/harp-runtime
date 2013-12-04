@@ -68,8 +68,8 @@ class HarpInterpreter
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
     @current_line = 1
-    @is_debug = context.include? :debug
-    @continue = context.include? :continue
+    @is_debug = context[:debug]
+    @continue = context[:continue]
     @break_at = (context.include? :break) ? context[:break].to_i : 0
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
     compute_desired_pc(context)
@@ -360,9 +360,9 @@ class HarpInterpreter
   end
 
   def compute_desired_pc(context)
-    if (context.include? :step)
+    if (context[:step])
       @desired_pc = context[:step][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
-    elsif (context.include? :continue)
+    elsif (context[:continue])
       @desired_pc = context[:continue][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
     else
       @desired_pc = nil

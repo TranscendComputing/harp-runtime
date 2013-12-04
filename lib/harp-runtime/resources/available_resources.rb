@@ -13,12 +13,15 @@ module Harp
 
     # Set to contain all compute resources
     RESOURCES_COMPUTE = Set.new
-    
+
     # Set to contain all rds resources
     RESOURCES_RDS = Set.new
-    
+
     # Set to contain all load_balancing resources
     RESOURCES_ELASTIC_LOAD_BALANCING = Set.new
+
+    # The set of sets
+    RESOURCE_SETS = Set.new
 
     class AvailableResource < Fog::Model
 
@@ -53,6 +56,7 @@ module Harp
         @@logger.debug "Adding #{self} as a resource #{name}"
         if ! service.nil?
           service.add(self)
+          RESOURCE_SETS.add(service)
         end
       end
 
