@@ -68,17 +68,11 @@ class HarpInterpreter
     @mutator = Harp::Cloud::CloudMutator.new(context)
     @program_counter = 0
     @current_line = 1
-    @is_debug = (context.include? :debug) ? true : false
+    @is_debug = context[:debug]
+    @continue = context[:continue]
     @break_at = (context.include? :break) ? context[:break].to_i : 0
-    @continue = (context.include? :continue) ? true : false
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
-    if (context.include? :step)
-      @desired_pc = context[:step][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
-    elsif (context.include? :continue)
-      @desired_pc = context[:continue][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
-    else
-      @desired_pc = nil
-    end
+    compute_desired_pc(context)
   end
 
   # Accept the resources from a template and add to the dictionary of resources
@@ -226,21 +220,7 @@ class HarpInterpreter
     end
   end
 
-  def play(lifecycle, options)
-
-    harp_file = options[:harp_file] || nil
-
-    if lifecycle.to_sym == Harp::Lifecycle::CREATE
-      options[:harp_id] = SecureRandom.urlsafe_base64(16)
-    end
-
-    load_harp(harp_file, options[:harp_contents], options[:harp_id])
-
-    # Now, instrument the script for debugging.
-    harp_contents = parse(instrument_for_debug(@harp_script.content))
-
-    @events.push({ :harp_id => options[:harp_id]})
-
+  def call_sandbox(lifecycle)
     # Call create/delete etc., as defined in harp file
     if SandboxModule.method_defined? lifecycle
       @@logger.debug "Invoking lifecycle: #{lifecycle.inspect}."
@@ -248,6 +228,25 @@ class HarpInterpreter
     else
       raise "No lifecycle method #{lifecycle.inspect} defined in harp."
     end
+  end
+
+  def play(lifecycle, options)
+
+    harp_file = options[:harp_file] || nil
+
+    harp_id = options[:harp_id]
+    if lifecycle.to_sym == Harp::Lifecycle::CREATE
+      harp_id = SecureRandom.urlsafe_base64(16)
+    end
+
+    load_harp(harp_file, options[:harp_contents], harp_id)
+
+    # Now, instrument the script for debugging.
+    harp_contents = parse(instrument_for_debug(@harp_script.content))
+
+    @events.push({ :harp_id => harp_id})
+
+    call_sandbox(lifecycle)
 
     respond
   end
@@ -314,21 +313,22 @@ class HarpInterpreter
 
   # Advance the program counter to the next instruction.
   def advance
-    @@logger.debug "At line: #{SandboxModule::line_count}, #{caller[0][/`.*'/][1..-2]}"
+    line_count = SandboxModule::line_count
+    #@@logger.debug "At line: #{line_count}, #{caller[0][/`.*'/][1..-2]}"
     if @break_at > 0
-      @@logger.debug "Waiting for l:#{@break_at}, at l:#{SandboxModule::line_count}"
-      if @break_at <= SandboxModule::line_count
+      #@@logger.debug "Waiting for l:#{@break_at}, at l:#{line_count}"
+      if @break_at <= line_count
         return false
       end
     end
     @program_counter += 1
-    @current_line = SandboxModule::line_count
+    @current_line = line_count
     if @desired_pc && @program_counter < @desired_pc
-      @@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}"
+      #@@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}"
       return false
     end
     if @desired_pc && @program_counter == @desired_pc
-      @@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{SandboxModule::line_count}"
+      #@@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{line_count}"
       if @continue
         @desired_pc = nil
       else
@@ -357,6 +357,16 @@ class HarpInterpreter
       end
     end
     new_harp
+  end
+
+  def compute_desired_pc(context)
+    if (context[:step])
+      @desired_pc = context[:step][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
+    elsif (context[:continue])
+      @desired_pc = context[:continue][/.*l:\d+:pc:(\d+).*$/, 1].to_i + 1
+    else
+      @desired_pc = nil
+    end
   end
 
 end

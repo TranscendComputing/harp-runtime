@@ -1,7 +1,10 @@
 require 'set'
 
+require 'harp-runtime/resources/compute/elastic_ip'
 require 'harp-runtime/resources/compute/instance'
 require 'harp-runtime/resources/compute/security_group'
+require 'harp-runtime/resources/compute/volume'
+
 
 module Harp
   module Resources

@@ -108,6 +108,7 @@ module Harp
         response = service.get_console_output(persisted.id)
         if response.status == 200
           output = response.body['output']
+          # escape special characters to ensure valid JSON.
           output = output.gsub('"', '\\"')
           output = output.gsub("\r", '')
           output = output.gsub("\n", '\\n')

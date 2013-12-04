@@ -9,5 +9,12 @@ class ComputeInstance < HarpResource
   property :private_ip_address, String
 end
 
+class ElasticIP < HarpResource
+  property :public_ip_address, String
+end
+
 class SecurityGroup < HarpResource
 end
+
+class Volume < HarpResource
+end  

@@ -13,12 +13,15 @@ module Harp
 
     # Set to contain all compute resources
     RESOURCES_COMPUTE = Set.new
-    
+
     # Set to contain all rds resources
     RESOURCES_RDS = Set.new
-    
+
     # Set to contain all load_balancing resources
     RESOURCES_ELASTIC_LOAD_BALANCING = Set.new
+
+    # The set of sets
+    RESOURCE_SETS = Set.new
 
     class AvailableResource < Fog::Model
 
@@ -56,6 +59,7 @@ module Harp
         @@logger.debug "Adding #{self} as a resource #{name}"
         if ! service.nil?
           service.add(self)
+          RESOURCE_SETS.add(service)
         end
       end
 
@@ -93,7 +97,7 @@ module Harp
         hash
       end
 
-      # Return persistable attributes with only desired attributes to keep 
+      # Return persistable attributes with only desired attributes to keep
       def keep(persist_attribs)
         if self.class.keeps
           return persist_attribs.select{ |attrib| attrib =~ self.class.keeps }
@@ -132,6 +136,7 @@ module Harp
 end
 
 require "harp-runtime/resources/compute/types"
+require "harp-runtime/resources/autoscaling/types"
 require "harp-runtime/resources/rds/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
 

@@ -19,6 +19,7 @@ require 'data_mapper'
 
 DataMapper.setup(:default, "sqlite::memory:")
 
+require 'harp-runtime/models/autoscale'
 require 'harp-runtime/models/base'
 require 'harp-runtime/models/compute'
 require 'harp-runtime/models/rds'
@@ -75,6 +76,26 @@ def custom()
 end
 
 OUTER
+
+module SpecHelpers
+  def create_interpreter_context
+    interpreter_context = {}
+    interpreter_context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    interpreter_context[:mock] = true
+    interpreter_context[:debug] = true
+    interpreter_context[:access] = "test"
+    interpreter_context[:secret] = "test"
+    interpreter_context
+  end
+end
+
+RSpec.configure do |c|
+  c.include SpecHelpers
+end
+
+shared_context 'when have mutator' do
+  let(:mutator) { Harp::Cloud::CloudMutator.new(create_interpreter_context()) }
+end
 
 # Tell Factory Girl to load the factory definitions, now that we've required everything (unless they have already been loaded)
 FactoryGirl.find_definitions

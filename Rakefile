@@ -1,9 +1,13 @@
 #!/usr/bin/env rake
 require "bundler/gem_tasks"
 
-require 'rspec/core/rake_task'
+begin
+  require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec)
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+  # Probably not in dev/test
+end
 
 task :default => [:spec, :jslint, "analyzer:all"]
 
@@ -35,7 +39,7 @@ begin
   namespace :analyzer do
     desc "run all code analyzing tools (flog)"
 
-    task :all => ["flog:total"]
+    task :all => ["flog:total", "flay:flay"]
 
     namespace :flog do
       require 'flog_cli'
@@ -43,13 +47,21 @@ begin
       task :total do
         threshold = 10
         flog = FlogCLI.new
-        flog.flog %w(app lib)
+        flog.flog %w(app lib spec)
         average = flog.average.round(1)
         total_score = flog.total_score
         puts "Average complexity: #{flog.average.round(1)}"
         puts "Total complexity: #{flog.total_score.round(1)}"
         flog.report
         fail "Average code complexity has exceeded max! (#{average} > #{threshold})" if average > threshold
+      end
+    end
+
+    namespace :flay do
+      require 'flay_task'
+      FlayTask.new() do |t|
+        t.verbose = true
+        t.threshold = 2000
       end
     end
   end

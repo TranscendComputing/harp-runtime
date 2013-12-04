@@ -21,9 +21,9 @@ class HarpApiApp < ApiBase
   def fetch_auth(params)
     auth = params[:auth] || nil
     if auth
-      access = settings.send(params[:auth])[:access]
-      secret = settings.send(params[:auth])[:secret]
-      keys = settings.send(params[:auth])[:keys]
+      access = settings.send(auth)[:access]
+      secret = settings.send(auth)[:secret]
+      keys = settings.send(auth)[:keys]
     else
       access = params[:access] || ""
       secret = params[:secret] || ""
@@ -48,8 +48,8 @@ class HarpApiApp < ApiBase
       logger.debug("Got harp script: #{script}")
     end
     set_or_default(params, :break, context, nil)
-    context[:step] = params[:step] if params[:step]
-    context[:continue] = params[:continue] if params[:continue]
+    context[:step] = params[:step]
+    context[:continue] = params[:continue]
     set_or_default(params, :harp_id, context, nil)
     context
   end

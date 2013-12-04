@@ -31,29 +31,20 @@ end
 OUTER
 
 describe Harp::HarpInterpreter, "#play" do
-
-  before :each do
-    @context = {}
-    @context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    @context[:mock] = true
-    @context[:debug] = true
-    @context[:access] = "test"
-    @context[:secret] = "test"
+  let(:interpreter_context) do
+    c = create_interpreter_context()
+    c[:harp_contents] = ADDON_SCRIPT
+    c
   end
+  let(:interpreter) { Harp::HarpInterpreter.new(interpreter_context()) }
 
   it "handles commands" do
-    interpreter = Harp::HarpInterpreter.new(@context)
-
-    @context[:harp_contents] = ADDON_SCRIPT
-    results = interpreter.play("command", @context)
+    results = interpreter.play("command", interpreter_context)
     expect(results).not_to be_empty
   end
 
   it "handles copies" do
-    interpreter = Harp::HarpInterpreter.new(@context)
-
-    @context[:harp_contents] = ADDON_SCRIPT
-    results = interpreter.play("copy", @context)
+    results = interpreter.play("copy", interpreter_context)
     expect(results).not_to be_empty
   end
 end

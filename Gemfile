@@ -8,6 +8,8 @@ group :test do
   gem "rake"
   gem "coveralls"
   gem "flog"
+  gem "flay"
+  gem "turbulence"
   gem "json",      :platform => :jruby
   gem "jslint"
   gem 'database_cleaner'

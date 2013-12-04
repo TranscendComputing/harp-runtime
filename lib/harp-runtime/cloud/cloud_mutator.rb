@@ -16,41 +16,47 @@ module Harp
         @access = options[:access]
         @secret = options[:secret]
         @cloud_type = options[:cloud_type]
-        @compute = nil
-        @rds = nil
-        @elb = nil
         @mock = (options.include? :mock) ? true : false
+        @service_connectors = {}
+      end
+
+      def service_for_set(resource_set)
+        case resource_set
+        when Harp::Resources::RESOURCES_COMPUTE
+          Fog::Compute
+        when Harp::Resources::RESOURCES_RDS
+          Fog::AWS::RDS
+        when Harp::Resources::RESOURCES_ELASTIC_LOAD_BALANCING
+          Fog::AWS::ELB
+        when Harp::Resources::RESOURCES_AUTOSCALE
+          Fog::AWS::AutoScaling
+        else
+        end
+      end
+
+      def make_service(resource_set, args)
+        clazz = service_for_set(resource_set)
+        if ! clazz
+          raise "No service found for resource set: #{resource_set.inspect}"
+        end
+        if @service_connectors[clazz]
+          return @service_connectors[clazz]
+        end
+        if ! clazz.name.include? "AWS"
+          args[:provider] = 'AWS'
+        end
+        @service_connectors[clazz] = clazz.new(args)
       end
 
       def establish_connect(resource_type)
-        if Harp::Resources::RESOURCES_COMPUTE.include? resource_type.class
-          if ! @compute.nil?
-            return @compute
-          end
-          if @mock
+        if @mock
             Fog.mock!
+        end
+        args = {:aws_access_key_id => @access, :aws_secret_access_key => @secret}
+        Harp::Resources::RESOURCE_SETS.each do |resource_set|
+          if resource_set.include? resource_type.class
+            return make_service(resource_set, args)
           end
-          @compute = Fog::Compute.new(:provider => 'AWS',
-            :aws_access_key_id => @access, :aws_secret_access_key => @secret)
-          return @compute
-        elsif Harp::Resources::RESOURCES_RDS.include? resource_type.class
-          if ! @rds.nil?
-            return @rds
-          end
-          if @mock
-            Fog.mock!
-          end
-          @rds = Fog::AWS::RDS.new({:aws_access_key_id => @access, :aws_secret_access_key => @secret})
-          return @rds
-        elsif Harp::Resources::RESOURCES_ELASTIC_LOAD_BALANCING.include? resource_type.class
-          if ! @elb.nil?
-            return @elb
-          end
-          if @mock
-            Fog.mock!
-          end
-          @elb = Fog::AWS::ELB.new({:aws_access_key_id => @access, :aws_secret_access_key => @secret})
-          return @elb
         end
       end
 
