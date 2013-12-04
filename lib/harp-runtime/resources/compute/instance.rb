@@ -52,6 +52,8 @@ module Harp
       attribute :user_data
       attribute :virtualization_type,      :aliases => 'virtualizationType'
       attribute :vpc_id,                   :aliases => 'vpcId'
+      attribute :description
+      attribute :type
 
       register_resource :compute_instance, RESOURCES_COMPUTE
 

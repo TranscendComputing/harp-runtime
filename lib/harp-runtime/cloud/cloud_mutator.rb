@@ -77,13 +77,27 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
+        
         resource.populate(resource_def)
+        persisted = HarpResource.entries.select{|res| res.name == resource_name}.first
+        
+        if ! persisted.nil?
+          require 'pry'
+          binding.pry
+          puts resource.populate(persisted.attributes)
+        end
+        
         resource.name = resource_name
         service = establish_connect(resource)
+        
         destroyed = resource.destroy(service)
-        pr = persist_resource(resource_name, resource, resource, "destroy")
-        pr.state = DESTROYED
-        return pr
+        if !destroyed.nil?
+          pr = persist_resource(resource_name, resource, resource, "destroy")
+          pr.state = DESTROYED
+          return pr
+        else
+          return nil
+        end
       end
 
       def get_output(resource, persisted)
