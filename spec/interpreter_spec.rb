@@ -23,6 +23,7 @@ describe Harp::HarpInterpreter do
       results.each do |result|
         break_event = result["break"] if result.include? ("break")
       end
+      puts "No break event in #{results}" if not break_event
       break_event
     end
 
