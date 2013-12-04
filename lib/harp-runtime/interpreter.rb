@@ -88,7 +88,9 @@ class HarpInterpreter
     if ! advance() then return self end
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
-    created = @mutator.create(resource_name, resource)
+    deps     = @resourcer.get_dep(resource_name)
+    deps.each {|ref| create(ref)}
+    created  = @mutator.create(resource_name, resource)
     created.harp_script = @harp_script
     result = {:create => resource_name}
     args = {:action => :create}
