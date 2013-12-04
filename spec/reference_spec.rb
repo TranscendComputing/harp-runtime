@@ -3,7 +3,8 @@ require "rubygems"
 require "harp_runtime"
 require "evalhook"
 
-ADDON_SCRIPT = <<OUTER
+describe Harp::HarpInterpreter, "#play" do
+  let(:ref_script) {'
 template = <<END
 {
   "Config": {
@@ -32,14 +33,11 @@ engine.consume(template)
 
 def create()
   engine.create("asg1")
-end
+end' }
 
-OUTER
-
-describe Harp::HarpInterpreter, "#play" do
   let(:interpreter_context) do
     c = create_interpreter_context()
-    c[:harp_contents] = ADDON_SCRIPT
+    c[:harp_contents] = ref_script
     c
   end
   let(:interpreter) { Harp::HarpInterpreter.new(interpreter_context()) }
