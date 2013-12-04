@@ -76,22 +76,21 @@ module Harp
       end
 
       def destroy(service)
-        @id = get_id(service)
-        if @id
-          server = service.servers.destroy(@id)
+        if id
+          server = service.servers.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
         return server
       end
       
-      def get_id(service)
-        tag_set = service.describe_tags('key'=>'Name','value'=>@name).body['tagSet']
-        tag_set.count > 0 ? tag_set[0]['resourceId'] : nil 
-      end
-      
       def get_state(service)
-        service.servers.get(get_id(service)).state
+        if id
+          state = service.servers.get(id).state
+        else
+          puts "No ID set, cannot get state."
+        end
+        return state
       end
 
       # Return a token to signify output from the current action

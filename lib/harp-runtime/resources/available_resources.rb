@@ -36,6 +36,9 @@ module Harp
       @@logger = Logging.logger[self]
       @@subclasses = { }
       @@service = { }
+      
+      DESTROYED = "DESTROYED"
+      CREATED = "CREATED"
 
       def self.create type
         cs = @@subclasses[type]
@@ -68,7 +71,7 @@ module Harp
       # Flesh out this resource's instance variables from supplied JSON.
       def populate resource
         resource.each { |name,value|
-          if ! ["type"].include?(name)
+          if ! ["type",:output_token,:value,:harp_script_id].include?(name)
             if self.class.aliases.include?(name)
               aliased = self.class.aliases[name]
               @@logger.debug "Setting var: #{aliased} to #{value}"
