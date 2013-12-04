@@ -5,13 +5,16 @@
 module Harp
 
   require "json"
-  
+  require "rgl/adjacency"
+
   # Resourcer keeps track of defined resources and provides lookup over them.
   class Resourcer
 
     @@logger = Logging.logger[self]
 
     def initialize(harp_id)
+      @dep_graph = RGL::DirectedAdjacencyGraph[]
+      @dependencies = Hash.new []
       @harp_id = harp_id
       @resources = nil
       @config = nil
@@ -37,14 +40,43 @@ module Harp
       @resources[resource_name]
     end
 
+    # Retrieve a resource dependency list from the set
+    def get_dep(resource_name)
+      @@logger.debug "Looking for : #{resource_name}'s dependencies"
+      @dependencies[resource_name]
+    end
+
     private
 
     def digest(content)
       json = JSON.parse(content)
       @config = json.has_key?("Config") ? json["Config"] : nil
       @resources = json.has_key?("Resources") ? json["Resources"] : nil
-      # TODO: parse into graph and determine dependencies.
+      # TODO: parse into graph and determince dependencies.
+      determine_deps
     end
-  end
 
+
+    def determine_deps
+      @resources.each do |name, content|
+        match_deps(name, content, "ref")
+      end
+    end
+
+    #Iterate over values to check for specified item
+    def match_deps(name, content, item)
+      content.each do |key, value|
+        if value.is_a?(Hash)
+            dep = value[item]
+            unless dep.nil?
+              content[key] = @resources.has_key?(dep) ? @resources[dep]["id"] : nil
+              @dependencies[name] += [dep]
+              @dep_graph.add_edge(dep, name)
+            end
+        end
+    end
+      
+    end
+
+  end
 end

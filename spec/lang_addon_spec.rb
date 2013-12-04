@@ -28,6 +28,7 @@ template = <<END
       "max_size": "1",
       "min_size": "1"
     }
+
   }
 }
 END
@@ -56,9 +57,18 @@ describe Harp::HarpInterpreter, "#play" do
   end
   let(:interpreter) { Harp::HarpInterpreter.new(interpreter_context()) }
 
+  it "handles commands" do
+    results = interpreter.play("command", interpreter_context)
+    expect(results).not_to be_empty
+  end
+
+  it "handles copies" do
+    results = interpreter.play("copy", interpreter_context)
+    expect(results).not_to be_empty
+  end
+
   it "handles refs" do
     results = interpreter.play("create", interpreter_context)
     expect(results).not_to be_empty
   end
-
 end
