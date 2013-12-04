@@ -23,7 +23,6 @@ module Harp
       def service_for_set(resource_set)
         case resource_set
         when Harp::Resources::RESOURCES_COMPUTE
-          puts ">> Harp::Resources::RESOURCES_COMPUTE #{Harp::Resources::RESOURCES_COMPUTE} === #{resource_set}"
           Fog::Compute
         when Harp::Resources::RESOURCES_RDS
           Fog::AWS::RDS
