@@ -6,6 +6,7 @@ module Harp
 
   require "json"
   require "rgl/adjacency"
+  require "rgl/topsort"
 
   # Resourcer keeps track of defined resources and provides lookup over them.
   class Resourcer
@@ -52,14 +53,16 @@ module Harp
       json = JSON.parse(content)
       @config = json.has_key?("Config") ? json["Config"] : nil
       @resources = json.has_key?("Resources") ? json["Resources"] : nil
-      # TODO: parse into graph and determince dependencies.
-      determine_deps
+      parse_into_graph
     end
 
 
-    def determine_deps
+    def parse_into_graph
       @resources.each do |name, content|
         match_deps(name, content, "ref")
+      end
+      unless @dep_graph.acyclic?
+          raise "Found circular dependency"
       end
     end
 
