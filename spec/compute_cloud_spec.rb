@@ -37,8 +37,10 @@ describe Harp::Cloud::CloudMutator, "#create" do
 
   it "creates a cloud instance" do
     result = mutator.create("test_inst1", instance_resource)
+    
     expect(result.class).to eq(ComputeInstance)
     expect(result.name).to eq("test_inst1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::CREATED)
   end
 
   it "creates a security group" do
@@ -48,11 +50,28 @@ describe Harp::Cloud::CloudMutator, "#create" do
 
     expect(result.description).to eq("A web security group")
   end
-
+  
   it "creates a volume" do
     result = mutator.create("test_vol1", volume_resource)
     expect(result.class).to eq(Volume)
     expect(result.name).to eq("test_vol1")
   end
+end
 
+describe Harp::Cloud::CloudMutator, "#destroy" do
+	it "destroys a cloud instance" do
+		context = {}
+    context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    context[:mock] = true
+    context[:debug] = true
+    context[:access] = "test"
+    context[:secret] = "test"
+    mutator = Harp::Cloud::CloudMutator.new(context)
+
+    result = mutator.destroy("test_inst1", instance_resource)
+    
+    expect(result.class).to eq(ComputeInstance)
+    expect(result.name).to eq("test_inst1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
 end

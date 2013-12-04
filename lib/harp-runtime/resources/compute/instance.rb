@@ -52,6 +52,8 @@ module Harp
       attribute :user_data
       attribute :virtualization_type,      :aliases => 'virtualizationType'
       attribute :vpc_id,                   :aliases => 'vpcId'
+      attribute :description
+      attribute :type
 
       register_resource :compute_instance, RESOURCES_COMPUTE
 
@@ -74,13 +76,21 @@ module Harp
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          server = service.servers.destroy(destroy_attribs)
+        if id
+          server = service.servers.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
         return server
+      end
+      
+      def get_state(service)
+        if id
+          state = service.servers.get(id).state
+        else
+          puts "No ID set, cannot get state."
+        end
+        return state
       end
 
       # Return a token to signify output from the current action
