@@ -6,30 +6,24 @@ require 'json'
 module Harp
   module Resources
 
-    class ElasticIP < AvailableResource
+    class ElasticIPAssociation < AvailableResource
 
       include Harp::Resources
 
-        attribute :id,                         :aliases => 'allocationId'
-        attribute :public_ip_address
-        attribute :public_ip,                  :aliases => 'publicIp'
+        attribute :id,                         :aliases => 'associationId'
+        attribute :allocation_id,              :aliases => 'allocationId'
         attribute :server_id,                  :aliases => 'instanceId'
-        attribute :domain
+        attribute :network_interface_id,       :aliases => 'networkInterfaceId'
+        attribute :network_interface_owner_id, :aliases => 'networkInterfaceOwnerId'
 
-      register_resource :elastic_ip, RESOURCES_COMPUTE
+
+      register_resource :elastic_ip_association, RESOURCES_COMPUTE
 
       # Only keeping a few properties, simplest define keeps.
-      @keeps = /^id$|public_ip_address/
-
-      # Return persistable attributes with only desired attributes to keep 
-      def keep(attribs)
-        attribs[:public_ip_address] = attribs[:public_ip]
-        super
-      end
-
+      @keeps = /^id$/
 
       def self.persistent_type()
-        ::ElasticIP
+        ::ElasticIPAssociation
       end
 
 

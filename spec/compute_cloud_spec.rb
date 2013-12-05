@@ -14,6 +14,11 @@ elastic_ip_resource = {
   "public_ip" => "123.4.5.6"
 }
 
+elastic_ip_association_resource = {
+  "type" => "Std::ElasticIPAssociation",
+  "public_ip" => "123.4.5.6"
+}
+
 security_group_resource = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group",
