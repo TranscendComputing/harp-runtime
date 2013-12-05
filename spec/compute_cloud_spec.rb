@@ -37,7 +37,6 @@ describe Harp::Cloud::CloudMutator, "#create" do
 
   it "creates a cloud instance" do
     result = mutator.create("test_inst1", instance_resource)
-    
     expect(result.class).to eq(ComputeInstance)
     expect(result.name).to eq("test_inst1")
     expect(result.state).to eq(Harp::Resources::AvailableResource::CREATED)
@@ -47,7 +46,6 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_sg1", security_group_resource)
     expect(result.class).to eq(SecurityGroup)
     expect(result.name).to eq("test_sg1")
-
     expect(result.description).to eq("A web security group")
   end
   
@@ -59,19 +57,34 @@ describe Harp::Cloud::CloudMutator, "#create" do
 end
 
 describe Harp::Cloud::CloudMutator, "#destroy" do
+  include_context "when have mutator"
+  
 	it "destroys a cloud instance" do
-		context = {}
-    context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
-
+    state = mutator.get_state("test_inst1", instance_resource)
     result = mutator.destroy("test_inst1", instance_resource)
-    
     expect(result.class).to eq(ComputeInstance)
     expect(result.name).to eq("test_inst1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+	it "destroys an elastic ip" do
+    result = mutator.destroy("test_eip1", elastic_ip_resource)
+    
+    expect(result.class).to eq(ElasticIP)
+    expect(result.name).to eq("test_eip1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+	it "destroys a security group" do
+    result = mutator.destroy("test_sg1", security_group_resource)
+    
+    expect(result.class).to eq(SecurityGroup)
+    expect(result.name).to eq("test_sg1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+	it "destroys a volume" do
+    result = mutator.destroy("test_vol1", volume_resource)
+    
+    expect(result.class).to eq(Volume)
+    expect(result.name).to eq("test_vol1")
     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 end

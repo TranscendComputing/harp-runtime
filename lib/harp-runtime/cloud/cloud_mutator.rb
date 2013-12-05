@@ -123,6 +123,7 @@ module Harp
         
         resource.name = resource_name
         service = establish_connect(resource)
+        
         return resource.get_state(service)
       end
       private

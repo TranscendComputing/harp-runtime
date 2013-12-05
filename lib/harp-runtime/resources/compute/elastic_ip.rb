@@ -44,9 +44,8 @@ module Harp
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          address = service.addresses.destroy(destroy_attribs)
+        if id
+          address = service.addresses.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
