@@ -10,7 +10,7 @@ module Harp
 
       include Harp::Resources
 
-        attribute :id,                         :aliases => 'allocationId'
+        attribute :id,                         :aliases => 'allocation_id'
         attribute :public_ip_address
         attribute :public_ip,                  :aliases => 'publicIp'
         attribute :server_id,                  :aliases => 'instanceId'
@@ -24,6 +24,7 @@ module Harp
       # Return persistable attributes with only desired attributes to keep 
       def keep(attribs)
         attribs[:public_ip_address] = attribs[:public_ip]
+        attribs[:id] = attribs[:allocation_id]
         super
       end
 
@@ -36,7 +37,7 @@ module Harp
       def create(service)
         create_attribs = self.attribs
         address = service.addresses.create(create_attribs)
-        @id = SecureRandom.urlsafe_base64(16)
+        address.allocation_id = SecureRandom.urlsafe_base64(16)
         return address
       end
 

@@ -22,6 +22,12 @@ module Harp
       # Only keeping a few properties, simplest define keeps.
       @keeps = /^id$/
 
+      # Return persistable attributes with only desired attributes to keep 
+      def keep(attribs)
+        attribs[:id] = attribs[:association_id]
+        super
+      end
+
       def self.persistent_type()
         ::ElasticIPAssociation
       end
@@ -30,12 +36,13 @@ module Harp
       def create(service)
         create_attribs = self.attribs
         address = service.addresses.create(create_attribs)
-        @id = SecureRandom.urlsafe_base64(16)
+        address.association_id = SecureRandom.urlsafe_base64(16)
         return address
       end
 
       def destroy(service)
         destroy_attribs = self.attribs
+        binding.pry
         if @id
           address = service.addresses.destroy(destroy_attribs)
         else
