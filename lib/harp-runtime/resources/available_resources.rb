@@ -73,8 +73,13 @@ module Harp
       end
 
       # Flesh out this resource's instance variables from supplied JSON.
-      def populate resource
+      def populate resource, mutator
         resource.each { |name,value|
+          if value.is_a?(Hash)
+            dep = mutator.get_harp_resource(value["ref"])
+            value = dep ? dep.instance_variable_get(:@id) : nil
+          end
+
           if ! ["type",:output_token,:value,:harp_script_id].include?(name)
             if self.class.aliases.include?(name)
               aliased = self.class.aliases[name]

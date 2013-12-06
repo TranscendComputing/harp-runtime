@@ -67,7 +67,7 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
-        resource.populate(resource_def)
+        resource.populate(resource_def, self)
         resource.name = resource_name
         service = establish_connect(resource)
         created = resource.create(service)
@@ -84,11 +84,11 @@ module Harp
           return
         end
         
-        resource.populate(resource_def)
+        resource.populate(resource_def, self)
         persisted = get_harp_resource(resource_name)
         
         if ! persisted.nil?
-          resource.populate(persisted.attributes)
+          resource.populate(persisted.attributes, self)
         end
         
         resource.name = resource_name
@@ -122,11 +122,11 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
-        resource.populate(resource_def)
+        resource.populate(resource_def, self)
         
         persisted = get_harp_resource(resource_name)
         if ! persisted.nil?
-          resource.populate(persisted.attributes)
+          resource.populate(persisted.attributes, self)
         end
         
         resource.name = resource_name

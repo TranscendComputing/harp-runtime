@@ -89,7 +89,10 @@ class HarpInterpreter
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
     deps     = @resourcer.get_dep(resource_name)
-    deps.each {|ref| create(ref)}
+    deps.each {|ref| 
+      unless @mutator.get_harp_resource(ref)
+       create(ref)
+      end}
     created  = @mutator.create(resource_name, resource)
     created.harp_script = @harp_script
     result = {:create => resource_name}
