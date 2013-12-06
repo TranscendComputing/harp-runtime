@@ -5,6 +5,11 @@ require 'simplecov'
 require 'coveralls'
 require 'factory_girl'
 
+# For debugging.
+require 'logging'
+Logging.logger.root.add_appenders(Logging.appenders.stdout)
+Logging.logger.root.level = :debug
+
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
@@ -52,6 +57,11 @@ template = <<END
       "type": "Std::ComputeInstance",
       "imageId": "ami-d0f89fb9",
       "instanceType": "t1.micro"
+    },
+    "computeInstance4": {
+      "type": "Std::ComputeInstance",
+      "imageId": "ami-d0f89fb9",
+      "instanceType": "t1.micro"
     }
   }
 }
@@ -62,7 +72,7 @@ engine.consume(template)
 def create()
   engine.create("computeInstance1")
   engine.create("computeInstance2")
-  engine.break # should be line 32, from top of script
+  engine.break # should be line 37, from top of script
   engine.create("computeInstance3")
 end
 
@@ -72,7 +82,7 @@ def destroy()
 end
 
 def custom()
-  engine.destroy("computeInstance2")
+  engine.create("computeInstance4")
 end
 
 OUTER
@@ -85,6 +95,7 @@ module SpecHelpers
     interpreter_context[:debug] = true
     interpreter_context[:access] = "test"
     interpreter_context[:secret] = "test"
+    interpreter_context[:harp_script] = FactoryGirl.create(:harp_script)
     interpreter_context
   end
 end

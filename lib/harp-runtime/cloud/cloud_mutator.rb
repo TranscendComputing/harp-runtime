@@ -18,6 +18,7 @@ module Harp
         @cloud_type = options[:cloud_type]
         @mock = (options.include? :mock) ? true : false
         @service_connectors = {}
+        @harp_script = options[:harp_script]
       end
 
       def service_for_set(resource_set)
@@ -72,6 +73,7 @@ module Harp
         created = resource.create(service)
         pr = persist_resource(resource_name, resource, created, "create")
         pr.state = Harp::Resources::AvailableResource::CREATED
+        pr.save
         return pr
       end
 
@@ -83,7 +85,7 @@ module Harp
         end
         
         resource.populate(resource_def)
-        persisted = HarpResource.entries.select{|res| res.name == resource_name}.first
+        persisted = get_harp_resource(resource_name)
         
         if ! persisted.nil?
           resource.populate(persisted.attributes)
@@ -93,11 +95,17 @@ module Harp
         service = establish_connect(resource)
         
         destroyed = resource.destroy(service)
-        pr = persist_resource(resource_name, resource, resource, "destroy")
-        pr.state = Harp::Resources::AvailableResource::DESTROYED
-        return pr
+        #pr = persist_resource(resource_name, resource, resource, "destroy")
+        persisted.live_resource = resource
+        persisted.state = Harp::Resources::AvailableResource::DESTROYED
+        persisted.save
+        return persisted
       end
 
+      def get_harp_resource(resource_name)
+        @harp_script.harp_resources.select{|res| res.name == resource_name}.first
+      end
+      
       def get_output(resource, persisted)
         resource = Harp::Resources::AvailableResource.from_name resource['type']
         if resource.nil?
@@ -116,7 +124,7 @@ module Harp
         end
         resource.populate(resource_def)
         
-        persisted = HarpResource.entries.select{|res| res.name == resource_name}.first
+        persisted = get_harp_resource(resource_name)
         if ! persisted.nil?
           resource.populate(persisted.attributes)
         end
@@ -131,6 +139,7 @@ module Harp
             if live_resource
               persistable = resource.make_persistable(live_resource)
               persistable.name = resource_name
+              persistable.harp_script_id = @harp_script.id
               @@logger.debug "Perform: #{action} resource #{persistable.inspect}"
               persistable
             end

@@ -231,7 +231,6 @@ class HarpInterpreter
   end
 
   def play(lifecycle, options)
-
     harp_file = options[:harp_file] || nil
 
     harp_id = options[:harp_id]
@@ -247,7 +246,6 @@ class HarpInterpreter
     @events.push({ :harp_id => harp_id})
 
     call_sandbox(lifecycle)
-
     respond
   end
 
@@ -314,9 +312,9 @@ class HarpInterpreter
   # Advance the program counter to the next instruction.
   def advance
     line_count = SandboxModule::line_count
-    #@@logger.debug "At line: #{line_count}, #{caller[0][/`.*'/][1..-2]}"
+    @@logger.debug "At line: #{line_count}, #{caller[0][/`.*'/][1..-2]}"
     if @break_at > 0
-      #@@logger.debug "Waiting for l:#{@break_at}, at l:#{line_count}"
+      @@logger.debug "Waiting for l:#{@break_at}, at l:#{line_count}"
       if @break_at <= line_count
         return false
       end
