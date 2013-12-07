@@ -51,11 +51,9 @@ describe Harp::HarpInterpreter do
       }
 
       it "instruments for debug and accepts breakpoint" do
-        interpreter.play("create", breakpoint_context)
+        created = interpreter.play("create", breakpoint_context)
         results = interpreter.play("destroy", breakpoint_context)
         break_event = find_break_event(results)
-        require 'awesome_print'
-        ap results
         break_event.should match ".*42$" # Should have broken at line 42
       end
     end

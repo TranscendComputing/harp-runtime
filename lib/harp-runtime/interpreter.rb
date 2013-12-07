@@ -5,6 +5,7 @@ require "shikashi"
 require "harp-runtime/cloud/cloud_mutator"
 require "harp-runtime/lang/command"
 require "harp-runtime/lang/copy"
+require 'pry'
 
 module SandboxModule
   extend self
@@ -73,6 +74,7 @@ class HarpInterpreter
     @break_at = (context.include? :break) ? context[:break].to_i : 0
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
     compute_desired_pc(context)
+    @context = context
   end
 
   # Accept the resources from a template and add to the dictionary of resources
@@ -148,6 +150,7 @@ class HarpInterpreter
 
   # Destroy a named resource.
   def destroy(resource_name)
+    @break_at = (@context.include? :break) ? @context[:break].to_i : 0
     if ! advance() then return self end
     @@logger.debug "Destroying resource: #{resource_name}."
     result = {:destroy => resource_name}
@@ -200,7 +203,6 @@ class HarpInterpreter
     priv.instances_of(HarpInterpreter).allow_all
 
     SandboxModule.set_engine(self)
-
     sandbox.run(priv, content, :base_namespace => SandboxModule)
   end
 
@@ -215,9 +217,10 @@ class HarpInterpreter
     @harp_script = ::HarpScript.first_or_new({:id => harp_id},
       {:location => harp_location, :version => "1.0"})
     if !@harp_script.saved?
-      @harp_script.content = harp_contents
+      #@harp_script.content = harp_contents
       @harp_script.save
     end
+    @harp_script.content = harp_contents
   end
 
   def call_sandbox(lifecycle)
@@ -233,17 +236,24 @@ class HarpInterpreter
   def play(lifecycle, options)
     harp_file = options[:harp_file] || nil
 
-    harp_id = options[:harp_id]
+    #harp_id = options[:harp_id]
+    if ! @harp_script.nil?
+      harp_id = @harp_script.id
+    else
+      harp_id = options[:harp_id]
+    end
+    
     if lifecycle.to_sym == Harp::Lifecycle::CREATE
       harp_id = SecureRandom.urlsafe_base64(16)
     end
-
+    
     load_harp(harp_file, options[:harp_contents], harp_id)
-
     # Now, instrument the script for debugging.
     harp_contents = parse(instrument_for_debug(@harp_script.content))
-
+    
     @events.push({ :harp_id => harp_id})
+    # require 'pry'
+#     binding.pry
 
     call_sandbox(lifecycle)
     respond
