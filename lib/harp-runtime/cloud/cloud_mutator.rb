@@ -24,14 +24,16 @@ module Harp
 
       def service_for_set(resource_set)
         case resource_set
-        when Harp::Resources::RESOURCES_COMPUTE
-          Fog::Compute
-        when Harp::Resources::RESOURCES_RDS
-          Fog::AWS::RDS
-        when Harp::Resources::RESOURCES_ELASTIC_LOAD_BALANCING
-          Fog::AWS::ELB
         when Harp::Resources::RESOURCES_AUTOSCALE
           Fog::AWS::AutoScaling
+        when Harp::Resources::RESOURCES_BEANSTALK
+          Fog::AWS::ElasticBeanstalk
+        when Harp::Resources::RESOURCES_COMPUTE
+          Fog::Compute
+        when Harp::Resources::RESOURCES_ELASTIC_LOAD_BALANCING
+          Fog::AWS::ELB
+        when Harp::Resources::RESOURCES_RDS
+          Fog::AWS::RDS
         else
         end
       end
