@@ -20,6 +20,12 @@ security_group_resource = {
   "description" => "A web security group"
 }
 
+security_group_resource_2 = {
+  "type" => "Std::SecurityGroup",
+  "name" => "web-security-group-2",
+  "description" => "A web security group 2"
+}
+
 volume_resource = {
   "type" => "Std::Volume",
   "availability_zone" => "us-east-1",
@@ -78,15 +84,15 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
   it "destroys a security group" do
-    result = mutator.destroy("test_sg1", security_group_resource)
-    
+    created = mutator.create("test_sg2", security_group_resource_2)
+    result = mutator.destroy("test_sg2", security_group_resource_2)
     expect(result.class).to eq(SecurityGroup)
-    expect(result.name).to eq("test_sg1")
+    expect(result.name).to eq("test_sg2")
     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
   it "destroys a volume" do
+    created = mutator.create("test_vol1", volume_resource)
     result = mutator.destroy("test_vol1", volume_resource)
-    
     expect(result.class).to eq(Volume)
     expect(result.name).to eq("test_vol1")
     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)

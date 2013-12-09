@@ -23,6 +23,11 @@ module Harp
       attribute :scheme,                :aliases => 'Scheme'
       attribute :vpc_id,                :aliases => 'VPCId'
       attribute :listeners
+      
+      attribute :description
+      attribute :type
+      attribute :live_resource
+      attribute :state
 
       register_resource :load_balancer, RESOURCES_ELASTIC_LOAD_BALANCING
 
@@ -45,9 +50,9 @@ module Harp
       end
       
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          load_balancer = service.load_balancers.destroy(destroy_attribs)
+        id
+        if id
+          load_balancer = service.load_balancers.destroy(id)
         else
           puts "No ID set, cannot delete."
         end

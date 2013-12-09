@@ -23,6 +23,10 @@ module Harp
         attribute :state,                 :aliases => 'status'
         attribute :tags,                  :aliases => 'tagSet'
         attribute :type,                  :aliases => 'volumeType'
+        
+        attribute :description
+        attribute :live_resource
+        attribute :state
 
       register_resource :volume, RESOURCES_COMPUTE
 

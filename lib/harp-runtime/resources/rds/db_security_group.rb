@@ -14,6 +14,10 @@ module Harp
       attribute  :ec2_security_groups,  :aliases => 'EC2SecurityGroups'
       attribute  :ip_ranges,            :aliases => 'IPRanges'
       attribute  :owner_id,             :aliases => 'OwnerId'
+      
+      attribute :type
+      attribute :live_resource
+      attribute :state
 
       register_resource :db_security_group, RESOURCES_RDS
 
@@ -36,9 +40,8 @@ module Harp
       end
       
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          security_group = service.security_groups.destroy(destroy_attribs)
+        if id
+          security_group = service.security_groups.destroy(id)
         else
           puts "No ID set, cannot delete."
         end

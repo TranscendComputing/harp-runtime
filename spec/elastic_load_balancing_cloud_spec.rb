@@ -16,3 +16,14 @@ describe Harp::Cloud::CloudMutator, "#create" do
     expect(result.name).to eq("test_lb_lb1")
   end
 end
+
+describe Harp::Cloud::CloudMutator, "#destroy" do
+  include_context "when have mutator"
+	it "destroys a loadbalancer" do
+    created = mutator.create("test_lb_lb2", lb_load_balancer_resource)
+    result = mutator.destroy("test_lb_lb2", lb_load_balancer_resource)
+    expect(result.class).to eq(LoadBalancer)
+    expect(result.name).to eq("test_lb_lb2")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+end
