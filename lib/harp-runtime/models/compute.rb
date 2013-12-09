@@ -13,6 +13,9 @@ class ElasticIP < HarpResource
   property :public_ip_address, String
 end
 
+class ElasticIPAssociation < HarpResource
+end
+
 class SecurityGroup < HarpResource
 end
 
