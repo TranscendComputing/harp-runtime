@@ -48,3 +48,33 @@ describe Harp::Cloud::CloudMutator, "#create" do
     expect(result.name).to eq("test_as_policy1")
   end
 end
+
+describe Harp::Cloud::CloudMutator, "#destroy" do
+  include_context "when have mutator"
+  it "destroys launch configuration" do
+    launch_config_resource["id"] = "testLC2"
+    created = mutator.create("test_lc2", launch_config_resource)
+    result = mutator.destroy("test_lc2", launch_config_resource)
+    expect(result.class).to eq(LaunchConfiguration)
+    expect(result.name).to eq("test_lc2")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+
+  it "destroys AS group" do
+    autoscaling_group_resource["id"] = "testASG2"
+    created = mutator.create("test_as_group2", autoscaling_group_resource)
+    result = mutator.destroy("test_as_group2", autoscaling_group_resource)
+    expect(result.class).to eq(AutoScalingGroup)
+    expect(result.name).to eq("test_as_group2")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+
+  it "destroys AutoScaling Policy" do
+    autoscaling_policy_resource["id"] = "testScalingPolicy2"
+    created = mutator.create("test_as_policy2", autoscaling_policy_resource)
+    result = mutator.destroy("test_as_policy2", autoscaling_policy_resource)
+    expect(result.class).to eq(ScalingPolicy)
+    expect(result.name).to eq("test_as_policy2")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+end

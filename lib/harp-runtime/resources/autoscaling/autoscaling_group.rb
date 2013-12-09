@@ -30,6 +30,7 @@ module Harp
         attribute :termination_policies,      :aliases => 'TerminationPolicies'
         attribute :vpc_zone_identifier,       :aliases => 'VPCZoneIdentifier'
         attribute :description
+        attribute :state
         attribute :type
         attribute :live_resource
 

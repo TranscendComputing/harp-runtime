@@ -27,6 +27,7 @@ module Harp
         attribute :user_data,             :aliases => 'UserData'
         attribute :spot_price,            :aliases => 'SpotPrice'
         attribute :description
+        attribute :state        
         attribute :type
         attribute :live_resource
 

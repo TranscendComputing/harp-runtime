@@ -19,6 +19,7 @@ module Harp
         attribute :min_adjustment_step,     :aliases => 'MinAdjustmentStep'
         attribute :scaling_adjustment,      :aliases => 'ScalingAdjustment'
         attribute :description
+        attribute :state
         attribute :type
         attribute :live_resource
 
@@ -40,7 +41,7 @@ module Harp
 
         def destroy(service)
         	if id
-          	   policy = service.policies.destroy(id)
+                policy = service.delete_policy(auto_scaling_group_name, id)
         	else
           	   puts "No ID set, cannot delete."
         	end
