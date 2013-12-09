@@ -18,6 +18,9 @@ module Harp
         attribute :cooldown,                :aliases => 'Cooldown'
         attribute :min_adjustment_step,     :aliases => 'MinAdjustmentStep'
         attribute :scaling_adjustment,      :aliases => 'ScalingAdjustment'
+        attribute :description
+        attribute :type
+        attribute :live_resource
 
         register_resource :scaling_policy, RESOURCES_AUTOSCALE
 
@@ -36,9 +39,8 @@ module Harp
         end
 
         def destroy(service)
-        	destroy_attribs = self.attribs
-        	if @id
-          	   policy = service.policies.destroy(destroy_attribs)
+        	if id
+          	   policy = service.policies.destroy(id)
         	else
           	   puts "No ID set, cannot delete."
         	end

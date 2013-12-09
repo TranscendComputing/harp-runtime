@@ -17,6 +17,9 @@ module Harp
         attribute :updated_at,        :aliases => 'DateUpdated'
         attribute :description,       :aliases => 'Description'
         attribute :version_names,     :aliases => 'Versions'
+        attribute :description
+        attribute :type
+        attribute :live_resource
 
       register_resource :elastic_application, RESOURCES_BEANSTALK
 
@@ -41,9 +44,8 @@ module Harp
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          application = service.applications.destroy(destroy_attribs)
+        if id
+          application = service.applications.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
