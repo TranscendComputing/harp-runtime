@@ -38,13 +38,11 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_db_sg2", db_security_group_resource)
     expect(result.class).to eq(DBSecurityGroup)
     expect(result.name).to eq("test_db_sg2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 	it "destroys a db instance" do
     created = mutator.create("test_db_db2", db_instance_resource)
     result = mutator.destroy("test_db_db2", db_instance_resource)
     expect(result.class).to eq(DBInstance)
     expect(result.name).to eq("test_db_db2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 end

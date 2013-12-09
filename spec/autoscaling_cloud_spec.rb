@@ -57,7 +57,6 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_lc2", launch_config_resource)
     expect(result.class).to eq(LaunchConfiguration)
     expect(result.name).to eq("test_lc2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 
   it "destroys AS group" do
@@ -66,7 +65,6 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_as_group2", autoscaling_group_resource)
     expect(result.class).to eq(AutoScalingGroup)
     expect(result.name).to eq("test_as_group2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 
   it "destroys AutoScaling Policy" do
@@ -75,6 +73,5 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_as_policy2", autoscaling_policy_resource)
     expect(result.class).to eq(ScalingPolicy)
     expect(result.name).to eq("test_as_policy2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 end

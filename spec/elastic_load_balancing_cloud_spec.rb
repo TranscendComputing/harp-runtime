@@ -24,6 +24,5 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_lb_lb2", lb_load_balancer_resource)
     expect(result.class).to eq(LoadBalancer)
     expect(result.name).to eq("test_lb_lb2")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 end
