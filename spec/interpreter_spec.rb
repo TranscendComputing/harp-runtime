@@ -52,8 +52,12 @@ describe Harp::HarpInterpreter do
       }
 
       it "instruments for debug and accepts breakpoint" do
-        created = interpreter.play("create", breakpoint_context)
-        results = interpreter.play("destroy", breakpoint_context)
+        harp_script = FactoryGirl.create(:harp_script)
+        breakpoint_context_created = breakpoint_context.clone
+        breakpoint_context_created[:harp_id] = harp_script.id
+        results = interpreter.play("destroy", breakpoint_context_created)
+        #created = interpreter.play("create", breakpoint_context)
+        #results = interpreter.play("destroy", breakpoint_context)
         break_event = find_break_event(results)
         break_event.should match ".*42$" # Should have broken at line 42
       end
