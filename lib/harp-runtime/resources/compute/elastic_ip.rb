@@ -19,6 +19,11 @@ module Harp
         attribute :network_interface_id,       :aliases => 'networkInterfaceId'
         attribute :network_interface_owner_id, :aliases => 'networkInterfaceOwnerId'
         attribute :domain
+        
+        attribute :description
+        attribute :type
+        attribute :live_resource
+        attribute :state
 
       register_resource :elastic_ip, RESOURCES_COMPUTE
 

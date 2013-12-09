@@ -100,7 +100,6 @@ module Harp
         
         destroyed = resource.destroy(service)
         #pr = persist_resource(resource_name, resource, resource, "destroy")
-        #persisted.live_resource = resource
         persisted.state = Harp::Resources::AvailableResource::DESTROYED
         remember(persisted)
         persisted.save

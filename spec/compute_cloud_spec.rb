@@ -70,25 +70,25 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     state = mutator.get_state("test_inst1", instance_resource)
     expect(state).to eq("shutting-down")
   end
-	# it "destroys an elastic ip" do
-#     result = mutator.destroy("test_eip1", elastic_ip_resource)
-#     
-#     expect(result.class).to eq(ElasticIP)
-#     expect(result.name).to eq("test_eip1")
-#     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
-#   end
-#   it "destroys a security group" do
-#     result = mutator.destroy("test_sg1", security_group_resource)
-#     
-#     expect(result.class).to eq(SecurityGroup)
-#     expect(result.name).to eq("test_sg1")
-#     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
-#   end
-#   it "destroys a volume" do
-#     result = mutator.destroy("test_vol1", volume_resource)
-#     
-#     expect(result.class).to eq(Volume)
-#     expect(result.name).to eq("test_vol1")
-#     expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
-#   end
+	it "destroys an elastic ip" do
+    created = mutator.create("test_eip1", elastic_ip_resource)
+    result = mutator.destroy("test_eip1", elastic_ip_resource)
+    expect(result.class).to eq(ElasticIP)
+    expect(result.name).to eq("test_eip1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+  it "destroys a security group" do
+    result = mutator.destroy("test_sg1", security_group_resource)
+    
+    expect(result.class).to eq(SecurityGroup)
+    expect(result.name).to eq("test_sg1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
+  it "destroys a volume" do
+    result = mutator.destroy("test_vol1", volume_resource)
+    
+    expect(result.class).to eq(Volume)
+    expect(result.name).to eq("test_vol1")
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
+  end
 end
