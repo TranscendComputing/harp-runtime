@@ -17,14 +17,15 @@ db_instance_resource = {
 }
 
 describe Harp::Cloud::CloudMutator, "#create" do
+  include_context "when have mutator"
   it "creates a db security group" do
-    context = {}
-    context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
+    # context = {}
+#     context[:cloud_type] = :aws # for the moment, assume AWS cloud
+#     context[:mock] = true
+#     context[:debug] = true
+#     context[:access] = "test"
+#     context[:secret] = "test"
+    #mutator = Harp::Cloud::CloudMutator.new(context)
 
     result = mutator.create("test_db_sg1", db_security_group_resource)
     expect(result.class).to eq(DBSecurityGroup)
@@ -33,13 +34,13 @@ describe Harp::Cloud::CloudMutator, "#create" do
     expect(result.description).to eq("A web db security group")
   end
   it "creates a db instance" do
-    context = {}
-    context[:cloud_type] = :aws # for the moment, assume AWS cloud
-    context[:mock] = true
-    context[:debug] = true
-    context[:access] = "test"
-    context[:secret] = "test"
-    mutator = Harp::Cloud::CloudMutator.new(context)
+    # context = {}
+#     context[:cloud_type] = :aws # for the moment, assume AWS cloud
+#     context[:mock] = true
+#     context[:debug] = true
+#     context[:access] = "test"
+#     context[:secret] = "test"
+    #mutator = Harp::Cloud::CloudMutator.new(context)
 
     result = mutator.create("test_db_db1", db_instance_resource)
     expect(result.class).to eq(DBInstance)

@@ -41,9 +41,8 @@ module Harp
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          volume = service.volumes.destroy(destroy_attribs)
+        if id
+          volume = service.volumes.destroy(id)
         else
           puts "No ID set, cannot delete."
         end

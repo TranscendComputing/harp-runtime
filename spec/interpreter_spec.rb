@@ -11,6 +11,12 @@ describe Harp::HarpInterpreter do
       c[:harp_contents] = VALID_SCRIPT
       c
     end
+    let(:interpreter_context_created) do
+      c = create_interpreter_context()
+      c[:harp_contents] = VALID_SCRIPT
+      c[:harp_id] = '123123'
+      c
+    end
     let(:interpreter) {
       Harp::HarpInterpreter.new(interpreter_context())
     }
@@ -30,15 +36,15 @@ describe Harp::HarpInterpreter do
     it "instruments for debug" do
       results = interpreter.play("create", interpreter_context)
       break_event = find_break_event(results)
-      break_event.should match ".*32$" # Should have broken at line 32
+      break_event.should match ".*37$" # Should have broken at line 37
     end
 
     context 'when in debug mode with breakpoint' do
 
       let(:breakpoint_context) do
         c = interpreter_context()
-        # 38 happens to be a reasonable breakpoint in VALID_SCRIPT
-        c[:break] = 38
+        # 42 happens to be a reasonable breakpoint in VALID_SCRIPT
+        c[:break] = 42
         c
       end
       let(:interpreter) {
@@ -46,20 +52,28 @@ describe Harp::HarpInterpreter do
       }
 
       it "instruments for debug and accepts breakpoint" do
-        results = interpreter.play("destroy", breakpoint_context)
+        harp_script = FactoryGirl.create(:harp_script)
+        breakpoint_context_created = breakpoint_context.clone
+        breakpoint_context_created[:harp_id] = harp_script.id
+        results = interpreter.play("destroy", breakpoint_context_created)
+        #created = interpreter.play("create", breakpoint_context)
+        #results = interpreter.play("destroy", breakpoint_context)
         break_event = find_break_event(results)
-        break_event.should match ".*38$" # Should have broken at line 38
+        break_event.should match ".*42$" # Should have broken at line 42
       end
     end
 
     it "invokes custom lifecycles" do
-      results = interpreter.play("custom", interpreter_context)
+      harp_script = FactoryGirl.create(:harp_script)
+      interpreter_context_created = interpreter_context.clone
+      interpreter_context_created[:harp_id] = harp_script.id
+      results = interpreter.play("custom", interpreter_context_created)
       expect(results).not_to be_empty
       destroyed = nil
       results.each do |result|
-        destroyed = result[:destroy] if result.include? (:destroy)
+        destroyed = result[:create] if result.include? (:create)
       end
-      destroyed.should match "computeInstance2" # Custom lifecycle should have destroyed this
+      destroyed.should match "computeInstance4" # Custom lifecycle should have destroyed this
     end
   end
 end
