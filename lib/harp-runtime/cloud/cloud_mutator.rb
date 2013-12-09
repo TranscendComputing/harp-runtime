@@ -19,6 +19,7 @@ module Harp
         @mock = (options.include? :mock) ? true : false
         @service_connectors = {}
         @harp_script = options[:harp_script]
+        @resources = {}
       end
 
       def service_for_set(resource_set)
@@ -73,6 +74,7 @@ module Harp
         created = resource.create(service)
         pr = persist_resource(resource_name, resource, created, "create")
         pr.state = Harp::Resources::AvailableResource::CREATED
+        remember(pr)
         pr.save
         return pr
       end
@@ -96,14 +98,16 @@ module Harp
         
         destroyed = resource.destroy(service)
         #pr = persist_resource(resource_name, resource, resource, "destroy")
-        persisted.live_resource = resource
+        #persisted.live_resource = resource
         persisted.state = Harp::Resources::AvailableResource::DESTROYED
+        remember(persisted)
         persisted.save
         return persisted
       end
 
       def get_harp_resource(resource_name)
-        @harp_script.harp_resources.select{|res| res.name == resource_name}.first
+        #@harp_script.harp_resources.select{|res| res.name == resource_name}.first
+        @resources[resource_name]
       end
       
       def get_output(resource, persisted)
@@ -116,6 +120,10 @@ module Harp
         output = resource.get_output(service, persisted)
       end
 
+      def remember(resource)
+        @resources[resource.name] = resource
+      end
+      
       def get_state(resource_name,resource_def)
         resource = Harp::Resources::AvailableResource.from_name resource_def['type']
         if resource.nil?

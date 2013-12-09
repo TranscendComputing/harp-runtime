@@ -5,18 +5,21 @@ require "shikashi"
 require "harp-runtime/cloud/cloud_mutator"
 require "harp-runtime/lang/command"
 require "harp-runtime/lang/copy"
-require 'pry'
 
 module SandboxModule
   extend self
+
+  attr_accessor :line_count
 
   DIE = "die"
   @interpreter = nil
   @line_count = 0
   @breakpoint = false
 
-  def set_engine(engine)
+  def reset(engine)
     @interpreter = engine
+    @breakpoint = false
+    @line_count = 0
   end
 
   def engine()
@@ -25,10 +28,6 @@ module SandboxModule
 
   def line_mark(line)
     @line_count = line unless @breakpoint
-  end
-
-  def line_count()
-    @line_count
   end
 
   def at_breakpoint?
@@ -74,7 +73,6 @@ class HarpInterpreter
     @break_at = (context.include? :break) ? context[:break].to_i : 0
     @events.push ({ :nav => "[Mock mode]" }) if (context.include? :mock)
     compute_desired_pc(context)
-    @context = context
   end
 
   # Accept the resources from a template and add to the dictionary of resources
@@ -87,10 +85,12 @@ class HarpInterpreter
 
   # Create a resource and wait for the resource to become available.
   def create(resource_name)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Launching resource: #{resource_name}."
     resource = @resourcer.get resource_name
-    created = @mutator.create(resource_name, resource)
+    deps     = @resourcer.get_dep(resource_name)
+    deps.each {|ref| create(ref)}
+    created  = @mutator.create(resource_name, resource)
     created.harp_script = @harp_script
     result = {:create => resource_name}
     args = {:action => :create}
@@ -106,7 +106,7 @@ class HarpInterpreter
   # Create a set of resources; all resources must will be complete before
   # processing continues.
   def createParallel(*resources)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Launching resource(s) in parallel #{resources.join(',')}."
     resources.each do |resource|
       resource = @resourcer.get resource_name
@@ -126,7 +126,7 @@ class HarpInterpreter
 
   # Update a resource to a new resource definition.
   def update(resource_name)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Updating resource: #{resource_name}."
     @events.push({ :update => resource_name})
     return self
@@ -134,7 +134,7 @@ class HarpInterpreter
 
   # Update a set of resources in parallel to new resource definitions.
   def updateParallel(*resources)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Updating resource(s) in parallel #{resources.join(',')}."
     resources.each { |resource| @events.push( { :update => resource })}
     return self
@@ -142,7 +142,7 @@ class HarpInterpreter
 
   # Update a resource to an alternate definition.
   def updateTo(resource_start, resource_finish)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Updating resource: #{resource_start} to #{resource_finish}."
     @events.push({ :update => resource_name})
     return self
@@ -150,8 +150,7 @@ class HarpInterpreter
 
   # Destroy a named resource.
   def destroy(resource_name)
-    @break_at = (@context.include? :break) ? @context[:break].to_i : 0
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Destroying resource: #{resource_name}."
     result = {:destroy => resource_name}
     args = {:action => :destroy}
@@ -168,21 +167,21 @@ class HarpInterpreter
 
   # Destroy a named resource.
   def destroyParallel(*resources)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Destroying resource(s) in parallel #{resources.join(',')}."
     resources.each { |resource| @events.push( { "destroy" => resource })}
     return self
   end
 
   def onFail(*fails)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Handle fail action: #{fails.join(',')}"
     return self
   end
 
   # Interpreter debug operation; break at current line.
   def break
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Handle break."
     SandboxModule::set_break
     @break_at = SandboxModule::line_count
@@ -202,7 +201,8 @@ class HarpInterpreter
 
     priv.instances_of(HarpInterpreter).allow_all
 
-    SandboxModule.set_engine(self)
+    SandboxModule.reset(self)
+
     sandbox.run(priv, content, :base_namespace => SandboxModule)
   end
 
@@ -217,10 +217,9 @@ class HarpInterpreter
     @harp_script = ::HarpScript.first_or_new({:id => harp_id},
       {:location => harp_location, :version => "1.0"})
     if !@harp_script.saved?
-      #@harp_script.content = harp_contents
+      @harp_script.content = harp_contents
       @harp_script.save
     end
-    @harp_script.content = harp_contents
   end
 
   def call_sandbox(lifecycle)
@@ -234,28 +233,23 @@ class HarpInterpreter
   end
 
   def play(lifecycle, options)
+
     harp_file = options[:harp_file] || nil
 
-    #harp_id = options[:harp_id]
-    if ! @harp_script.nil?
-      harp_id = @harp_script.id
-    else
-      harp_id = options[:harp_id]
-    end
-    
+    harp_id = options[:harp_id]
     if lifecycle.to_sym == Harp::Lifecycle::CREATE
       harp_id = SecureRandom.urlsafe_base64(16)
     end
-    
+
     load_harp(harp_file, options[:harp_contents], harp_id)
+
     # Now, instrument the script for debugging.
     harp_contents = parse(instrument_for_debug(@harp_script.content))
-    
+
     @events.push({ :harp_id => harp_id})
-    # require 'pry'
-#     binding.pry
 
     call_sandbox(lifecycle)
+
     respond
   end
 
@@ -287,7 +281,7 @@ class HarpInterpreter
   end
 
   def method_missing(meth, *args, &block)
-    if ! advance() then return self end
+    if ! advance? then return self end
     @@logger.debug "Invoking: #{meth}"
     begin
       require "harp-runtime/lang/#{meth}"
@@ -319,34 +313,48 @@ class HarpInterpreter
     done
   end
 
-  # Advance the program counter to the next instruction.
-  def advance
-    line_count = SandboxModule::line_count
-    @@logger.debug "At line: #{line_count}, #{caller[0][/`.*'/][1..-2]}"
-    if @break_at > 0
-      @@logger.debug "Waiting for l:#{@break_at}, at l:#{line_count}"
-      if @break_at <= line_count
-        return false
-      end
+  def at_breakpoint?
+    if SandboxModule::at_breakpoint?
+      return true
     end
-    @program_counter += 1
-    @current_line = line_count
+    # Check current line against breakpoint; skip execution if at break.
+    if @break_at > 0 and @break_at <= SandboxModule::line_count
+      SandboxModule::set_break
+      return true
+    end
+  end
+
+  def fast_forward?
     if @desired_pc && @program_counter < @desired_pc
-      #@@logger.debug "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}"
-      return false
+      #@@logger.warn "Waiting for pc:#{@desired_pc}, at pc:#{@program_counter}"
+      return true
     end
     if @desired_pc && @program_counter == @desired_pc
-      #@@logger.debug "Reached desired pc #{@desired_pc} at #{@current_line} #{line_count}"
+      #@@logger.warn "Reached desired pc #{@desired_pc} at #{SandboxModule::line_count} #{line_count}"
       if @continue
         @desired_pc = nil
       else
         @break_at = @current_line
       end
     end
+    false
+  end
+
+  # Advance the program counter to the next instruction.
+  def advance?
+    line_count = SandboxModule::line_count
+    #@@logger.warn "At line: #{line_count}, #{caller[0][/`.*'/][1..-2]}"
+    return false if at_breakpoint?
+    @program_counter += 1
+    @current_line = line_count
+    # If we're doing a step or continue, don't execute until at the right line.
+    return false if fast_forward?
     return true
   end
 
   # Decorate script with line number tags, to enable line number tracking for breakpoints.
+  # Currently only checking for here-documents.  Probably need fancier
+  # parsing for non-executable lines.
   def instrument_for_debug harp_contents
     if ! @is_debug
       return harp_contents
