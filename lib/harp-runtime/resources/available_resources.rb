@@ -11,14 +11,17 @@ module Harp
     # Set to contain all resources for auto scale
     RESOURCES_AUTOSCALE = Set.new
 
+    # Set to contain all beanstalk resources
+    RESOURCES_BEANSTALK = Set.new
+
     # Set to contain all compute resources
     RESOURCES_COMPUTE = Set.new
 
-    # Set to contain all rds resources
-    RESOURCES_RDS = Set.new
-
     # Set to contain all load_balancing resources
     RESOURCES_ELASTIC_LOAD_BALANCING = Set.new
+
+    # Set to contain all rds resources
+    RESOURCES_RDS = Set.new
 
     # The set of sets
     RESOURCE_SETS = Set.new
@@ -135,10 +138,11 @@ module Harp
   end
 end
 
-require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/autoscaling/types"
-require "harp-runtime/resources/rds/types"
+require "harp-runtime/resources/beanstalk/types"
+require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
+require "harp-runtime/resources/rds/types"
 
 class String
   def underscore

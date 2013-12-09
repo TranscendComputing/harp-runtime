@@ -91,6 +91,7 @@ params = <<END
       "MaxValue": "1024",
       "ConstraintDescription" : "must be between 5 and 1024Gb."
     },
+    
     "SSHLocation" : {
       "description" : " The IP address range that can be used to SSH to the EC2 instances",
       "type": "String",
@@ -255,8 +256,7 @@ template = <<END
     },
 
     "DBInstance" : {
-      "type": "AWS::RDS::DBInstance",
-      "Properties": {
+      "type": "Std::DBInstance",
         "DBName"            : { "Ref" : "DBName" },
         "Engine"            : "MySQL",
         "MultiAZ"           : { "Ref": "MultiAZDatabase" },
@@ -265,27 +265,22 @@ template = <<END
         "DBSecurityGroups"  : [{ "Ref" : "DBSecurityGroup" }],
         "AllocatedStorage"  : { "Ref" : "DBAllocatedStorage" },
         "MasterUserPassword": { "Ref" : "DBPassword" }
-      }
     },
 
     "DBSecurityGroup": {
-      "type": "AWS::RDS::DBSecurityGroup",
-      "Properties": {
-        "DBSecurityGroupIngress": { "EC2SecurityGroupName": { "Ref": "WebServerSecurityGroup"} },
-        "GroupDescription"      : "Frontend Access"
-      }
+      "type": "Std::DBSecurityGroup",
+        "EC2SecurityGroups": { "EC2SecurityGroupName": { "Ref": "WebServerSecurityGroup"} },
+        "DBSecurityGroupDescription"      : "Frontend Access"
     },
 
 
     "WebServerSecurityGroup" : {
-      "type" : "AWS::EC2::SecurityGroup",
-      "Properties" : {
-        "GroupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
-        "SecurityGroupIngress" : [
-          {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},"SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}},
-          {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}}
-        ]
-      }
+      "type" : "Std::SecurityGroup",
+      "groupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+      "ipPermissions" : [
+        {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},"SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}},
+        {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}}
+      ]
     }
   },
 
