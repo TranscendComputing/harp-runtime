@@ -30,6 +30,7 @@ module Harp
         attribute :option_settings,     :aliases => 'OptionSettings'
         attribute :options_to_remove,   :aliases => 'OptionsToRemove'
         attribute :description
+        attribute :state
         attribute :type
         attribute :live_resource
         

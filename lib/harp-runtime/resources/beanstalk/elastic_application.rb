@@ -18,6 +18,7 @@ module Harp
         attribute :description,       :aliases => 'Description'
         attribute :version_names,     :aliases => 'Versions'
         attribute :description
+        attribute :state
         attribute :type
         attribute :live_resource
 
