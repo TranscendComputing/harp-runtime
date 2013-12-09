@@ -59,17 +59,16 @@ describe Harp::Cloud::CloudMutator, "#create" do
   end
 
   it "creates elastic ip association" do
-    inst = mutator.create("ins_asso", ins_for_asso)
+    inst = mutator.create("ins_for_asso", ins_for_asso)
     eip_for_asso["server_id"] = inst.instance_variable_get(:@id)
     
-    eip  = mutator.create("eip_asso", eip_for_asso)
+    eip  = mutator.create("eip_for_asso", eip_for_asso)
     eip_association_resource["allocation_id"] = eip.instance_variable_get(:@id)
     eip_association_resource["server_id"]     = inst.instance_variable_get(:@id)
 
-
-    result = mutator.create("test_eip_asso1", eip_association_resource)
+    result = mutator.create("test_eip_asso", eip_association_resource)
     expect(result.class).to eq(ElasticIPAssociation)
-    expect(result.name).to eq("test_eip_asso1")
+    expect(result.name).to eq("test_eip_asso")
     expect(result.state).to eq(Harp::Resources::AvailableResource::CREATED)
   end
 
