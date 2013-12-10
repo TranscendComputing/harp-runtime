@@ -26,7 +26,10 @@ module Harp
         attribute :security_groups,       :aliases => 'SecurityGroups'
         attribute :user_data,             :aliases => 'UserData'
         attribute :spot_price,            :aliases => 'SpotPrice'
-
+        attribute :description
+        attribute :state        
+        attribute :type
+        attribute :live_resource
 
         register_resource :launch_configuration, RESOURCES_AUTOSCALE
 
@@ -45,9 +48,8 @@ module Harp
         end
 
         def destroy(service)
-        	destroy_attribs = self.attribs
-        	if @id
-          	   configuration = service.configurations.destroy(destroy_attribs)
+        	if id
+          	   configuration = service.configurations.destroy(id)
         	else
           	   puts "No ID set, cannot delete."
         	end

@@ -29,7 +29,11 @@ module Harp
         attribute :version_label,       :aliases => 'VersionLabel'
         attribute :option_settings,     :aliases => 'OptionSettings'
         attribute :options_to_remove,   :aliases => 'OptionsToRemove'
-
+        attribute :description
+        attribute :state
+        attribute :type
+        attribute :live_resource
+        
       register_resource :elastic_environment, RESOURCES_BEANSTALK
 
       # Only keeping a few properties, simplest define keeps.
@@ -47,9 +51,8 @@ module Harp
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          environment = service.environments.destroy(destroy_attribs)
+        if id
+          environment = service.environments.destroy(id)
         else
           puts "No ID set, cannot delete."
         end

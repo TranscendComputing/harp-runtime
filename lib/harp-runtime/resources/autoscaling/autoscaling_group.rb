@@ -29,6 +29,10 @@ module Harp
         attribute :tags,                      :aliases => 'Tags'
         attribute :termination_policies,      :aliases => 'TerminationPolicies'
         attribute :vpc_zone_identifier,       :aliases => 'VPCZoneIdentifier'
+        attribute :description
+        attribute :state
+        attribute :type
+        attribute :live_resource
 
 
         register_resource :auto_scaling_group, RESOURCES_AUTOSCALE
@@ -48,9 +52,8 @@ module Harp
         end
 
         def destroy(service)
-        	destroy_attribs = self.attribs
-        	if @id
-          	   group = service.groups.destroy(destroy_attribs)
+        	if id
+          	   group = service.groups.destroy(id)
         	else
           	   puts "No ID set, cannot delete."
         	end

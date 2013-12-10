@@ -15,6 +15,12 @@ module Harp
         attribute :server_id,                  :aliases => 'instanceId'
         attribute :network_interface_id,       :aliases => 'networkInterfaceId'
         attribute :network_interface_owner_id, :aliases => 'networkInterfaceOwnerId'
+        attribute :public_ip
+        
+        attribute :description
+        attribute :type
+        attribute :live_resource
+        attribute :state
 
 
       register_resource :elastic_ip_association, RESOURCES_COMPUTE
@@ -34,17 +40,16 @@ module Harp
 
 
       def create(service)
-        create_attribs = self.attribs
-        address = service.addresses.create(create_attribs)
-        address.association_id = SecureRandom.urlsafe_base64(16)
-        return address
+        create_attribs = self.attribs[:attributes]
+        address = service.associate_address(create_attribs[:server_id],create_attribs[:public_ip],nil,nil)
+        #id = address.association_id
+        return self
       end
 
       def destroy(service)
-        destroy_attribs = self.attribs
-        binding.pry
-        if @id
-          address = service.addresses.destroy(destroy_attribs)
+        public_ip = self.attribs[:attributes][:public_ip]
+        if public_ip
+          address = service.disassociate_address(public_ip)
         else
           puts "No ID set, cannot delete."
         end

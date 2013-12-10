@@ -16,6 +16,10 @@ module Harp
       attribute :ip_permissions_egress,  :aliases => 'ipPermissionsEgress'
       attribute :owner_id,        :aliases => 'ownerId'
       attribute :vpc_id,          :aliases => 'vpcId'
+      
+      attribute :type
+      attribute :live_resource
+      attribute :state
 
       register_resource :security_group, RESOURCES_COMPUTE
 
@@ -46,7 +50,7 @@ module Harp
       
       def destroy(service)
         if id
-          security_groups = service.security_groups.destroy(id)
+          security_groups = service.security_groups.destroy(name)
         else
           puts "No ID set, cannot delete."
         end

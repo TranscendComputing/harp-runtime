@@ -36,6 +36,10 @@ module Harp
       attribute :publicly_accessible,          :aliases => 'PubliclyAccessible'
       attribute :vpc_security_groups,          :aliases => 'VpcSecurityGroups'
       attribute :password
+      
+      attribute :description
+      attribute :type
+      attribute :live_resource
 
       attr_accessor :parameter_group_name, :security_group_names, :port
 
@@ -60,9 +64,8 @@ module Harp
       end
       
       def destroy(service)
-        destroy_attribs = self.attribs
-        if @id
-          instance = service.servers.destroy(destroy_attribs)
+        if id
+          instance = service.servers.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
