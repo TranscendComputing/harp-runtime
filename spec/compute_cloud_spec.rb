@@ -74,7 +74,6 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_eip_asso", eip_association_resource)
     expect(result.class).to eq(ElasticIPAssociation)
     expect(result.name).to eq("test_eip_asso")
-    expect(result.state).to eq(Harp::Resources::AvailableResource::CREATED)
   end
 
   it "creates a cloud instance" do
