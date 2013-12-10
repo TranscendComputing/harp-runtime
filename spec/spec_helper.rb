@@ -6,9 +6,6 @@ require 'coveralls'
 require 'factory_girl'
 
 # For debugging.
-require 'logging'
-Logging.logger.root.add_appenders(Logging.appenders.stdout)
-Logging.logger.root.level = :debug
 #require 'logging'
 #Logging.logger.root.add_appenders(Logging.appenders.stdout)
 #Logging.logger.root.level = :debug
@@ -109,6 +106,14 @@ end
 
 shared_context 'when have mutator' do
   let(:mutator) { Harp::Cloud::CloudMutator.new(create_interpreter_context()) }
+  def verify_created(result, name, type)
+    expect(result.class).to eq(type)
+    expect(result.name).to eq(name)
+  end
+  def verify_destroyed(result, name, type)
+    expect(result.class).to eq(type)
+    expect(result.name).to eq(name)
+  end
 end
 
 # Tell Factory Girl to load the factory definitions, now that we've required everything (unless they have already been loaded)

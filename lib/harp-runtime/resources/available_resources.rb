@@ -42,7 +42,7 @@ module Harp
       @@logger = Logging.logger[self]
       @@subclasses = { }
       @@service = { }
-      
+
       DESTROYED = "DESTROYED"
       CREATED = "CREATED"
 
@@ -161,22 +161,22 @@ Auto Scaling Trigger
 Alarm
 Compute External Gateway
 Compute EC2 DHCP Options
-Compute Elastic IP Address
+DONE Compute Elastic IP Address
 Compute Elastic IP Address Association
-Compute Instance
+DONE Compute Instance
 Compute Internet Gateway
 Compute Network ACL
 Compute Network ACL Entry
 Compute NetworkInterface
 Compute Route
 Compute Route Table
-Compute Security Group
+DONE Compute Security Group
 Compute Security Group Ingress
 Compute Security Group Egress
 Compute Subnet
 Compute Subnet Network ACL Association
 Compute Subnet Route Table Association
-Compute Volume
+DONE Compute Volume
 Compute Volume Attachment
 Compute VPC
 Compute VPC Dhcp Options Association
@@ -189,7 +189,7 @@ Cache Security Group
 Cache Security Group Ingress
 Elastic Application
 Elastic Environment
-Load Balancer
+DONE Load Balancer
 Identity Access Key
 Identity Group
 Identity Instance Profile
@@ -197,9 +197,9 @@ Identity Policy
 Identity Role
 Identity Add User to Group
 Identity User
-Relational Database DBInstance
+DONE Relational Database DBInstance
 Relational Database DB Subnet Group
-Relational Database DBSecurityGroup
+DONE Relational Database DBSecurityGroup
 Relational Database Security Group Ingress
 DNS Resource Record Set
 DNS Resource Record Set Group
