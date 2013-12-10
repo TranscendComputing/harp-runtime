@@ -17,6 +17,15 @@ eip_association_resource = {
   "type" => "Std::ElasticIPAssociation",
 }
 
+network_interface_resource = {
+  "type"            => "Std::NetworkInterface",
+  "sourceDestCheck" => "false",
+  "groupSet"        => ["sg-75zzz219"],
+  "subnetId"        => "subnet-3z648z53",
+  "privateIpAddress"=> "10.0.0.16"
+
+}
+
 security_group_resource = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group",
@@ -27,6 +36,13 @@ security_group_resource_2 = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group-2",
   "description" => "A web security group 2"
+}
+
+subnet_resource = {
+  "type"       => "Std::Subnet",
+  "cidrBlock"  => "10.0.0.0/24",
+  "availabilityZone" => "us-east-1a",
+  "vpcId"      => "vpc-903w8odf9"
 }
 
 volume_resource = {
@@ -71,6 +87,11 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_sg1", security_group_resource)
     verify_created(result, "test_sg1", SecurityGroup)
     expect(result.description).to eq("A web security group")
+  end
+
+   it "creates a subnet" do
+    result = mutator.create("test_sbnt1", subnet_resource)
+    verify_created(result, "test_sbnt1", Subnet)
   end
 
   describe Harp::Cloud::CloudMutator, "#create eip" do

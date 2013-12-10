@@ -12,7 +12,7 @@ module Harp
 
         attribute :id
         attribute :subnet_id,                   :aliases => 'subnetId'
-        attribute :vpc_if,                      :aliases => 'vpcId'
+        attribute :vpc_id,                      :aliases => 'vpcId'
         attribute :cidr_block,                  :aliases => 'cidrBlock'
         attribute :available_ip_address_count,  :aliases => 'availableIpAddressCount'
         attribute :availability_zone,           :aliases => 'availabilityZone'
@@ -42,7 +42,7 @@ module Harp
 
 
       def create(service)
-        create_attribs = self.attribs
+        create_attribs = self.attribs[:attributes]
         subnet = service.subnets.create(create_attribs)
         @id = subnet.subnet_id
         return subnet
