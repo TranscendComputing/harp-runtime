@@ -6,9 +6,9 @@ require 'coveralls'
 require 'factory_girl'
 
 # For debugging.
-require 'logging'
-Logging.logger.root.add_appenders(Logging.appenders.stdout)
-Logging.logger.root.level = :debug
+# require 'logging'
+# Logging.logger.root.add_appenders(Logging.appenders.stdout)
+# Logging.logger.root.level = :debug
 #require 'logging'
 #Logging.logger.root.add_appenders(Logging.appenders.stdout)
 #Logging.logger.root.level = :debug
