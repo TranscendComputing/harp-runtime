@@ -23,7 +23,6 @@ network_interface_resource = {
   "groupSet"        => ["sg-75zzz219"],
   "subnetId"        => "subnet-3z648z53",
   "privateIpAddress"=> "10.0.0.16"
-
 }
 
 security_group_resource = {
@@ -83,13 +82,18 @@ describe Harp::Cloud::CloudMutator, "#create" do
     verify_created(result, "test_inst1", ComputeInstance)
   end
 
+  it "creates a network interface" do
+    result = mutator.create("test_netwIn1", network_interface_resource)
+    verify_created(result, "test_netwIn1", NetworkInterface)
+  end
+
   it "creates a security group" do
     result = mutator.create("test_sg1", security_group_resource)
     verify_created(result, "test_sg1", SecurityGroup)
     expect(result.description).to eq("A web security group")
   end
 
-   it "creates a subnet" do
+  it "creates a subnet" do
     result = mutator.create("test_sbnt1", subnet_resource)
     verify_created(result, "test_sbnt1", Subnet)
   end

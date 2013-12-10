@@ -12,7 +12,6 @@ module Harp
 
         attribute :id
         attribute :network_interface_id,        :aliases => 'networkInterfaceId'
-        attribute :state
         attribute :subnet_id,                   :aliases => 'subnetId'
         attribute :description,                 :aliases => 'description'
         attribute :status,                      :aliases => 'status'
@@ -45,7 +44,7 @@ module Harp
 
 
       def create(service)
-        create_attribs = self.attribs
+        create_attribs = self.attribs[:attributes]
         network_interface = service.network_interfaces.create(create_attribs)
         @id = network_interface.network_interface_id
         return network_interface
