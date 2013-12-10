@@ -21,7 +21,6 @@ network_interface_resource = {
   "type"            => "Std::NetworkInterface",
   "sourceDestCheck" => "false",
   "groupSet"        => ["sg-75zzz219"],
-  "subnetId"        => "subnet-3z648z53",
   "privateIpAddress"=> "10.0.0.16"
 }
 
@@ -70,11 +69,24 @@ shared_context 'when have an eip' do
   end
 end
 
+shared_context 'when have a network interface' do
+  let(:subnet) do
+    @new_subnet = mutator.create("test_sbnt1", subnet_resource)
+    @new_subnet.instance_variable_get(:@id)
+  end
+  let(:network_interface) do
+    network_interface_resource["subnet_id"] = $subnet_id
+
+    @network_interface = mutator.create("test_netwIn1", network_interface_resource)
+    @network_interface.instance_variable_get(:@id)
+  end
+ end
+
+
 describe Harp::Cloud::CloudMutator, "#create" do
   include_context "when have mutator"
 
   before do
-
   end
 
   it "creates a cloud instance" do
@@ -82,20 +94,28 @@ describe Harp::Cloud::CloudMutator, "#create" do
     verify_created(result, "test_inst1", ComputeInstance)
   end
 
-  it "creates a network interface" do
-    result = mutator.create("test_netwIn1", network_interface_resource)
-    verify_created(result, "test_netwIn1", NetworkInterface)
+  describe Harp::Cloud::CloudMutator, "#create network_interface" do
+    include_context "when have a network interface"
+
+    it "creates a subnet" do
+      #TODO, remove hardwired vpc once VPC resource is added
+      $subnet_id ||= subnet
+      verify_created(@new_subnet, "test_sbnt1", Subnet)
+    end
+
+    it "creates a network interface" do
+      $subnet_id ||= subnet
+      network_interface
+      verify_created(@network_interface, "test_netwIn1", NetworkInterface)
+    end
+
   end
+
 
   it "creates a security group" do
     result = mutator.create("test_sg1", security_group_resource)
     verify_created(result, "test_sg1", SecurityGroup)
     expect(result.description).to eq("A web security group")
-  end
-
-  it "creates a subnet" do
-    result = mutator.create("test_sbnt1", subnet_resource)
-    verify_created(result, "test_sbnt1", Subnet)
   end
 
   describe Harp::Cloud::CloudMutator, "#create eip" do
@@ -122,6 +142,7 @@ describe Harp::Cloud::CloudMutator, "#create" do
   end
 end
 
+#Destroy specs
 describe Harp::Cloud::CloudMutator, "#destroy" do
   include_context "when have mutator"
 
