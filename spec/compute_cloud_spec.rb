@@ -27,8 +27,7 @@ eip_association_resource = {
 }
 
 elastic_ip_resource = {
-  "type" => "Std::ElasticIP",
-  "public_ip" => "123.4.5.6"
+  "type" => "Std::ElasticIP"
 }
 
 eip_association_resource = {
@@ -69,7 +68,7 @@ describe Harp::Cloud::CloudMutator, "#create" do
     eip_for_asso["server_id"] = inst.instance_variable_get(:@id)
     
     eip  = mutator.create("eip_for_asso", eip_for_asso)
-    eip_association_resource["allocation_id"] = eip.instance_variable_get(:@id)
+    eip_association_resource["public_ip"] = eip.instance_variable_get(:@id)
     eip_association_resource["server_id"]     = inst.instance_variable_get(:@id)
 
     result = mutator.create("test_eip_asso", eip_association_resource)
@@ -108,10 +107,23 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     expect(result.name).to eq("test_inst1")
   end
 	it "destroys an elastic ip" do
-    created = mutator.create("test_eip1", elastic_ip_resource)
-    result = mutator.destroy("test_eip1", elastic_ip_resource)
+    created = mutator.create("test_eip2", elastic_ip_resource)
+    result = mutator.destroy("test_eip2", elastic_ip_resource)
     expect(result.class).to eq(ElasticIP)
-    expect(result.name).to eq("test_eip1")
+    expect(result.name).to eq("test_eip2")
+  end
+  it "destroys an elastic ip association" do
+    inst = mutator.create("ins_for_asso", ins_for_asso)
+    eip_for_asso["server_id"] = inst.instance_variable_get(:@id)
+    
+    eip  = mutator.create("eip_for_asso", eip_for_asso)
+    eip_association_resource["public_ip"] = eip.instance_variable_get(:@id)
+    eip_association_resource["server_id"]     = inst.instance_variable_get(:@id)
+
+    created = mutator.create("test_eip_asso", eip_association_resource)
+    result = mutator.destroy("test_eip_asso", eip_association_resource)
+    expect(result.name).to eq("test_eip_asso")
+    expect(result.class).to eq(ElasticIPAssociation)
   end
   it "destroys a security group" do
     created = mutator.create("test_sg2", security_group_resource_2)
