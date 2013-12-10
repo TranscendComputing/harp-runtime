@@ -52,7 +52,10 @@ volume_resource = {
   "size" => 5
 }
 
-
+vpc_resource = {
+  "type" => "Std::Vpc",
+  "cidr_block" => "10.1.2.0/24"
+}
 
 describe Harp::Cloud::CloudMutator, "#create" do
   include_context "when have mutator"
@@ -93,6 +96,12 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_vol1", volume_resource)
     expect(result.class).to eq(Volume)
     expect(result.name).to eq("test_vol1")
+  end
+  
+  it "creates a vpc" do
+    result = mutator.create("test_vpc1", vpc_resource)
+    expect(result.class).to eq(Vpc)
+    expect(result.name).to eq("test_vpc1")
   end
 end
 
