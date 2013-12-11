@@ -23,12 +23,6 @@ security_group_resource = {
   "description" => "A web security group"
 }
 
-security_group_resource_2 = {
-  "type" => "Std::SecurityGroup",
-  "name" => "web-security-group-2",
-  "description" => "A web security group 2"
-}
-
 volume_resource = {
   "type" => "Std::Volume",
   "availability_zone" => "us-east-1",
@@ -71,6 +65,17 @@ route_resource = {
   "type" => "Std::Route",
   "route_table_id" => "",
   "destination_cidr_block" => "10.0.0.0/16"
+}
+
+security_group_ingress_resource = {
+  "type" => "Std::SecurityGroupIngress",
+  "group_name" => "test_security_group_1",
+  "options" => {
+    "CidrIp" => "10.0.0.0/16",
+    "FromPort" => -1,
+    "IpProtocol" => "tcp",
+    "ToPort" => -1
+  }
 }
 
 shared_context 'when have an instance' do
@@ -138,6 +143,18 @@ shared_context 'when have a vpc' do
   end
 end
 
+shared_context 'when have a security_group' do
+  let(:security_group) do
+    @new_security_group = mutator.create("test_security_group_1", security_group_resource)
+    @new_security_group.instance_variable_get(:@id)
+  end
+  let(:security_group_ingress) do
+    security_group
+    @new_security_group_ingress = mutator.create("test_security_group_ingress1", security_group_ingress_resource)
+    @new_security_group_ingress.instance_variable_get(:@id)
+  end
+end
+
 describe Harp::Cloud::CloudMutator, "#create" do
   include_context "when have mutator"
 
@@ -148,12 +165,6 @@ describe Harp::Cloud::CloudMutator, "#create" do
   it "creates a cloud instance" do
     result = mutator.create("test_inst1", instance_resource)
     verify_created(result, "test_inst1", ComputeInstance)
-  end
-
-  it "creates a security group" do
-    result = mutator.create("test_sg1", security_group_resource)
-    verify_created(result, "test_sg1", SecurityGroup)
-    expect(result.description).to eq("A web security group")
   end
 
   describe Harp::Cloud::CloudMutator, "#create eip" do
@@ -217,6 +228,15 @@ describe Harp::Cloud::CloudMutator, "#create" do
       verify_created(@new_route, "test_route1", Route)
     end
   end
+  
+  describe Harp::Cloud::CloudMutator, "#create security_group" do
+    include_context "when have a security_group"
+    
+    it "creates a security_group_ingress" do
+      security_group_ingress
+      verify_created(@new_security_group_ingress, "test_security_group_ingress1", SecurityGroupIngress)
+    end
+  end
 end
 
 describe Harp::Cloud::CloudMutator, "#destroy" do
@@ -254,8 +274,8 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
   end
 
   it "destroys a security group" do
-    created = mutator.create("test_sg2", security_group_resource_2)
-    result = mutator.destroy("test_sg2", security_group_resource_2)
+    created = mutator.create("test_sg2", security_group_resource)
+    result = mutator.destroy("test_sg2", security_group_resource)
     verify_destroyed(result, "test_sg2", SecurityGroup)
   end
   it "destroys a volume" do
@@ -302,5 +322,13 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
       result = mutator.destroy("test_route1", route_resource)
       verify_destroyed(result, "test_route1", Route)
     end
+  end
+  
+  it "destroys a security_group_ingress" do
+    created = mutator.create("test_sg3", security_group_resource)
+    security_group_ingress_resource['group_name'] = created.name
+    mutator.create("test_security_group_ingress1", security_group_ingress_resource)
+    result = mutator.destroy("test_security_group_ingress1", security_group_ingress_resource)
+    verify_destroyed(result, "test_security_group_ingress1", SecurityGroupIngress)
   end
 end
