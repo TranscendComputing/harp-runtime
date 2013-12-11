@@ -37,8 +37,6 @@ module Harp
       end
 
       def destroy(service)
-        require 'pry'
-        binding.pry
         if dhcp_options_id
           dhcp_option_association = service.dhcp_options.destroy(dhcp_options_id)
         else
