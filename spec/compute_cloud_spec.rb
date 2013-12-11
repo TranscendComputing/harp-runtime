@@ -75,12 +75,12 @@ shared_context 'when have a network interface' do
     @new_subnet.instance_variable_get(:@id)
   end
   let(:network_interface) do
-    network_interface_resource["subnet_id"] = $subnet_id
+    network_interface_resource["subnet_id"] = subnet
 
     @network_interface = mutator.create("test_netwIn1", network_interface_resource)
     @network_interface.instance_variable_get(:@id)
   end
- end
+end
 
 
 describe Harp::Cloud::CloudMutator, "#create" do
@@ -99,12 +99,12 @@ describe Harp::Cloud::CloudMutator, "#create" do
 
     it "creates a subnet" do
       #TODO, remove hardwired vpc once VPC resource is added
-      $subnet_id ||= subnet
+      subnet
       verify_created(@new_subnet, "test_sbnt1", Subnet)
     end
 
     it "creates a network interface" do
-      $subnet_id ||= subnet
+      subnet
       network_interface
       verify_created(@network_interface, "test_netwIn1", NetworkInterface)
     end
@@ -145,6 +145,24 @@ end
 #Destroy specs
 describe Harp::Cloud::CloudMutator, "#destroy" do
   include_context "when have mutator"
+
+
+  describe Harp::Cloud::CloudMutator, "#destroy network_interface" do
+    include_context "when have a network interface"
+
+    it "destroys a subnet" do
+      #TODO, remove hardwired vpc once VPC resource is added
+      subnet
+      result = mutator.destroy("test_sbnt1", subnet_resource)
+      verify_destroyed(result, "test_sbnt1", Subnet)
+    end
+
+    it "destroys a network interface" do
+      network_interface
+      result = mutator.destroy("test_netwIn1", network_interface_resource)
+      verify_destroyed(result, "test_netwIn1", NetworkInterface)
+    end
+  end
 
   describe Harp::Cloud::CloudMutator, "#destroy eip" do
     include_context "when have mutator"
