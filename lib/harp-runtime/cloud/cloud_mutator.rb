@@ -16,9 +16,9 @@ module Harp
         @access = options[:access]
         @secret = options[:secret]
         @cloud_type = options[:cloud_type]
+
         @mock = (options.include? :mock) ? true : false
         @service_connectors = {}
-        @harp_script = options[:harp_script]
         @resources = {}
       end
 
@@ -74,10 +74,7 @@ module Harp
         resource.name = resource_name
         service = establish_connect(resource)
         created = resource.create(service)
-        pr = persist_resource(resource_name, resource, created, "create")
-        pr.state = Harp::Resources::AvailableResource::CREATED
-        remember(pr)
-        return pr
+        return persist_resource(resource_name, resource, created, Harp::Resources::AvailableResource::CREATED)
       end
 
       def destroy(resource_name, resource_def)
@@ -86,29 +83,24 @@ module Harp
           @@logger.error "No resource type #{resource_def['type']}"
           return
         end
-        
+
         resource.populate(resource_def)
         persisted = get_harp_resource(resource_name)
-        
+
         if ! persisted.nil?
           resource.populate(persisted.attributes)
         end
-        
+
         resource.name = resource_name
         service = establish_connect(resource)
-        
-        destroyed = resource.destroy(service)
-        #pr = persist_resource(resource_name, resource, resource, "destroy")
-        persisted.state = Harp::Resources::AvailableResource::DESTROYED
-        remember(persisted)
-        return persisted
+        is_destroyed = resource.destroy(service)
+        return persist_resource(resource_name, resource, persisted, Harp::Resources::AvailableResource::DESTROYED)
       end
 
       def get_harp_resource(resource_name)
-        #@harp_script.harp_resources.select{|res| res.name == resource_name}.first
         @resources[resource_name]
       end
-      
+
       def get_output(resource, persisted)
         resource = Harp::Resources::AvailableResource.from_name resource['type']
         if resource.nil?
@@ -119,10 +111,14 @@ module Harp
         output = resource.get_output(service, persisted)
       end
 
+      def add_all(resources)
+        resources.each { |resource| @resources[resource.name] = resource }
+      end
+
       def remember(resource)
         @resources[resource.name] = resource
       end
-      
+
       def get_state(resource_name,resource_def)
         resource = Harp::Resources::AvailableResource.from_name resource_def['type']
         if resource.nil?
@@ -130,15 +126,15 @@ module Harp
           return
         end
         resource.populate(resource_def)
-        
+
         persisted = get_harp_resource(resource_name)
         if ! persisted.nil?
           resource.populate(persisted.attributes)
         end
-        
+
         resource.name = resource_name
         service = establish_connect(resource)
-        
+
         return resource.get_state(service)
       end
       private
@@ -146,8 +142,9 @@ module Harp
             if live_resource
               persistable = resource.make_persistable(live_resource)
               persistable.name = resource_name
-              persistable.harp_script_id = @harp_script.id
+              persistable.state = action
               @@logger.debug "Perform: #{action} resource #{persistable.inspect}"
+              remember(persistable)
               persistable
             end
           end
