@@ -32,7 +32,7 @@ module Harp
       @keeps = /^id$/
 
 
-      # Return persistable attributes with only desired attributes to keep 
+      # Return persistable attributes with only desired attributes to keep
       def keep(attribs)
         attribs[:id] = attribs[:network_interface_id]
         super
