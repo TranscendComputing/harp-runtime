@@ -16,7 +16,13 @@ end
 class ElasticIPAssociation < HarpResource
 end
 
+class NetworkInterface < HarpResource
+end
+
 class SecurityGroup < HarpResource
+end
+
+class Subnet < HarpResource
 end
 
 class Volume < HarpResource
