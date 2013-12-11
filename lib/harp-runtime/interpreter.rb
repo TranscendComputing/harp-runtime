@@ -154,7 +154,7 @@ class HarpInterpreter
     @@logger.debug "Destroying resource: #{resource_name}."
     result = {:destroy => resource_name}
     args = {:action => :destroy}
-    resource = @resourcer.get_existing(resource_name)
+    resource = @resourcer.get resource_name
     destroyed = @mutator.destroy(resource_name, resource)
     destroyed.harp_script = @harp_script
     if destroyed.output? (args)
@@ -219,6 +219,8 @@ class HarpInterpreter
     if !@harp_script.saved?
       @harp_script.content = harp_contents
       @harp_script.save
+    else
+      reconnect_existing(harp_id)
     end
   end
 
@@ -260,6 +262,7 @@ class HarpInterpreter
 
     parse(@harp_script.content)
     resources = @harp_script.harp_resources
+    @mutator.add_all(resources.entries)
   end
 
   def get_output(output_token, options)
@@ -275,8 +278,7 @@ class HarpInterpreter
   end
 
   def get_status(options)
-    resources = reconnect_existing(options[:harp_id])
-
+    reconnect_existing(options[:harp_id])
     respond
   end
 
