@@ -77,7 +77,6 @@ module Harp
         pr = persist_resource(resource_name, resource, created, "create")
         pr.state = Harp::Resources::AvailableResource::CREATED
         remember(pr)
-        #pr.save
         return pr
       end
 
@@ -102,7 +101,6 @@ module Harp
         #pr = persist_resource(resource_name, resource, resource, "destroy")
         persisted.state = Harp::Resources::AvailableResource::DESTROYED
         remember(persisted)
-        #persisted.save
         return persisted
       end
 
