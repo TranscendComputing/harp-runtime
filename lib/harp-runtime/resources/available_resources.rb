@@ -121,6 +121,9 @@ module Harp
 
       # Persist a virtual resource
       def make_persistable(resource)
+        if resource.class == self.class.persistent_type()
+          return resource
+        end
         persist_attribs = resource.attributes
         persist_attribs = self.keep(persist_attribs)
         persist_attribs = self.prune(persist_attribs)
