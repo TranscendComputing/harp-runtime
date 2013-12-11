@@ -35,9 +35,54 @@ volume_resource = {
   "size" => 5
 }
 
+vpc_resource = {
+  "type" => "Std::Vpc",
+  "cidr_block" => "10.1.2.0/24"
+}
+
+internet_gateway_resource = {
+  "type" => "Std::InternetGateway"
+}
+
+vpc_gateway_attachment_resource = {
+  "type" => "Std::VpcGatewayAttachment",
+  "internet_gateway_id" => "",
+  "vpc_id" => ""
+}
+
+dhcp_option_resource = {
+  "type" => "Std::DhcpOption",
+  "dhcp_configuration_set" => {},
+  "tag_set" => {}
+}
+
+dhcp_option_association_resource = {
+  "type" => "Std::DhcpOptionAssociation",
+  "dhcp_options_id" => "",
+  "vpc_id" => ""
+}
+
+route_table_resource = {
+  "type" => "Std::RouteTable",
+  "vpc_id" => ""
+}
+
+route_resource = {
+  "type" => "Std::Route",
+  "route_table_id" => "",
+  "destination_cidr_block" => "10.0.0.0/16"
+}
+
 shared_context 'when have an instance' do
   let(:server_id) do
     inst = mutator.create("test_inst1", instance_resource)
+    inst.instance_variable_get(:@id)
+  end
+end
+
+shared_context 'when have an internet gateway' do
+  let(:gateway_id) do
+    inst = mutator.create("test_gateway1", internet_gateway_resource)
     inst.instance_variable_get(:@id)
   end
 end
@@ -52,6 +97,44 @@ shared_context 'when have an eip' do
     eip_association_resource["server_id"] = server_id
     @eip_association = mutator.create("test_eip_asso", eip_association_resource)
     @eip_association.instance_variable_get(:@id)
+  end
+end
+
+shared_context 'when have a vpc' do
+  let(:vpc) do
+    @new_vpc = mutator.create("test_vpc1", vpc_resource)
+    @new_vpc.instance_variable_get(:@id)
+  end
+  let(:internet_gateway) do
+    @new_gateway = mutator.create("test_gateway1", internet_gateway_resource)
+    @new_gateway.instance_variable_get(:@id)
+  end
+  let(:dhcp_option) do
+    @new_dhcp_option = mutator.create("test_dhcp_option1", dhcp_option_resource)
+    @new_dhcp_option.instance_variable_get(:@id)
+  end
+  let(:vpc_gateway_attachment) do
+    vpc_gateway_attachment_resource["internet_gateway_id"] = internet_gateway
+    vpc_gateway_attachment_resource["vpc_id"] = vpc
+    @new_gateway_attachment = mutator.create("test_gateway_attach", vpc_gateway_attachment_resource)
+    @new_gateway_attachment.instance_variable_get(:@id)
+  end
+  let(:dhcp_option_association) do
+    dhcp_option_association_resource["dhcp_options_id"] = dhcp_option
+    dhcp_option_association_resource["vpc_id"] = vpc
+    @new_dhcp_option_association = mutator.create("test_dhcp_option_association", dhcp_option_association_resource)
+    @new_dhcp_option_association.instance_variable_get(:@id)
+  end
+  let(:route_table) do
+    route_table_resource["vpc_id"] = vpc
+    @new_route_table = mutator.create("test_route_table1", route_table_resource)
+    @new_route_table.instance_variable_get(:@id)
+  end
+  let(:route) do
+    route_resource["route_table_id"] = route_table
+    route_resource["internet_gateway_id"] = internet_gateway
+    @new_route = mutator.create("test_route1", route_resource)
+    @new_route.instance_variable_get(:@id)
   end
 end
 
@@ -94,6 +177,45 @@ describe Harp::Cloud::CloudMutator, "#create" do
   it "creates a volume" do
     result = mutator.create("test_vol1", volume_resource)
     verify_created(result, "test_vol1", Volume)
+  end
+  
+  describe Harp::Cloud::CloudMutator, "#create vpc" do
+    include_context "when have a vpc"
+
+    it "creates a vpc" do
+      vpc
+      verify_created(@new_vpc, "test_vpc1", Vpc)
+    end
+    
+    it "creates an internet gateway" do
+      internet_gateway
+      verify_created(@new_gateway, "test_gateway1", InternetGateway)
+    end
+    
+    it "creates a dhcp option" do
+      dhcp_option
+      verify_created(@new_dhcp_option, "test_dhcp_option1", DhcpOption)
+    end
+
+    it "creates vpc gateway attachment" do
+      vpc_gateway_attachment
+      verify_created(@new_gateway_attachment, "test_gateway_attach", VpcGatewayAttachment)
+    end
+    
+    it "creates dhcp option association" do
+      dhcp_option_association
+      verify_created(@new_dhcp_option_association, "test_dhcp_option_association", DhcpOptionAssociation)
+    end
+    
+    it "creates a route_table" do
+      route_table
+      verify_created(@new_route_table, "test_route_table1", RouteTable)
+    end
+    
+    it "creates a route" do
+      route
+      verify_created(@new_route, "test_route1", Route)
+    end
   end
 end
 
@@ -140,5 +262,45 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     created = mutator.create("test_vol1", volume_resource)
     result = mutator.destroy("test_vol1", volume_resource)
     verify_destroyed(result, "test_vol1", Volume)
+  end
+  
+  describe Harp::Cloud::CloudMutator, "#destroy vpc" do
+    include_context "when have a vpc"
+
+    it "destroys a vpc" do
+      vpc
+      result = mutator.destroy("test_vpc1", vpc_resource)
+      verify_destroyed(result, "test_vpc1", Vpc)
+    end
+    it "destroys an internet gateway" do
+      internet_gateway
+      result = mutator.destroy("test_gateway1", internet_gateway_resource)
+      verify_destroyed(result, "test_gateway1", InternetGateway)
+    end
+    it "destroys a dhcp option" do
+      dhcp_option
+      result = mutator.destroy("test_dhcp_option1", dhcp_option_resource)
+      verify_destroyed(result, "test_dhcp_option1", DhcpOption)
+    end
+    it "destroys a vpc gateway attachment" do
+      vpc_gateway_attachment
+      result = mutator.destroy("test_gateway_attach", vpc_gateway_attachment_resource)
+      verify_destroyed(result, "test_gateway_attach", VpcGatewayAttachment)
+    end
+    it "destroys a dhpc option association" do
+      dhcp_option_association
+      result = mutator.destroy("test_dhcp_option_association", dhcp_option_association_resource)
+      verify_destroyed(result, "test_dhcp_option_association", DhcpOptionAssociation)
+    end
+    it "destroys a route_table" do
+      route_table
+      result = mutator.destroy("test_route_table1", route_table_resource)
+      verify_destroyed(result, "test_route_table1", RouteTable)
+    end
+    it "creates a route" do
+      route
+      result = mutator.destroy("test_route1", route_resource)
+      verify_destroyed(result, "test_route1", Route)
+    end
   end
 end

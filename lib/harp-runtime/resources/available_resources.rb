@@ -156,39 +156,39 @@ end
 
 __END__
 Other types to be defined:
-Auto Scaling Policy
+DONE Auto Scaling Policy
 Auto Scaling Trigger
 Alarm
-Compute External Gateway
-Compute EC2 DHCP Options
+DONE Compute External Gateway
+DONE Compute EC2 DHCP Options
 DONE Compute Elastic IP Address
-Compute Elastic IP Address Association
+DONE Compute Elastic IP Address Association
 DONE Compute Instance
-Compute Internet Gateway
+DONE Compute Internet Gateway
 Compute Network ACL
 Compute Network ACL Entry
-Compute NetworkInterface
+DONE Compute NetworkInterface
 Compute Route
 Compute Route Table
 DONE Compute Security Group
 Compute Security Group Ingress
 Compute Security Group Egress
-Compute Subnet
+DONE Compute Subnet
 Compute Subnet Network ACL Association
 Compute Subnet Route Table Association
 DONE Compute Volume
-Compute Volume Attachment
-Compute VPC
-Compute VPC Dhcp Options Association
-Compute VPC Gateway Attachment
+DONE Compute Volume Attachment
+DONE Compute VPC
+DONE Compute VPC Dhcp Options Association
+DONE Compute VPC Gateway Attachment
 Compute VPN Connection
 Compute VPN Gateway
 Cache Cache Cluster
 Cache Parameter Group
 Cache Security Group
 Cache Security Group Ingress
-Elastic Application
-Elastic Environment
+DONE Elastic Application
+DONE Elastic Environment
 DONE Load Balancer
 Identity Access Key
 Identity Group
