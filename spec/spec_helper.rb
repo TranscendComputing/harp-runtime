@@ -110,10 +110,12 @@ shared_context 'when have mutator' do
   def verify_created(result, name, type)
     expect(result.class).to eq(type)
     expect(result.name).to eq(name)
+    expect(result.state).to eq(Harp::Resources::AvailableResource::CREATED)
   end
   def verify_destroyed(result, name, type)
     expect(result.class).to eq(type)
     expect(result.name).to eq(name)
+    expect(result.state).to eq(Harp::Resources::AvailableResource::DESTROYED)
   end
 end
 
