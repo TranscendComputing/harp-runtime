@@ -6,46 +6,43 @@ require 'json'
 module Harp
   module Resources
 
-    class Vpc < AvailableResource
+    class InternetGateway < AvailableResource
 
       include Harp::Resources
 
-      attribute :id,                :aliases => 'vpcId'
-
-      attribute :state
-      attribute :cidr_block,       :aliases => 'cidrBlock'
-      attribute :dhcp_options_id,  :aliases => 'dhcpOptionsId'
-      attribute :tags,             :aliases => 'tagSet'
-      attribute :tenancy,          :aliases => 'instanceTenancy'
+      attribute :id,                          :aliases => 'internetGatewayId'
+      attribute :attachment_set,              :aliases => 'attachmentSet'
+      attribute :tag_set,                     :aliases => 'tagSet'
         
       attribute :description
       attribute :type
       attribute :live_resource
+      attribute :state
 
-      register_resource :vpc, RESOURCES_COMPUTE
+      register_resource :internet_gateway, RESOURCES_COMPUTE
 
       # Only keeping a few properties, simplest define keeps.
       @keeps = /^id$/
 
 
       def self.persistent_type()
-        ::Vpc
+        ::InternetGateway
       end
 
       def create(service)
         create_attribs = self.attribs[:attributes]
-        vpc = service.vpcs.create(create_attribs)
-        @id = vpc.id
-        return vpc
+        internet_gateway = service.internet_gateways.create
+        @id = internet_gateway.id
+        return internet_gateway
       end
 
       def destroy(service)
         if id
-          vpc = service.vpcs.destroy(id)
+          internet_gateway = service.internet_gateways.destroy(id)
         else
           puts "No ID set, cannot delete."
         end
-        return vpc
+        return internet_gateway
       end
 
     end
