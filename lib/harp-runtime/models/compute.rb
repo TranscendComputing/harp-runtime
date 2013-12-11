@@ -35,4 +35,10 @@ class DhcpOption < HarpResource
 end
 
 class DhcpOptionAssociation < HarpResource
+end
+
+class RouteTable < HarpResource
+end
+
+class Route < HarpResource
 end     

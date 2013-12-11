@@ -62,6 +62,17 @@ dhcp_option_association_resource = {
   "vpc_id" => ""
 }
 
+route_table_resource = {
+  "type" => "Std::RouteTable",
+  "vpc_id" => ""
+}
+
+route_resource = {
+  "type" => "Std::Route",
+  "route_table_id" => "",
+  "destination_cidr_block" => "10.0.0.0/16"
+}
+
 shared_context 'when have an instance' do
   let(:server_id) do
     inst = mutator.create("test_inst1", instance_resource)
@@ -113,6 +124,17 @@ shared_context 'when have a vpc' do
     dhcp_option_association_resource["vpc_id"] = vpc
     @new_dhcp_option_association = mutator.create("test_dhcp_option_association", dhcp_option_association_resource)
     @new_dhcp_option_association.instance_variable_get(:@id)
+  end
+  let(:route_table) do
+    route_table_resource["vpc_id"] = vpc
+    @new_route_table = mutator.create("test_route_table1", route_table_resource)
+    @new_route_table.instance_variable_get(:@id)
+  end
+  let(:route) do
+    route_resource["route_table_id"] = route_table
+    route_resource["internet_gateway_id"] = internet_gateway
+    @new_route = mutator.create("test_route1", route_resource)
+    @new_route.instance_variable_get(:@id)
   end
 end
 
@@ -183,6 +205,16 @@ describe Harp::Cloud::CloudMutator, "#create" do
     it "creates dhcp option association" do
       dhcp_option_association
       verify_created(@new_dhcp_option_association, "test_dhcp_option_association", DhcpOptionAssociation)
+    end
+    
+    it "creates a route_table" do
+      route_table
+      verify_created(@new_route_table, "test_route_table1", RouteTable)
+    end
+    
+    it "creates a route" do
+      route
+      verify_created(@new_route, "test_route1", Route)
     end
   end
 end
@@ -259,6 +291,16 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
       dhcp_option_association
       result = mutator.destroy("test_dhcp_option_association", dhcp_option_association_resource)
       verify_destroyed(result, "test_dhcp_option_association", DhcpOptionAssociation)
+    end
+    it "destroys a route_table" do
+      route_table
+      result = mutator.destroy("test_route_table1", route_table_resource)
+      verify_destroyed(result, "test_route_table1", RouteTable)
+    end
+    it "creates a route" do
+      route
+      result = mutator.destroy("test_route1", route_resource)
+      verify_destroyed(result, "test_route1", Route)
     end
   end
 end
