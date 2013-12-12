@@ -23,7 +23,7 @@ cache_security_group_ingress_resource = {
 
 shared_context 'when have a cache security_group' do
   let(:security_group) do
-    @new_security_group = mutator.create("test_security_group_1", security_group_resource)
+    @new_security_group = mutator.create("test_security_group_11", security_group_resource)
     @new_security_group.instance_variable_get(:@name)
   end
   let(:cache_security_group) do
