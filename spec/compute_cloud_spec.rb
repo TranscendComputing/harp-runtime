@@ -17,30 +17,10 @@ eip_association_resource = {
   "type" => "Std::ElasticIPAssociation",
 }
 
-network_interface_resource = {
-  "type"            => "Std::NetworkInterface",
-  "sourceDestCheck" => "false",
-  "groupSet"        => ["sg-75zzz219"],
-  "privateIpAddress"=> "10.0.0.16"
-}
-
 security_group_resource = {
   "type" => "Std::SecurityGroup",
   "name" => "web-security-group",
   "description" => "A web security group"
-}
-
-security_group_resource_2 = {
-  "type" => "Std::SecurityGroup",
-  "name" => "web-security-group-2",
-  "description" => "A web security group 2"
-}
-
-subnet_resource = {
-  "type"       => "Std::Subnet",
-  "cidrBlock"  => "10.0.0.0/24",
-  "availabilityZone" => "us-east-1a",
-  "vpcId"      => "vpc-903w8odf9"
 }
 
 volume_resource = {
@@ -85,6 +65,17 @@ route_resource = {
   "type" => "Std::Route",
   "route_table_id" => "",
   "destination_cidr_block" => "10.0.0.0/16"
+}
+
+security_group_ingress_resource = {
+  "type" => "Std::SecurityGroupIngress",
+  "group_name" => "test_security_group_1",
+  "options" => {
+    "CidrIp" => "10.0.0.0/16",
+    "FromPort" => -1,
+    "IpProtocol" => "tcp",
+    "ToPort" => -1
+  }
 }
 
 shared_context 'when have an instance' do
@@ -152,16 +143,15 @@ shared_context 'when have a vpc' do
   end
 end
 
-shared_context 'when have a network interface' do
-  let(:subnet) do
-    @new_subnet = mutator.create("test_sbnt1", subnet_resource)
-    @new_subnet.instance_variable_get(:@id)
+shared_context 'when have a security_group' do
+  let(:security_group) do
+    @new_security_group = mutator.create("test_security_group_1", security_group_resource)
+    @new_security_group.instance_variable_get(:@id)
   end
-  let(:network_interface) do
-    network_interface_resource["subnet_id"] = subnet
-
-    @network_interface = mutator.create("test_netwIn1", network_interface_resource)
-    @network_interface.instance_variable_get(:@id)
+  let(:security_group_ingress) do
+    security_group
+    @new_security_group_ingress = mutator.create("test_security_group_ingress1", security_group_ingress_resource)
+    @new_security_group_ingress.instance_variable_get(:@id)
   end
 end
 
@@ -169,35 +159,12 @@ describe Harp::Cloud::CloudMutator, "#create" do
   include_context "when have mutator"
 
   before do
+
   end
 
   it "creates a cloud instance" do
     result = mutator.create("test_inst1", instance_resource)
     verify_created(result, "test_inst1", ComputeInstance)
-  end
-
-  describe Harp::Cloud::CloudMutator, "#create network_interface" do
-    include_context "when have a network interface"
-
-    it "creates a subnet" do
-      #TODO, remove hardwired vpc once VPC resource is added
-      subnet
-      verify_created(@new_subnet, "test_sbnt1", Subnet)
-    end
-
-    it "creates a network interface" do
-      subnet
-      network_interface
-      verify_created(@network_interface, "test_netwIn1", NetworkInterface)
-    end
-
-  end
-
-
-  it "creates a security group" do
-    result = mutator.create("test_sg1", security_group_resource)
-    verify_created(result, "test_sg1", SecurityGroup)
-    expect(result.description).to eq("A web security group")
   end
 
   describe Harp::Cloud::CloudMutator, "#create eip" do
@@ -222,7 +189,7 @@ describe Harp::Cloud::CloudMutator, "#create" do
     result = mutator.create("test_vol1", volume_resource)
     verify_created(result, "test_vol1", Volume)
   end
-
+  
   describe Harp::Cloud::CloudMutator, "#create vpc" do
     include_context "when have a vpc"
 
@@ -230,12 +197,12 @@ describe Harp::Cloud::CloudMutator, "#create" do
       vpc
       verify_created(@new_vpc, "test_vpc1", Vpc)
     end
-
+    
     it "creates an internet gateway" do
       internet_gateway
       verify_created(@new_gateway, "test_gateway1", InternetGateway)
     end
-
+    
     it "creates a dhcp option" do
       dhcp_option
       verify_created(@new_dhcp_option, "test_dhcp_option1", DhcpOption)
@@ -245,45 +212,35 @@ describe Harp::Cloud::CloudMutator, "#create" do
       vpc_gateway_attachment
       verify_created(@new_gateway_attachment, "test_gateway_attach", VpcGatewayAttachment)
     end
-
+    
     it "creates dhcp option association" do
       dhcp_option_association
       verify_created(@new_dhcp_option_association, "test_dhcp_option_association", DhcpOptionAssociation)
     end
-
+    
     it "creates a route_table" do
       route_table
       verify_created(@new_route_table, "test_route_table1", RouteTable)
     end
-
+    
     it "creates a route" do
       route
       verify_created(@new_route, "test_route1", Route)
     end
   end
-end
-
-#Destroy specs
-describe Harp::Cloud::CloudMutator, "#destroy" do
-  include_context "when have mutator"
-
-
-  describe Harp::Cloud::CloudMutator, "#destroy network_interface" do
-    include_context "when have a network interface"
-
-    it "destroys a subnet" do
-      #TODO, remove hardwired vpc once VPC resource is added
-      subnet
-      result = mutator.destroy("test_sbnt1", subnet_resource)
-      verify_destroyed(result, "test_sbnt1", Subnet)
-    end
-
-    it "destroys a network interface" do
-      network_interface
-      result = mutator.destroy("test_netwIn1", network_interface_resource)
-      verify_destroyed(result, "test_netwIn1", NetworkInterface)
+  
+  describe Harp::Cloud::CloudMutator, "#create security_group" do
+    include_context "when have a security_group"
+    
+    it "creates a security_group_ingress" do
+      security_group_ingress
+      verify_created(@new_security_group_ingress, "test_security_group_ingress1", SecurityGroupIngress)
     end
   end
+end
+
+describe Harp::Cloud::CloudMutator, "#destroy" do
+  include_context "when have mutator"
 
   describe Harp::Cloud::CloudMutator, "#destroy eip" do
     include_context "when have mutator"
@@ -317,8 +274,8 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
   end
 
   it "destroys a security group" do
-    created = mutator.create("test_sg2", security_group_resource_2)
-    result = mutator.destroy("test_sg2", security_group_resource_2)
+    created = mutator.create("test_sg2", security_group_resource)
+    result = mutator.destroy("test_sg2", security_group_resource)
     verify_destroyed(result, "test_sg2", SecurityGroup)
   end
   it "destroys a volume" do
@@ -326,7 +283,7 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
     result = mutator.destroy("test_vol1", volume_resource)
     verify_destroyed(result, "test_vol1", Volume)
   end
-
+  
   describe Harp::Cloud::CloudMutator, "#destroy vpc" do
     include_context "when have a vpc"
 
@@ -365,5 +322,13 @@ describe Harp::Cloud::CloudMutator, "#destroy" do
       result = mutator.destroy("test_route1", route_resource)
       verify_destroyed(result, "test_route1", Route)
     end
+  end
+  
+  it "destroys a security_group_ingress" do
+    created = mutator.create("test_sg3", security_group_resource)
+    security_group_ingress_resource['group_name'] = created.name
+    mutator.create("test_security_group_ingress1", security_group_ingress_resource)
+    result = mutator.destroy("test_security_group_ingress1", security_group_ingress_resource)
+    verify_destroyed(result, "test_security_group_ingress1", SecurityGroupIngress)
   end
 end

@@ -171,8 +171,8 @@ DONE Compute Internet Gateway
 Compute Network ACL
 Compute Network ACL Entry
 DONE Compute NetworkInterface
-Compute Route
-Compute Route Table
+DONE Compute Route
+DONE Compute Route Table
 DONE Compute Security Group
 Compute Security Group Ingress
 Compute Security Group Egress

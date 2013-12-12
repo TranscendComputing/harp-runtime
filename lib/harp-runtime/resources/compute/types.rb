@@ -14,6 +14,7 @@ require 'harp-runtime/resources/compute/dhcp_option'
 require 'harp-runtime/resources/compute/dhcp_option_association'
 require 'harp-runtime/resources/compute/route_table'
 require 'harp-runtime/resources/compute/route'
+require 'harp-runtime/resources/compute/security_group_ingress'
 
 module Harp
   module Resources

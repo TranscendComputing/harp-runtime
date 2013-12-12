@@ -48,3 +48,6 @@ end
 
 class Route < HarpResource
 end
+
+class SecurityGroupIngress < HarpResource
+end
