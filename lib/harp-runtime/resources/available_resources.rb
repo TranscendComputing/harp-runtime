@@ -17,6 +17,9 @@ module Harp
     # Set to contain all compute resources
     RESOURCES_COMPUTE = Set.new
 
+    # Set to contain all elasticache resources
+    RESOURCES_ELASTICACHE = Set.new
+
     # Set to contain all load_balancing resources
     RESOURCES_ELASTIC_LOAD_BALANCING = Set.new
 
@@ -146,6 +149,7 @@ require "harp-runtime/resources/beanstalk/types"
 require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
 require "harp-runtime/resources/rds/types"
+require "harp-runtime/resources/elasticache/types"
 
 class String
   def underscore
