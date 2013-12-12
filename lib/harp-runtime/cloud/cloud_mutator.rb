@@ -34,6 +34,8 @@ module Harp
           Fog::AWS::ELB
         when Harp::Resources::RESOURCES_RDS
           Fog::AWS::RDS
+        when Harp::Resources::RESOURCES_ELASTICACHE
+          Fog::AWS::Elasticache
         else
         end
       end

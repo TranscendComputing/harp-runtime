@@ -1,6 +1,6 @@
 require 'set'
 require 'fog/core/model'
-require 'harp-runtime/models/autoscale'
+require 'harp-runtime/models/elasticache'
 require 'json'
 
 module Harp
@@ -10,8 +10,10 @@ module Harp
 
       include Harp::Resources
 
-        identity  :id,              :aliases => 'cacheSecurityGroupName'
-        attribute :description,     :aliases => 'description'
+        attribute :id, :aliases => 'CacheSecurityGroupName'
+        attribute :description, :aliases => 'Description'
+        attribute :ec2_groups, :aliases => 'EC2SecurityGroups', :type => :array
+        attribute :owner_id, :aliases => 'OwnerId'
         attribute :state
         attribute :type
         attribute :live_resource
@@ -27,16 +29,16 @@ module Harp
         end
 
         def create(service)
-            create_attribs=self.attribs[:attributes]
-            security_group  = service.security_groups.create(create_attribs)
+          create_attribs=self.attribs[:attributes]
+          security_group  = service.security_groups.create(create_attribs)
         	return security_group
         end
 
         def destroy(service)
         	if id
-               security_group = service.security_groups.destroy(id)
+            security_group = service.security_groups.destroy(id)
         	else
-          	   puts "No ID set, cannot delete."
+          	puts "No ID set, cannot delete."
         	end
         	return security_group
         end

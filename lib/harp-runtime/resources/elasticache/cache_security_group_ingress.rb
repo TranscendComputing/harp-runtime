@@ -1,6 +1,6 @@
 require 'set'
 require 'fog/core/model'
-require 'harp-runtime/models/autoscale'
+require 'harp-runtime/models/elasticache'
 require 'json'
 
 module Harp
@@ -10,9 +10,11 @@ module Harp
 
       include Harp::Resources
 
-        identity  :id, 					:aliases => 'cacheSecurityGroupName'
-		attribute :ec2_groups, 			:aliases => 'ec2SecurityGroups', :type => :array
-        attribute :owner_id, 			:aliases => 'ownerId'
+        attribute :id
+        attribute :group_name
+		    attribute :name
+        attribute :ec2_name
+        attribute :ec2_owner_id
         attribute :description
         attribute :state
         attribute :type
@@ -21,25 +23,31 @@ module Harp
         register_resource :cache_security_group_ingress, RESOURCES_ELASTICACHE
 
         # Only keeping a few properties, simplest define keeps.
-        @keeps = /^id$/
-
+        @keeps = /^id$|^name$/
+        
+        def keep(attribs)
+          attribs[:id] = attribs[:name]
+          super
+        end
 
         def self.persistent_type()
         	::CacheSecurityGroupIngress
         end
 
         def create(service)
-            security_group  = service.authorize_ec2_group(CacheSecurityGroupName, OwnerId)
-        	return security_group
+          cache_security_group_ingress = service.authorize_cache_security_group_ingress(group_name,ec2_name,ec2_owner_id)
+          @id = cache_security_group_ingress.body['ResponseMetadata']['RequestId']
+          return self
         end
 
         def destroy(service)
-        	if id
-               security_group = service.revoke_ec2_group(id, OwnerId)
-        	else
-          	   puts "No ID set, cannot delete."
+          if id
+            #fog says this function is: to-do
+            #cache_security_group_ingress = service.revoke_cache_security_group_ingress(group_name,ec2_name,ec2_owner_id)
+          else
+          	puts "No ID set, cannot delete."
         	end
-        	return security_group
+        	return self
         end
 
     end

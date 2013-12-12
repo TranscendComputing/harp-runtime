@@ -149,6 +149,7 @@ require "harp-runtime/resources/beanstalk/types"
 require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
 require "harp-runtime/resources/rds/types"
+require "harp-runtime/resources/elasticache/types"
 
 class String
   def underscore
