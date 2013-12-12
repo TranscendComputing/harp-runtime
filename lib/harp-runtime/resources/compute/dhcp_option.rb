@@ -40,7 +40,7 @@ module Harp
         if id
           dhcp_option = service.dhcp_options.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return dhcp_option
       end

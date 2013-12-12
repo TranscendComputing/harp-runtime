@@ -43,7 +43,7 @@ module Harp
         if id
           vpc = service.vpcs.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return vpc
       end

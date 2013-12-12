@@ -52,7 +52,7 @@ module Harp
         if id
           subnet = service.subnets.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return subnet
       end

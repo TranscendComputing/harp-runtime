@@ -40,7 +40,7 @@ module Harp
         if internet_gateway_id && vpc_id
           vpc_gateway_attachment = service.detach_internet_gateway(internet_gateway_id, vpc_id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return self
       end

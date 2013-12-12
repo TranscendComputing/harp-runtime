@@ -67,7 +67,7 @@ module Harp
         if id
           instance = service.servers.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return instance
       end

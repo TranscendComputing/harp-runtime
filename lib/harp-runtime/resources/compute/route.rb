@@ -45,7 +45,7 @@ module Harp
         if route_table_id && destination_cidr_block
           route = service.delete_route(route_table_id,destination_cidr_block)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return self
       end
