@@ -48,7 +48,7 @@ module Harp
         if id
           volume = service.volumes.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return volume
       end

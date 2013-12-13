@@ -12,5 +12,8 @@ before_script:
   - gem install source2swagger
   - npm install -g jamjs
   - jam install
+  - npm install -g bower
+  - npm install http-browserify
+  - bower install
   - ./script/document
 services: mongodb

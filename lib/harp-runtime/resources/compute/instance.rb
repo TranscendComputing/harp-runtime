@@ -81,7 +81,7 @@ module Harp
         if id
           server = service.servers.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return server
       end
@@ -90,7 +90,7 @@ module Harp
         if id
           state = service.servers.get(id).state
         else
-          puts "No ID set, cannot get state."
+          raise "No ID set, cannot get state."
         end
         return state
       end

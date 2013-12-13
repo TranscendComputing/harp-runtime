@@ -43,7 +43,7 @@ module Harp
         if id
           security_group = service.security_groups.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return security_group
       end

@@ -23,14 +23,12 @@ describe "RootApp" do
     end
 
     it "should return a success response code" do
-      puts last_response
-      #last_response.status.should eq(200)
-      #last_response.should be_ok
+      last_response.status.should eq(200)
+      last_response.should be_ok
     end
 
     it "should return the proper content type" do
-      #last_response.headers["Content-Type"].should eq(JSON_CONTENT)
-      puts last_response.headers["Content-Type"]
+      last_response.headers["Content-Type"].should eq(JSON_CONTENT)
     end
 
   end

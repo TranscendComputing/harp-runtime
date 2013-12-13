@@ -54,7 +54,7 @@ module Harp
         if id
           environment = service.environments.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return environment
       end

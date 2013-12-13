@@ -40,7 +40,7 @@ module Harp
         if id
           internet_gateway = service.internet_gateways.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return internet_gateway
       end

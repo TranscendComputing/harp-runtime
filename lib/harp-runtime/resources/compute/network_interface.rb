@@ -54,7 +54,7 @@ module Harp
         if id
           network_interface = service.network_interfaces.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return network_interface
       end

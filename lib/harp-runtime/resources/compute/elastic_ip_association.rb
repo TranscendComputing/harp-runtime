@@ -51,7 +51,7 @@ module Harp
         if public_ip
           address = service.disassociate_address(public_ip)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return address
       end

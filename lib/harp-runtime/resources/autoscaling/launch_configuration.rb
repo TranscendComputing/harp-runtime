@@ -10,13 +10,13 @@ module Harp
 
       include Harp::Resources
 
-        attribute :id,                    :aliases => 'LaunchConfigurationName'
-        attribute :arn,                   :aliases => 'LaunchConfigurationARN'
-        attribute :associate_public_ip,   :aliases => 'AssociatePublicIpAddress'
-        attribute :block_device_mappings, :aliases => 'BlockDeviceMappings'
-        attribute :created_at,            :aliases => 'CreatedTime'
-        attribute :iam_instance_profile,  :aliases => 'IamInstanceProfile'
-        attribute :image_id,              :aliases => 'ImageId'
+      attribute :id,                    :aliases => 'LaunchConfigurationName'
+      attribute :arn,                   :aliases => 'LaunchConfigurationARN'
+      attribute :associate_public_ip,   :aliases => 'AssociatePublicIpAddress'
+      attribute :block_device_mappings, :aliases => 'BlockDeviceMappings'
+      attribute :created_at,            :aliases => 'CreatedTime'
+      attribute :iam_instance_profile,  :aliases => 'IamInstanceProfile'
+      attribute :image_id,              :aliases => 'ImageId'
         #attribute :instance_monitoring,   :aliases => 'InstanceMonitoring'
         attribute :instance_monitoring,   :aliases => 'InstanceMonitoring', :squash => 'Enabled'
         attribute :instance_type,         :aliases => 'InstanceType'
@@ -27,7 +27,7 @@ module Harp
         attribute :user_data,             :aliases => 'UserData'
         attribute :spot_price,            :aliases => 'SpotPrice'
         attribute :description
-        attribute :state        
+        attribute :state
         attribute :type
         attribute :live_resource
 
@@ -38,25 +38,25 @@ module Harp
 
 
         def self.persistent_type()
-        	::LaunchConfiguration
+            ::LaunchConfiguration
         end
 
         def create(service)
             create_attribs = self.attribs[:attributes]
             configuration  = service.configurations.create(create_attribs)
-        	return configuration
+            return configuration
         end
 
         def destroy(service)
-        	if id
-          	   configuration = service.configurations.destroy(id)
-        	else
-          	   puts "No ID set, cannot delete."
-        	end
-        	return configuration
-        end
-        
-    end
-  end
+            if id
+             configuration = service.configurations.destroy(id)
+         else
+             raise "No ID set, cannot delete."
+         end
+         return configuration
+     end
+
+ end
+end
 end
 

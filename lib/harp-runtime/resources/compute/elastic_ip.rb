@@ -50,7 +50,7 @@ module Harp
         if id
           address = service.addresses.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return address
       end

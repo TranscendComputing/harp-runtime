@@ -23,7 +23,7 @@ module Harp
       attribute :scheme,                :aliases => 'Scheme'
       attribute :vpc_id,                :aliases => 'VPCId'
       attribute :listeners
-      
+
       attribute :description
       attribute :type
       attribute :live_resource
@@ -33,7 +33,7 @@ module Harp
 
       # Only keeping a few properties, simplest define keeps.
       @keeps = /^id$|^name$/
-      
+
       @output = false
 
       def self.persistent_type()
@@ -48,13 +48,13 @@ module Harp
         @id = load_balancer.id
         return load_balancer
       end
-      
+
       def destroy(service)
         id
         if id
           load_balancer = service.load_balancers.destroy(id)
         else
-          puts "No ID set, cannot delete."
+          raise "No ID set, cannot delete."
         end
         return load_balancer
       end
