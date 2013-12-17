@@ -32,7 +32,7 @@ module Harp
       def create(service)
         create_attribs = self.attribs[:attributes]
         vpc_gateway_attachment = service.attach_internet_gateway(create_attribs[:internet_gateway_id], create_attribs[:vpc_id])
-        @id = vpc_gateway_attachment.body['requestId']
+        self.id = vpc_gateway_attachment.body['requestId']
         return self
       end
 
