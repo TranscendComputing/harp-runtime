@@ -15,6 +15,7 @@ module Harp
       attribute :description
       attribute :live_resource
       attribute :state
+      attribute :type
       
       attribute :name
       attribute :cloud
@@ -33,6 +34,9 @@ module Harp
 
       def self.persistent_type()
         ::AssemblyPuppet
+      end
+      
+      def provision_server(server_ip)
       end
 
     end

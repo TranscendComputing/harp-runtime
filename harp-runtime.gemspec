@@ -34,6 +34,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "puma"
   gem.add_runtime_dependency "delayed_job"
   gem.add_runtime_dependency "delayed_job_data_mapper"
+  gem.add_runtime_dependency "ridley"
+  gem.add_runtime_dependency "ridley-connectors"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "shotgun"

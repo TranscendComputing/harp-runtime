@@ -14,6 +14,7 @@ module Harp
       attribute :description
       attribute :live_resource
       attribute :state
+      attribute :type
       
       attribute :name
       attribute :cloud
@@ -22,6 +23,7 @@ module Harp
       attribute :cloud_credential
       attribute :image
       
+      attribute :config
       attribute :packages
       attribute :server_options
 
@@ -36,9 +38,11 @@ module Harp
       end
 
       def create(service)
-        server_options = self.attribs[:attributes][:server_options]
-        assembly = service.servers.create(server_options)
+        atts = self.attribs[:attributes]
+        assembly = service.servers.create(atts[:server_options].symbolize_keys)
+        assembly.wait_for { ready? }
         self.id = assembly.id
+        provision_server(assembly.public_ip_address)
         return self
       end
 
