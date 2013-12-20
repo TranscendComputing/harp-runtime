@@ -38,6 +38,9 @@ module Harp
       
       def provision_server(server_ip)
       end
+      
+      def destroy_provisioner(private_dns_name)
+      end
 
     end
   end

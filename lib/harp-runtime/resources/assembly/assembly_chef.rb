@@ -81,6 +81,32 @@ module Harp
           bootstrap_server(ridley,server_ip,parse_packages)
         end
       end
+      
+      def destroy_provisioner(private_dns_name)
+        defaults = {"winrm" => {"port" => 5985},"ssh" => {"port" => 22}}
+        defaults.merge!(config)
+        ridley = Ridley.new(
+          server_url: defaults['server_url'],
+          client_name: defaults['client_name'],
+          client_key: defaults['client_key'],
+          validator_client: defaults['validator_client'],
+          validator_path: defaults['validator_path'],
+          ssh: {
+            user: defaults['ssh']['user'],
+            password: defaults['ssh']['password'],
+            keys: defaults['ssh']['keys'],
+            port: defaults['ssh']['port'],
+            sudo: defaults['ssh']['sudo']
+          },
+          winrm: {
+            user: defaults['winrm']['user'],
+            password: defaults['winrm']['password'],
+            port: defaults['winrm']['port']
+          }
+        )
+        ridley.node.delete(private_dns_name)
+        ridley.client.delete(private_dns_name)
+      end
 
     end
   end

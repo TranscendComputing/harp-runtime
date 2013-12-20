@@ -48,6 +48,7 @@ module Harp
 
       def destroy(service)
         if id
+          destroy_provisioner(service.servers.get(id).private_dns_name)
           assembly = service.servers.destroy(id)
         else
           puts "No ID set, cannot delete."
