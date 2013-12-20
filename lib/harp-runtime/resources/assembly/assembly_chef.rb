@@ -41,34 +41,8 @@ module Harp
       end
       
       def provision_server(server_ip)
-        defaults = {"winrm" => {"port" => 5985},"ssh" => {"port" => 22}}
-        defaults.merge!(config)
-        ridley = Ridley.new(
-          server_url: defaults['server_url'],
-          client_name: defaults['client_name'],
-          client_key: defaults['client_key'],
-          validator_client: defaults['validator_client'],
-          validator_path: defaults['validator_path'],
-          ssh: {
-            user: defaults['ssh']['user'],
-            password: defaults['ssh']['password'],
-            keys: defaults['ssh']['keys'],
-            port: defaults['ssh']['port'],
-            sudo: defaults['ssh']['sudo']
-          },
-          winrm: {
-            user: defaults['winrm']['user'],
-            password: defaults['winrm']['password'],
-            port: defaults['winrm']['port']
-          }
-        )
+        ridley = init_ridley(config)
         bootstrap_server(ridley,server_ip,parse_packages)
-      end
-      
-      def parse_packages
-        run_list = []
-        packages.each { |p| run_list << p['type'] + "[" + p['name'] +"]"}
-        run_list
       end
       
       def bootstrap_server(ridley,server_ip,parse_packages)
@@ -83,6 +57,18 @@ module Harp
       end
       
       def destroy_provisioner(private_dns_name)
+        ridley = init_ridley(config)
+        ridley.node.delete(private_dns_name)
+        ridley.client.delete(private_dns_name)
+      end
+      
+      def parse_packages
+        run_list = []
+        packages.each { |p| run_list << p['type'] + "[" + p['name'] +"]"}
+        run_list
+      end
+      
+      def init_ridley(config)
         defaults = {"winrm" => {"port" => 5985},"ssh" => {"port" => 22}}
         defaults.merge!(config)
         ridley = Ridley.new(
@@ -104,8 +90,7 @@ module Harp
             port: defaults['winrm']['port']
           }
         )
-        ridley.node.delete(private_dns_name)
-        ridley.client.delete(private_dns_name)
+        return ridley
       end
 
     end
