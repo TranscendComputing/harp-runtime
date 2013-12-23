@@ -33,9 +33,14 @@ engine.consume(template)
 
 def create()
     engine.create("computeInstance1")
+    engine.create("computeInstance2")
+    engine.create("computeInstance3")
+    engine.create("computeInstance1", "service apache2 restart")
 end
 
 def destroy()
+    engine.destroy("computeInstance3")
+    engine.destroy("computeInstance2")
     engine.destroy("computeInstance1")
 end
 

@@ -17,7 +17,7 @@ describe "RootApp" do
     end
   end
 
-  pending "GET /api-docs/" do
+  describe "GET /api-docs/" do
     before :each do
       get "/api-docs/"
     end

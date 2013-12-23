@@ -84,7 +84,7 @@ define([
     },
 
     invokeLifecycle: function(lifecycle, data, args) {
-      //args = args + "&mock=y";
+      args = args + "&mock=y";
       if (lifecycle !== "create") {
           if (!this.harp_id) {
             alert("Harp ID is required for lifecycle '" + lifecycle + "'.");
