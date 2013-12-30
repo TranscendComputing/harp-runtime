@@ -35,7 +35,7 @@ def create()
     engine.create("computeInstance1")
     engine.create("computeInstance2")
     engine.create("computeInstance3")
-    engine.command("computeInstance1", "service apache2 restart")
+    engine.create("computeInstance1", "service apache2 restart")
 end
 
 def destroy()
