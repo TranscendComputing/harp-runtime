@@ -1,5 +1,9 @@
 language: ruby
 bundler_args: --without development
+#cache:
+#  bundler: true
+#  directories:
+#    - node_modules
 rvm:
   - "1.9.2"
   - "1.9.3"
