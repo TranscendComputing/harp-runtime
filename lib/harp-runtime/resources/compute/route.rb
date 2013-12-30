@@ -37,7 +37,7 @@ module Harp
       def create(service)
         create_attribs = self.attribs[:attributes]
         route = service.create_route(create_attribs[:route_table_id],create_attribs[:destination_cidr_block],create_attribs[:internet_gateway_id],create_attribs[:instance_id],create_attribs[:network_interface_id])
-        @id = route.body['requestId']
+        self.id = route.body['requestId']
         return self
       end
 

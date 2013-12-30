@@ -25,7 +25,12 @@ require 'app/editor'
 require 'data_mapper'
 require 'delayed_job_data_mapper'
 
-DataMapper::Logger.new($stdout, :debug)
+if ENV['RACK_ENV'] == 'production'
+  # production config / requires
+  DataMapper::Logger.new($stdout, :info)
+else
+  DataMapper::Logger.new($stdout, :debug)
+end
 DataMapper::Model.raise_on_save_failure = true  # globally across all models
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/dev.db")
 

@@ -30,6 +30,7 @@ require 'harp-runtime/models/compute'
 require 'harp-runtime/models/rds'
 require 'harp-runtime/models/elastic_load_balancing'
 require 'harp-runtime/models/elasticache'
+require 'harp-runtime/models/assembly'
 
 DataMapper.finalize
 DataMapper.auto_migrate!

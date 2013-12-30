@@ -25,6 +25,9 @@ module Harp
 
     # Set to contain all rds resources
     RESOURCES_RDS = Set.new
+    
+    # Set to contain all assembly resources
+    RESOURCES_ASSEMBLY = Set.new
 
     # The set of sets
     RESOURCE_SETS = Set.new
@@ -150,6 +153,7 @@ require "harp-runtime/resources/compute/types"
 require "harp-runtime/resources/elastic_load_balancing/types"
 require "harp-runtime/resources/rds/types"
 require "harp-runtime/resources/elasticache/types"
+require "harp-runtime/resources/assembly/types"
 
 class String
   def underscore
