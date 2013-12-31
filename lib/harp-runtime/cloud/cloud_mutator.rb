@@ -106,13 +106,14 @@ module Harp
       end
 
       def get_output(resource, persisted)
-        resource = Harp::Resources::AvailableResource.from_name resource['type']
-        if resource.nil?
-          @@logger.error "No resource type #{resource_def['type']}"
+        res = Harp::Resources::AvailableResource.from_name resource['type']
+        if res.nil?
+          @@logger.error "No resource type #{resource['type']}"
           return
         end
-        service = establish_connect(resource)
-        output = resource.get_output(service, persisted)
+        res.populate(resource)
+        service = establish_connect(res)
+        output = res.get_output(service, persisted)
       end
 
       def add_all(resources)
