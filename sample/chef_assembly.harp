@@ -1,0 +1,53 @@
+# Create some instances on AWS
+
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "assembly_chef_resource" : {
+          "type" : "Std::AssemblyChef",
+          "server_options" : {
+            "image_id" : "ami-d0f89fb9",
+            "flavor_id" : "t1.micro",
+            "key_name" : "dev-client-ec2",
+            "groups" : ["launch-wizard-2"]
+          },
+          "name" : "ChefAssembly",
+          "image" : "ami-d0f89fb9",
+          "packages" : [
+            {"name" : "apt","type" : "recipe"},
+            {"name" : "apache2","type" : "recipe"}
+          ],
+          "config" : {
+            "server_url" : "https://api.opscode.com/organizations/momentumsidev",
+            "client_name" : "harp-client",
+            "client_key" : "~/chef_keys/harp-client.pem",
+            "validator_client" : "momentumsidev-validator",
+            "validator_path" : "~/chef_keys/momentumsidev-validator.pem",
+            "ssh" : {
+              "user" : "ubuntu",
+              "keys" : ["~/chef_keys/dev-client-ec2.pem"],
+              "port" : 22,
+              "sudo" : true
+            }
+          }
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("assembly_chef_resource")
+end
+
+def destroy()
+    engine.destroy("assembly_chef_resource")
+end
+
+def custom()
+    engine.destroy("assembly_chef_resource")
+end
+
