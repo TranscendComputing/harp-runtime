@@ -42,15 +42,19 @@ module Harp
       
       def provision_server(server_ip)
         ridley = init_ridley(config)
+        @boot_counter = 0
         bootstrap_server(ridley,server_ip,parse_packages)
       end
       
       def bootstrap_server(ridley,server_ip,parse_packages)
+        @boot_counter += 1
+        puts @boot_counter
         begin
           puts "waiting 60 seconds for bootstrap: " + server_ip
           sleep(60)
           ridley.node.bootstrap(server_ip,run_list: parse_packages)
         rescue
+          raise 'Bootstrap timeout error' if @boot_counter > 5
           puts "retrying bootstrap: " + server_ip
           bootstrap_server(ridley,server_ip,parse_packages)
         end

@@ -1,12 +1,13 @@
 require 'set'
 require 'fog/core/model'
 require 'harp-runtime/models/assembly'
+require 'harp-runtime/resources/compute/instance'
 require 'json'
 
 module Harp
   module Resources
 
-    class Assembly < AvailableResource
+    class Assembly < ComputeInstance
 
       include Harp::Resources
 
@@ -54,6 +55,11 @@ module Harp
           puts "No ID set, cannot delete."
         end
         return self
+      end
+      
+      # Return a token to signify output from the current action
+      def output_token(args={})
+        return "#{name}:#{id}"
       end
 
     end
