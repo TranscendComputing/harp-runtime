@@ -61,6 +61,22 @@ module Harp
       def output_token(args={})
         return "#{name}:#{id}"
       end
+      
+      def get_output(service, persisted)
+        output = ""
+        output = get_provisioner_output(service, persisted)
+        response = service.get_console_output(persisted.id)
+        if response.status == 200
+          output += "\nstdout:\n"
+          output += output + response.body['output']
+          # escape special characters to ensure valid JSON.
+          output = output.gsub('"', '\\"')
+          output = output.gsub("\r", '')
+          output = output.gsub("\n", '\\n')
+          output = output.gsub("\e", 'ESC')
+        end
+        output
+      end
 
     end
   end
