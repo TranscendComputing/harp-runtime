@@ -57,7 +57,7 @@ class HarpApiApp < ApiBase
   def handle_error(e, action)
     logger.error("Error running script: #{e}")
     logger.error("Error running script: #{e.backtrace[1..-1].join("\n")}")
-    erb :harp_api_error,  :layout => :layout_api, :locals => {:action => action, :error => "An error occurred."}
+    erb :harp_api_error,  :layout => :layout_api, :locals => {:action => action, :error => e.message.gsub(/\"|\\|\a|\b|\r|\n|\s|\t/, "")}
   end
 
   def run_lifecycle(lifecycle, interpreter, context)
