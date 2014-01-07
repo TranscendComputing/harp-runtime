@@ -21,7 +21,7 @@ shared_context 'when have a harp user' do
   let(:found_user) { @found_user = HarpUser.get(harp_user) }
 
   let(:found_key) {
-    @found_key = Key.all(:name => key.name).first
+    @found_key = Key.get_by_name(key.name)
     temp_file = @found_key.temp_file
     @found_value = temp_file.open.read
     temp_file.close

@@ -15,7 +15,7 @@ class Key
   include DataMapper::Resource
   property :id, Serial
   property :name, String, :key => true
-  property :value, String
+  property :value, Text
 
   has n, :harp_users, :through => Resource
 
@@ -24,5 +24,8 @@ class Key
     t << value
     t.close
     t
+  end
+  def self.get_by_name(key_name)
+    Key.all(:name => key_name).first
   end
 end
