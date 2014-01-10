@@ -102,6 +102,8 @@ define([
       if (!this.spinner) {
           spin_target = document.getElementById("working");
           this.spinner = new Spinner(this.spinner_opts).spin(spin_target);
+      }else{
+          this.spinner.spin(document.getElementById("working"));
       }
 
       $.ajax({

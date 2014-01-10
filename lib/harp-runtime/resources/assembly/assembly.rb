@@ -1,6 +1,7 @@
 require 'set'
 require 'fog/core/model'
 require 'harp-runtime/models/assembly'
+require 'harp-runtime/models/user_data'
 require 'harp-runtime/resources/compute/instance'
 require 'json'
 
@@ -16,14 +17,14 @@ module Harp
       attribute :live_resource
       attribute :state
       attribute :type
-      
+
       attribute :name
       attribute :cloud
       attribute :configurations
       attribute :tool
       attribute :cloud_credential
       attribute :image
-      
+
       attribute :config
       attribute :packages
       attribute :server_options
@@ -39,11 +40,12 @@ module Harp
       end
 
       def create(service)
+        provisioner = init_provisioner
         atts = self.attribs[:attributes]
         assembly = service.servers.create(atts[:server_options].symbolize_keys)
         assembly.wait_for { ready? }
         self.id = assembly.id
-        provision_server(assembly.public_ip_address)
+        provision_server(assembly.public_ip_address,provisioner)
         return self
       end
 
@@ -56,12 +58,12 @@ module Harp
         end
         return self
       end
-      
+
       # Return a token to signify output from the current action
       def output_token(args={})
         return "#{name}:#{id}"
       end
-      
+
       def get_output(service, persisted)
         output = ""
         output = get_provisioner_output(service, persisted)

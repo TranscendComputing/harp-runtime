@@ -22,12 +22,12 @@ template = <<END
           "config" : {
             "server_url" : "https://api.opscode.com/organizations/momentumsidev",
             "client_name" : "harp-client",
-            "client_key" : "~/chef_keys/harp-client.pem",
+            "client_key" : "harp-client",
             "validator_client" : "momentumsidev-validator",
-            "validator_path" : "~/chef_keys/momentumsidev-validator.pem",
+            "validator_path" : "momentumsidev-validator",
             "ssh" : {
               "user" : "ubuntu",
-              "keys" : ["~/chef_keys/dev-client-ec2.pem"],
+              "keys" : ["dev-client-ec2"],
               "port" : 22,
               "sudo" : true
             }
