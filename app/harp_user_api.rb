@@ -11,5 +11,9 @@ class HarpUserApiApp < Sinatra::Base
   get '/key/:key_name' do
     Key.get_by_name(params[:key_name]).to_json
   end
+  
+  get '/puppet-emc/:master_ip' do
+    PuppetENC.find(params[:master_ip]).first.attributes[:yaml]
+  end
 
 end

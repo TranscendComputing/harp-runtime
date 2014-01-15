@@ -13,7 +13,7 @@ server_options = {
 assembly_chef_resource = {
   "type" => "Std::AssemblyChef",
   "server_options" => server_options,
-  
+
   "name" => "ChefAssembly",
   "image" => "ami-d0f89fb9",
   "packages" => [
@@ -38,19 +38,22 @@ assembly_chef_resource = {
 assembly_puppet_resource = {
   "type" => "Std::AssemblyPuppet",
   "server_options" => server_options,
-  
+
   "name" => "PuppetAssembly",
   "image" => "ami-d0f89fb9",
   "packages" => [
     {"name" => "transcend_nexus","type" => "class"},
     {"name" => "transcend_sonar","type" => "class"}
-  ]
+  ],
+  "config" => {
+    "server_url" => "54.205.121.185"
+  }
 }
 
 assembly_salt_resource = {
   "type" => "Std::AssemblySalt",
   "server_options" => server_options,
-  
+
   "name" => "SaltAssembly",
   "image" => "ami-d0f89fb9",
   "packages" => [

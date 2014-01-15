@@ -40,6 +40,7 @@ module Harp
       end
 
       def create(service)
+        @service = service
         provisioner = init_provisioner
         atts = self.attribs[:attributes]
         assembly = service.servers.create(atts[:server_options].symbolize_keys)

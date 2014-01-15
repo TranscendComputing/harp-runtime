@@ -29,3 +29,9 @@ class Key
     Key.all(:name => key_name).first
   end
 end
+
+class PuppetENC
+  include DataMapper::Resource
+  property :master_ip, String, :key => true
+  property :yaml, Text
+end

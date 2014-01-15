@@ -16,14 +16,15 @@ module Harp
       attribute :live_resource
       attribute :state
       attribute :type
-      
+
       attribute :name
       attribute :cloud
       attribute :configurations
       attribute :tool
       attribute :cloud_credential
       attribute :image
-      
+
+      attribute :config
       attribute :packages
       attribute :server_options
 
@@ -35,11 +36,43 @@ module Harp
       def self.persistent_type()
         ::AssemblyPuppet
       end
-      
-      def provision_server(server_ip)
+
+      def init_provisioner
+        bootstrap_file  = File.open(File.expand_path("../puppet-bootstrap/ubuntu.sh", __FILE__)).read
+        user_data = ""
+        line_num=0
+        bootstrap_file.each_line do |line|
+          if line_num == 0
+            user_data << line
+            line_num += 1
+            user_data << "puppet_master_ip=" + config["server_url"]
+            line_num += 1
+          else
+            user_data << line
+            line_num += 1
+          end
+        end
+        server_options["user_data"] = user_data
       end
-      
+
+      def provision_server(server_ip,provisioner)
+        PuppetENC.first_or_create(:master_ip=>config["server_url"]).update(:master_ip=>config["server_url"],:yaml=>parse_packages)
+      end
+
+      def bootstrap_server(provisioner,server_ip,parse_packages)
+      end
+
       def destroy_provisioner(private_dns_name)
+      end
+
+      def parse_packages
+        classes_list = {}
+        packages.each { |p| classes_list[p['name']] = nil}
+        yaml_hash = {"classes"=>classes_list}
+        yaml_hash.to_yaml
+      end
+
+      def get_provisioner_output(service, persisted)
       end
 
     end
