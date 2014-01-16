@@ -56,7 +56,8 @@ module Harp
       end
 
       def provision_server(server_ip,provisioner)
-        PuppetENC.first_or_create(:master_ip=>config["server_url"]).update(:master_ip=>config["server_url"],:yaml=>parse_packages)
+        internal_dns = @service.servers.get(id).private_dns_name
+        PuppetENC.first_or_create(:master_ip=>internal_dns).update(:master_ip=>internal_dns,:yaml=>parse_packages)
       end
 
       def bootstrap_server(provisioner,server_ip,parse_packages)
