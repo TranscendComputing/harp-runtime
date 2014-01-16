@@ -1,0 +1,2 @@
+#!/bin/bash
+curl http://harp-dev-69587.use1.nitrousbox.com:9393/api/v1/user/puppet-emc/$1
