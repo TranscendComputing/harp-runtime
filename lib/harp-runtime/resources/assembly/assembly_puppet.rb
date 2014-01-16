@@ -67,8 +67,8 @@ module Harp
       end
 
       def parse_packages
-        classes_list = {}
-        packages.each { |p| classes_list[p['name']] = nil}
+        classes_list = []
+        packages.each { |p| classes_list << p['name']}
         yaml_hash = {"classes"=>classes_list}
         yaml_hash.to_yaml
       end
