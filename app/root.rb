@@ -36,6 +36,7 @@ class RootApp < Sinatra::Base
   end
 
   get '/' do
+    @require_main = "welcome"
     erb :welcome
   end
 

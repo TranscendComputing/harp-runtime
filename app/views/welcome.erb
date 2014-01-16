@@ -1,14 +1,18 @@
-
+<div id="welcome">
 <div class="row">
-    <div class="col-lg-12">
+  <div class="col-lg-12">
 
-		<div class="jumbotron">
-			<h1>Harp Runtime UI</h1>
-			<p>The Harp Runtime provides an execution environment to develop and invoke Harp scripts.</p>
-			<p><a href="/edit" class="btn btn-primary btn-lg">Edit a Sample</a></p>
-		</div>
+    <div class="jumbotron">
+      <h1>Harp Runtime UI</h1>
+      <p>The Harp Runtime provides an execution environment to develop and invoke Harp scripts.</p>
+      <p>
+        <button id="go_edit" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#loadHarp">
+          Edit a Sample
+        </button>
+      </p>
+    </div>
 
-	</div>
+  </div>
 </div>
 
 <div class="row">
@@ -46,4 +50,35 @@
       </ul>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="loadHarp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Choose a Harp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row form-row">
+          <div class="col-lg-12">
+            <form class="form" role="form">
+              <select id="sample_files" multiple size="10" class="form-control">
+              </select>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+          <input type="file" class="filestyle" data-classButton="btn btn-primary" data-input="false">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Load File</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </div>

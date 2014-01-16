@@ -9,6 +9,8 @@ class ComputeInstance < HarpResource
   property :private_ip_address, String
 end
 
+# An ElasticIP is the datastore representation of an IP that may be
+# associated with compute instances.
 class ElasticIP < HarpResource
   property :public_ip_address, String
 end
