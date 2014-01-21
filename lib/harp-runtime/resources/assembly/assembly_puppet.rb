@@ -74,6 +74,14 @@ module Harp
       end
 
       def get_provisioner_output(service, persisted)
+        server = service.servers.get(persisted.id)
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        output = "puppet: \n"
+        output += server.ssh(['sudo cat /var/log/syslog'])[0].stdout
+        @ssh_key.unlink
+        output
       end
 
     end

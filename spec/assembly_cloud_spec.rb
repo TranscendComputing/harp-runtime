@@ -42,11 +42,15 @@ assembly_puppet_resource = {
   "name" => "PuppetAssembly",
   "image" => "ami-d0f89fb9",
   "packages" => [
-    {"name" => "transcend_nexus","type" => "class"},
-    {"name" => "transcend_sonar","type" => "class"}
+    {"name" => "apache","type" => "class"},
+    {"name" => "ntp","type" => "class"}
   ],
   "config" => {
-    "server_url" => "54.205.121.185"
+    "server_url" => "54.205.121.185",
+    "ssh" => {
+      "user" => "ubuntu",
+      "keys" => ["dev-client-ec2"]
+    }
   }
 }
 
@@ -64,12 +68,27 @@ assembly_salt_resource = {
 }
 
 shared_context 'when have an assembly' do
+  let(:mutator_assembly) {
+    cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../config/settings.yaml'))
+    Key.first_or_create(:name=>'dev-client-ec2').update(:value=>cnf['default_creds']['dev-client-ec2'])
+    Key.first_or_create(:name=>'harp-client').update(:value=>cnf['default_creds']['harp-client'])
+    Key.first_or_create(:name=>'momentumsidev-validator').update(:value=>cnf['default_creds']['momentumsidev-validator'])
+    PuppetENC.first_or_create(:master_ip=>"www.momentumsi.com").update(:yaml=>nil)
+    interpreter_context = {}
+    interpreter_context[:cloud_type] = :aws # for the moment, assume AWS cloud
+    interpreter_context[:debug] = true
+    interpreter_context[:access] = cnf['default_creds']['access']
+    interpreter_context[:secret] = cnf['default_creds']['secret']
+    interpreter_context[:harp_script] = FactoryGirl.create(:harp_script)
+    interpreter_context
+    Harp::Cloud::CloudMutator.new(interpreter_context)
+  }
   let(:assembly_chef) do
     @new_assembly_chef = mutator.create("ChefAssembly", assembly_chef_resource)
     @new_assembly_chef.instance_variable_get(:@id)
   end
   let(:assembly_puppet) do
-    @new_assembly_puppet = mutator.create("PuppetAssembly", assembly_puppet_resource)
+    @new_assembly_puppet = mutator_assembly.create("PuppetAssembly", assembly_puppet_resource)
     @new_assembly_puppet.instance_variable_get(:@id)
   end
   let(:assembly_salt) do

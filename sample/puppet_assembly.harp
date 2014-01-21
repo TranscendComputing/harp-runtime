@@ -23,7 +23,7 @@ template = <<END
             "server_url" : "54.205.121.185",
             "ssh" : {
               "user" : "ubuntu",
-              "key" : "dev-client-ec2"
+              "keys" : ["dev-client-ec2"]
             }
           }
         }
