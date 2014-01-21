@@ -30,11 +30,14 @@ module Harp
       attribute :config
       attribute :packages
       attribute :server_options
+      
+      attribute :private_ip_address,       :aliases => 'privateIpAddress'
+      attribute :public_ip_address,        :aliases => 'ipAddress'
 
       register_resource :assembly_chef, RESOURCES_ASSEMBLY
 
       # Only keeping a few properties, simplest define keeps.
-      @keeps = /^id$/
+      @keeps = /^id$|^.*_ip_address/
 
       def self.persistent_type()
         ::AssemblyChef

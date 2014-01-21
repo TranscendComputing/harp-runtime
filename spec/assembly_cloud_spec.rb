@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 require "rubygems"
 require "harp_runtime"
 require "harp-runtime/cloud/cloud_mutator"
+require "httparty"
 
 server_options = {
   "image_id" => "ami-d0f89fb9",
@@ -70,9 +71,9 @@ assembly_salt_resource = {
 shared_context 'when have an assembly' do
   let(:mutator_assembly) {
     cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../config/settings.yaml'))
-    Key.first_or_create(:name=>'dev-client-ec2').update(:value=>cnf['default_creds']['dev-client-ec2'])
-    Key.first_or_create(:name=>'harp-client').update(:value=>cnf['default_creds']['harp-client'])
-    Key.first_or_create(:name=>'momentumsidev-validator').update(:value=>cnf['default_creds']['momentumsidev-validator'])
+    FactoryGirl.create(:key, name: "dev-client-ec2", value: cnf['default_creds']['dev-client-ec2'])
+    FactoryGirl.create(:key, name: "harp-client", value: cnf['default_creds']['harp-client'])
+    FactoryGirl.create(:key, name: "momentumsidev-validator", value: cnf['default_creds']['momentumsidev-validator'])
     PuppetENC.first_or_create(:master_ip=>"www.momentumsi.com").update(:yaml=>nil)
     interpreter_context = {}
     interpreter_context[:cloud_type] = :aws # for the moment, assume AWS cloud
@@ -84,7 +85,7 @@ shared_context 'when have an assembly' do
     Harp::Cloud::CloudMutator.new(interpreter_context)
   }
   let(:assembly_chef) do
-    @new_assembly_chef = mutator.create("ChefAssembly", assembly_chef_resource)
+    @new_assembly_chef = mutator_assembly.create("ChefAssembly", assembly_chef_resource)
     @new_assembly_chef.instance_variable_get(:@id)
   end
   let(:assembly_puppet) do
@@ -92,7 +93,7 @@ shared_context 'when have an assembly' do
     @new_assembly_puppet.instance_variable_get(:@id)
   end
   let(:assembly_salt) do
-    @new_assembly_salt = mutator.create("SaltAssembly", assembly_salt_resource)
+    @new_assembly_salt = mutator_assembly.create("SaltAssembly", assembly_salt_resource)
     @new_assembly_salt.instance_variable_get(:@id)
   end
 end
@@ -104,6 +105,8 @@ describe Harp::Cloud::CloudMutator, "#create" do
     pending "pending due to need of live instance"
     assembly_chef
     verify_created(@new_assembly_chef, "ChefAssembly", AssemblyChef)
+    expect(HTTParty.get("http://#{@new_assembly_chef.public_ip_address}").code).to eq(200)
+    mutator_assembly.destroy("ChefAssembly", assembly_chef_resource)
   end
   it "creates an assembly_puppet" do
     pending "pending due to need of live instance"

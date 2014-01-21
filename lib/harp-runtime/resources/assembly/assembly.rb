@@ -47,7 +47,7 @@ module Harp
         assembly.wait_for { ready? }
         self.id = assembly.id
         provision_server(assembly.public_ip_address,provisioner)
-        return self
+        return assembly
       end
 
       def destroy(service)

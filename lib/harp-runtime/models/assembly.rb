@@ -6,6 +6,8 @@ class Assembly < HarpResource
 end
 
 class AssemblyChef < HarpResource
+  property :public_ip_address, String
+  property :private_ip_address, String
 end
 
 class AssemblyPuppet < HarpResource

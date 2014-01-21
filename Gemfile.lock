@@ -8,7 +8,9 @@ PATH
       dm-mysql-adapter
       dm-sqlite-adapter
       extlib
+      faraday (= 0.8.9)
       fog
+      httparty
       json
       logging
       net-ssh
@@ -136,8 +138,8 @@ GEM
     extlib (0.9.16)
     factory_girl (4.3.0)
       activesupport (>= 3.0.0)
-    faraday (0.8.8)
-      multipart-post (>= 1.2, < 3)
+    faraday (0.8.9)
+      multipart-post (~> 1.2.0)
     fastercsv (1.5.5)
     ffi (1.9.3)
     flay (2.4.0)
@@ -163,6 +165,9 @@ GEM
     gyoku (1.1.1)
       builder (>= 2.1.2)
     hashie (2.0.5)
+    httparty (0.12.0)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
     httpclient (2.3.4.1)
     httpi (0.9.7)
       rack
@@ -184,7 +189,8 @@ GEM
       mixlib-log
     mixlib-log (1.6.0)
     multi_json (1.8.4)
-    multipart-post (2.0.0)
+    multi_xml (0.5.5)
+    multipart-post (1.2.0)
     net-http-persistent (2.9)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
