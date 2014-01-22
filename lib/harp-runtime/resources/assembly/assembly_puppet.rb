@@ -27,11 +27,14 @@ module Harp
       attribute :config
       attribute :packages
       attribute :server_options
+      
+      attribute :private_ip_address,      :aliases => 'privateIpAddress'
+      attribute :public_ip_address,       :aliases => 'ipAddress'
 
       register_resource :assembly_puppet, RESOURCES_ASSEMBLY
 
       # Only keeping a few properties, simplest define keeps.
-      @keeps = /^id$/
+      @keeps = /^id$|^.*_ip_address/
 
       def self.persistent_type()
         ::AssemblyPuppet
@@ -72,21 +75,26 @@ module Harp
         server.username = config["ssh"]["user"]
         @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
         server.private_key_path = @ssh_key.path
-        begin
-          bootstrap(server)
-        rescue
-          sleep(20)
-          bootstrap(server)
-        end
+        @boot_counter = 0
+        bootstrap(server)
         @ssh_key.unlink
       end
       
       def bootstrap(server)
-        server.ssh(["sudo apt-get update && apt-get -y upgrade"])[0].stdout
-        server.ssh(["sudo aptitude -y install puppet"])[0].stdout
-        server.ssh(["sudo sed -i /etc/default/puppet -e 's/START=no/START=yes/'"])[0].stdout
-        server.ssh(["sudo sed -i -e '/\[main\]/{:a;n;/^$/!ba;i\pluginsync=true' -e '}' /etc/puppet/puppet.conf"])[0].stdout
-        server.ssh(["sudo service puppet restart"])[0].stdout
+        @boot_counter += 1
+        begin
+          puts "waiting 30 seconds for bootstrap..."
+          sleep(30)
+          puts server.ssh(["sudo apt-get update && apt-get -y upgrade"])[0].stdout
+          puts server.ssh(["sudo aptitude -y install puppet"])[0].stdout
+          puts server.ssh(["sudo sed -i /etc/default/puppet -e 's/START=no/START=yes/'"])[0].stdout
+          puts server.ssh(["sudo sed -i -e '/\[main\]/{:a;n;/^$/!ba;i\pluginsync=true' -e '}' /etc/puppet/puppet.conf"])[0].stdout
+          puts server.ssh(["sudo service puppet restart"])[0].stdout
+        rescue
+          raise 'Bootstrap timeout error' if @boot_counter > 15
+          puts "retrying bootstrap: "
+          bootstrap(server)
+        end
       end
 
       def destroy_provisioner(private_dns_name)

@@ -112,6 +112,13 @@ describe Harp::Cloud::CloudMutator, "#create" do
     pending "pending due to need of live instance"
     assembly_puppet
     verify_created(@new_assembly_puppet, "PuppetAssembly", AssemblyPuppet)
+    begin
+      sleep(60)
+      expect(HTTParty.get("http://#{@new_assembly_puppet.public_ip_address}").code).to eq(200)
+    rescue
+      sleep(60)
+      expect(HTTParty.get("http://#{@new_assembly_puppet.public_ip_address}").code).to eq(200)
+    end
     mutator_assembly.destroy("PuppetAssembly", assembly_puppet_resource)
   end
   it "creates an assembly_salt" do
