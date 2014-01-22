@@ -28,6 +28,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "rgl"
   gem.add_runtime_dependency "json"
   gem.add_runtime_dependency "extlib"
+  gem.add_runtime_dependency "dm-mysql-adapter"
   gem.add_runtime_dependency "dm-sqlite-adapter"
   gem.add_runtime_dependency "net-ssh"
   gem.add_runtime_dependency "puma"
