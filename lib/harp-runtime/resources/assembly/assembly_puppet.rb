@@ -64,9 +64,29 @@ module Harp
         server.private_key_path = @ssh_key.path
         server.ssh(['echo "'+parse_packages+'" > /usr/local/bin/puppet_node_classifiers/'+@service.servers.get(id).private_dns_name.downcase])[0].stdout
         @ssh_key.unlink
+        bootstrap_server
       end
 
-      def bootstrap_server(provisioner,server_ip,parse_packages)
+      def bootstrap_server
+        server = @service.servers.get(id)
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        begin
+          bootstrap(server)
+        rescue
+          sleep(20)
+          bootstrap(server)
+        end
+        @ssh_key.unlink
+      end
+      
+      def bootstrap(server)
+        server.ssh(["sudo apt-get update && apt-get -y upgrade"])[0].stdout
+        server.ssh(["sudo aptitude -y install puppet"])[0].stdout
+        server.ssh(["sudo sed -i /etc/default/puppet -e 's/START=no/START=yes/'"])[0].stdout
+        server.ssh(["sudo sed -i -e '/\[main\]/{:a;n;/^$/!ba;i\pluginsync=true' -e '}' /etc/puppet/puppet.conf"])[0].stdout
+        server.ssh(["sudo service puppet restart"])[0].stdout
       end
 
       def destroy_provisioner(private_dns_name)

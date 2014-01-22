@@ -109,10 +109,10 @@ describe Harp::Cloud::CloudMutator, "#create" do
     mutator_assembly.destroy("ChefAssembly", assembly_chef_resource)
   end
   it "creates an assembly_puppet" do
-    #pending "pending due to need of live instance"
+    pending "pending due to need of live instance"
     assembly_puppet
     verify_created(@new_assembly_puppet, "PuppetAssembly", AssemblyPuppet)
-    #mutator_assembly.destroy("PuppetAssembly", assembly_puppet_resource)
+    mutator_assembly.destroy("PuppetAssembly", assembly_puppet_resource)
   end
   it "creates an assembly_salt" do
     pending "pending due to need of live instance"
