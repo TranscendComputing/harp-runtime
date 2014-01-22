@@ -56,8 +56,14 @@ module Harp
       end
 
       def provision_server(server_ip,provisioner)
-        internal_dns = @service.servers.get(id).private_dns_name
-        PuppetENC.first_or_create(:master_ip=>internal_dns).update(:master_ip=>internal_dns,:yaml=>parse_packages)
+        # internal_dns = @service.servers.get(id).private_dns_name
+#         PuppetENC.first_or_create(:master_ip=>internal_dns).update(:master_ip=>internal_dns,:yaml=>parse_packages)
+        server = @service.servers.find{|i| i.public_ip_address == config['server_url'] || i.dns_name == config['server_url']}
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        server.ssh(['echo "'+parse_packages+'" > /usr/local/bin/puppet_node_classifiers/'+@service.servers.get(id).private_dns_name.downcase])[0].stdout
+        @ssh_key.unlink
       end
 
       def bootstrap_server(provisioner,server_ip,parse_packages)
