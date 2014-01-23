@@ -45,7 +45,7 @@ begin
       require 'flog_cli'
       desc "Analyze total code complexity with flog"
       task :total do
-        threshold = 10
+        threshold = 20
         flog = FlogCLI.new
         flog.flog %w(app lib spec)
         average = flog.average.round(1)
