@@ -62,10 +62,14 @@ assembly_salt_resource = {
   "name" => "SaltAssembly",
   "image" => "ami-d0f89fb9",
   "packages" => [
-    {"name" => "activemq","type" => "recipe","version" => "1.0.0"},
-    {"name" => "apparmor","type" => "recipe","version" => "0.9.0"},
-    {"name" => "apt",     "type" => "recipe","version" => "1.1.2"}
-  ]
+    {"name" => "apache2"}
+  ],
+  "config" => {
+    "ssh" => {
+      "user" => "ubuntu",
+      "keys" => ["dev-client-ec2"]
+    }
+  }
 }
 
 shared_context 'when have an assembly' do
@@ -125,5 +129,13 @@ describe Harp::Cloud::CloudMutator, "#create" do
     pending "pending due to need of live instance"
     assembly_salt
     verify_created(@new_assembly_salt, "SaltAssembly", AssemblySalt)
+    # begin
+#       sleep(60)
+#       expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
+#     rescue
+#       sleep(60)
+#       expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
+#     end
+#     mutator_assembly.destroy("SaltAssembly", assembly_salt_resource)
   end
 end
