@@ -35,6 +35,9 @@ With Node.JS installed, pull down the client packages as follows:
 ```
 npm install -g jamjs
 jam install
+npm install -g bower
+npm install http-browserify
+bower install
 ```
 
 For local testing, you can invoke the app with Shotgun.
