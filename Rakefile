@@ -35,6 +35,21 @@ task :jslint do
   end
 end
 
+namespace :db do
+  require "data_mapper"
+  require 'harp-runtime/models/user_data'
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/dev.db")
+  DataMapper.finalize
+  DataMapper.auto_upgrade!
+  
+  desc "Seed the database with configuration settings."
+  task :seed do
+    cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), 'config/settings.yaml'))
+    cnf['default_creds']['keys'].each{|k| Key.first_or_create(:name=>k['name']).update(:value=>k['private_key']) }
+    puts "Seeded Keys..."
+  end
+end
+
 begin
   namespace :analyzer do
     desc "run all code analyzing tools (flog)"

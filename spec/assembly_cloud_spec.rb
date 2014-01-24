@@ -75,9 +75,12 @@ assembly_salt_resource = {
 shared_context 'when have an assembly' do
   let(:mutator_assembly) {
     cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../config/settings.yaml'))
-    FactoryGirl.create(:key, name: "dev-client-ec2", value: cnf['default_creds']['dev-client-ec2'])
-    FactoryGirl.create(:key, name: "harp-client", value: cnf['default_creds']['harp-client'])
-    FactoryGirl.create(:key, name: "momentumsidev-validator", value: cnf['default_creds']['momentumsidev-validator'])
+    cnf['dev-client-ec2']             = cnf['default_creds']['keys'].select {|k| k['name'] ==  'dev-client-ec2'}[0]['private_key']
+    cnf['harp-client']                = cnf['default_creds']['keys'].select {|k| k['name'] ==  'harp-client'}[0]['private_key']
+    cnf['momentumsidev-validator']    = cnf['default_creds']['keys'].select {|k| k['name'] ==  'momentumsidev-validator'}[0]['private_key']
+    FactoryGirl.create(:key, name: "dev-client-ec2", value: cnf['dev-client-ec2'])
+    FactoryGirl.create(:key, name: "harp-client", value: cnf['harp-client'])
+    FactoryGirl.create(:key, name: "momentumsidev-validator", value: cnf['momentumsidev-validator'])
     PuppetENC.first_or_create(:master_ip=>"www.momentumsi.com").update(:yaml=>nil)
     interpreter_context = {}
     interpreter_context[:cloud_type] = :aws # for the moment, assume AWS cloud
