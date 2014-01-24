@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
-puts `rdoc -o public/doc`
+puts `rdoc -o public/doc -x node_modules -x bower_components -x public/vendor -x spec`
 `cp -r public/doc/* public/docs`
 puts `bundle exec source2swagger -c "##~" -o public/docs -f config.ru`
 puts `bundle exec source2swagger -c "##~" -o public/docs -i app -e "rb"`
