@@ -129,13 +129,13 @@ describe Harp::Cloud::CloudMutator, "#create" do
     pending "pending due to need of live instance"
     assembly_salt
     verify_created(@new_assembly_salt, "SaltAssembly", AssemblySalt)
-    # begin
-#       sleep(60)
-#       expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
-#     rescue
-#       sleep(60)
-#       expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
-#     end
-#     mutator_assembly.destroy("SaltAssembly", assembly_salt_resource)
+    begin
+      sleep(60)
+      expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
+    rescue
+      sleep(60)
+      expect(HTTParty.get("http://#{@new_assembly_salt.public_ip_address}").code).to eq(200)
+    end
+    mutator_assembly.destroy("SaltAssembly", assembly_salt_resource)
   end
 end

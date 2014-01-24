@@ -16,4 +16,6 @@ class AssemblyPuppet < HarpResource
 end
 
 class AssemblySalt < HarpResource
+  property :public_ip_address, String
+  property :private_ip_address, String
 end
