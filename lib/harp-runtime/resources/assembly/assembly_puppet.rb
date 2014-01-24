@@ -16,30 +16,106 @@ module Harp
       attribute :live_resource
       attribute :state
       attribute :type
-      
+
       attribute :name
       attribute :cloud
       attribute :configurations
       attribute :tool
       attribute :cloud_credential
       attribute :image
-      
+
+      attribute :config
       attribute :packages
       attribute :server_options
+      
+      attribute :private_ip_address,      :aliases => 'privateIpAddress'
+      attribute :public_ip_address,       :aliases => 'ipAddress'
 
       register_resource :assembly_puppet, RESOURCES_ASSEMBLY
 
       # Only keeping a few properties, simplest define keeps.
-      @keeps = /^id$/
+      @keeps = /^id$|^.*_ip_address/
 
       def self.persistent_type()
         ::AssemblyPuppet
       end
-      
-      def provision_server(server_ip)
+
+      def init_provisioner
+        bootstrap_file  = File.open(File.expand_path("../puppet-bootstrap/ubuntu.sh", __FILE__)).read
+        user_data = ""
+        line_num=0
+        bootstrap_file.each_line do |line|
+          if line_num == 0
+            user_data << line
+            line_num += 1
+            user_data << "puppet_master_ip=" + config["server_url"]
+            line_num += 1
+          else
+            user_data << line
+            line_num += 1
+          end
+        end
+        server_options["user_data"] = user_data
+      end
+
+      def provision_server(server_ip,provisioner)
+        # internal_dns = @service.servers.get(id).private_dns_name
+#         PuppetENC.first_or_create(:master_ip=>internal_dns).update(:master_ip=>internal_dns,:yaml=>parse_packages)
+        server = @service.servers.find{|i| i.public_ip_address == config['server_url'] || i.dns_name == config['server_url']}
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        server.ssh(['echo "'+parse_packages+'" > /usr/local/bin/puppet_node_classifiers/'+@service.servers.get(id).private_dns_name.downcase])[0].stdout
+        @ssh_key.unlink
+        bootstrap_server
+      end
+
+      def bootstrap_server
+        server = @service.servers.get(id)
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        @boot_counter = 0
+        bootstrap(server)
+        @ssh_key.unlink
       end
       
+      def bootstrap(server)
+        @boot_counter += 1
+        begin
+          puts "waiting 30 seconds for bootstrap..."
+          sleep(30)
+          puts server.ssh(["sudo apt-get update && apt-get -y upgrade"])[0].stdout
+          puts server.ssh(["sudo aptitude -y install puppet"])[0].stdout
+          puts server.ssh(["sudo sed -i /etc/default/puppet -e 's/START=no/START=yes/'"])[0].stdout
+          puts server.ssh(["sudo sed -i -e '/\[main\]/{:a;n;/^$/!ba;i\pluginsync=true' -e '}' /etc/puppet/puppet.conf"])[0].stdout
+          puts server.ssh(["sudo service puppet restart"])[0].stdout
+        rescue
+          raise 'Bootstrap timeout error' if @boot_counter > 15
+          puts "retrying bootstrap: "
+          bootstrap(server)
+        end
+      end
+
       def destroy_provisioner(private_dns_name)
+      end
+
+      def parse_packages
+        classes_list = []
+        packages.each { |p| classes_list << p['name']}
+        yaml_hash = {"classes"=>classes_list}
+        yaml_hash.to_yaml
+      end
+
+      def get_provisioner_output(service, persisted)
+        server = service.servers.get(persisted.id)
+        server.username = config["ssh"]["user"]
+        @ssh_key = Key.get_by_name(config['ssh']['keys'][0]).temp_file
+        server.private_key_path = @ssh_key.path
+        output = "puppet: \n"
+        output += server.ssh(['sudo cat /var/log/syslog'])[0].stdout
+        @ssh_key.unlink
+        output
       end
 
     end

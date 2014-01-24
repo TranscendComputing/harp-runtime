@@ -1,6 +1,8 @@
 require 'set'
 require 'fog/core/model'
 require 'harp-runtime/models/assembly'
+require 'harp-runtime/models/user_data'
+require 'harp-runtime/resources/compute/instance'
 require 'json'
 
 module Harp
@@ -9,7 +11,7 @@ module Harp
     # An Assembly is an operating system image combined with some bootstrapped
     # configuration.  For example, an Ubuntu image with a Chef client and an
     # initial Chef role can be saved as an assembly.
-    class Assembly < AvailableResource
+    class Assembly < ComputeInstance
 
       include Harp::Resources
 
@@ -41,12 +43,14 @@ module Harp
       end
 
       def create(service)
+        @service = service
+        provisioner = init_provisioner
         atts = self.attribs[:attributes]
         assembly = service.servers.create(atts[:server_options].symbolize_keys)
         assembly.wait_for { ready? }
         self.id = assembly.id
-        provision_server(assembly.public_ip_address)
-        return self
+        provision_server(assembly.public_ip_address,provisioner)
+        return assembly
       end
 
       def destroy(service)
@@ -57,6 +61,27 @@ module Harp
           puts "No ID set, cannot delete."
         end
         return self
+      end
+
+      # Return a token to signify output from the current action
+      def output_token(args={})
+        return "#{name}:#{id}"
+      end
+
+      def get_output(service, persisted)
+        output = ""
+        output = get_provisioner_output(service, persisted)
+        response = service.get_console_output(persisted.id)
+        if response.status == 200
+          output += "\nstdout:\n"
+          output += response.body['output'] if !response.body['output'].nil?
+          # escape special characters to ensure valid JSON.
+          output = output.gsub('"', '\\"')
+          output = output.gsub("\r", '')
+          output = output.gsub("\n", '\\n')
+          output = output.gsub("\e", 'ESC')
+        end
+        output
       end
 
     end
