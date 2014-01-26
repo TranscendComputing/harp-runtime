@@ -93,3 +93,11 @@ The Harp runtime uses DataMapper for persistence; the default development engine
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## What We're Doing
+
+You can follow along as we build out and improve this project with our collaborative viewer.
+
+[![Watch Us Code](https://floobits.com/huxoll/harp-runtime.png)][floobits]
+[floobits]: https://floobits.com/huxoll/harp-runtime/redirect
+

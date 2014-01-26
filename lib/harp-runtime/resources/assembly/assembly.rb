@@ -8,6 +8,9 @@ require 'json'
 module Harp
   module Resources
 
+    # An Assembly is an operating system image combined with some bootstrapped
+    # configuration.  For example, an Ubuntu image with a Chef client and an
+    # initial Chef role can be saved as an assembly.
     class Assembly < ComputeInstance
 
       include Harp::Resources
