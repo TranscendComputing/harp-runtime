@@ -1,0 +1,70 @@
+# Create some instances on AWS
+
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "assembly_puppet_resource" : {
+          "type" : "Std::AssemblyPuppet",
+          "server_options" : {
+            "image_id" : "ami-d0f89fb9",
+            "flavor_id" : "t1.micro",
+            "key_name" : "dev-client-ec2",
+            "groups" : ["launch-wizard-2"]
+          },
+          "name" : "PuppetAssembly",
+          "image" : "ami-d0f89fb9",
+          "packages" : [
+            {"name" : "apache","type" : "class"},
+            {"name" : "ntp","type" : "class"}
+          ],
+          "config" : {
+            "server_url" : "54.205.121.185",
+            "ssh" : {
+              "user" : "ubuntu",
+              "keys" : ["dev-client-ec2"]
+            }
+          }
+        },
+        "assembly_salt_resource" : {
+          "type" : "Std::AssemblySalt",
+          "server_options" : {
+            "image_id" : "ami-d0f89fb9",
+            "flavor_id" : "t1.micro",
+            "key_name" : "dev-client-ec2",
+            "groups" : ["launch-wizard-2"]
+          },
+          "name" : "SaltAssembly",
+          "image" : "ami-d0f89fb9",
+          "packages" : [
+            {"name" : "apache2"}
+          ],
+          "config" : {
+            "ssh" : {
+              "user" : "ubuntu",
+              "keys" : ["dev-client-ec2"]
+            }
+          }
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("assembly_puppet_resource")
+    engine.create("assembly_salt_resource")
+end
+
+def destroy()
+    engine.destroy("assembly_puppet_resource")
+    engine.destroy("assembly_salt_resource")
+end
+
+def custom()
+    engine.destroy("assembly_puppet_resource")
+    engine.destroy("assembly_salt_resource")
+end
+

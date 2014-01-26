@@ -14,4 +14,9 @@ FactoryGirl.define do
     state "starting"
     harp_script
   end
+  
+  factory :key do
+    name "key_resource"
+    value "valid_key"
+  end
 end

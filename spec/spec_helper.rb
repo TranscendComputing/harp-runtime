@@ -22,10 +22,12 @@ end
 
 require 'data_mapper'
 
-DataMapper.setup(:default, "sqlite::memory:")
+#DataMapper.setup(:default, "sqlite::memory:")
+DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/devspec.db")
 
 require 'harp-runtime/models/autoscale'
 require 'harp-runtime/models/base'
+require 'harp-runtime/models/user_data'
 require 'harp-runtime/models/compute'
 require 'harp-runtime/models/rds'
 require 'harp-runtime/models/elastic_load_balancing'
