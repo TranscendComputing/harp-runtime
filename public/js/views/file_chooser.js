@@ -1,4 +1,4 @@
-/*global define, ace, console */
+/*global define, ace, console, window */
 define([
   'jquery',
   'underscore',
@@ -49,7 +49,9 @@ define([
     },
 
     load: function () {
-      this.model.set("content", this.editor.getValue());
+      if (this.sampleFile) {
+        window.location.href = "/edit?sample=" + this.sampleFile;
+      }
     }
   });
 
