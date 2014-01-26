@@ -1,0 +1,49 @@
+# Create some instances on AWS
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "computeInstance1": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
+        },
+        "computeInstance2": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
+        },
+        "computeInstance3": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro",
+            "key_name": "buildbot"
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("computeInstance1")
+    engine.create("computeInstance2")
+    engine.create("computeInstance3")
+    engine.create("computeInstance1", "service apache2 restart")
+end
+
+def destroy()
+    engine.destroy("computeInstance3")
+    engine.destroy("computeInstance2")
+    engine.destroy("computeInstance1")
+end
+
+def custom()
+    engine.destroy("computeInstance3")
+    engine.destroy("computeInstance2")
+    engine.destroy("computeInstance1")
+end
+

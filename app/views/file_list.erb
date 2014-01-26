@@ -1,0 +1,10 @@
+    "results": [
+    <% last = results.pop %><% results.each do |result| %>
+    {<% i = 1 %><%# result.each do |key, val| >"<%= key >": "<%= val >"<% if i < result.length >,%>
+        "name": "<%= result %>"
+    },<% end %>
+    <% if last %>
+    {
+        "name": "<%= last %>"
+    }
+<% end %>]

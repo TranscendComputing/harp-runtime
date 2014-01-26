@@ -5,6 +5,10 @@ body {
     overflow: hidden;
 }
 
+.form-row {
+    margin-bottom: 15px;
+}
+
 #editor {
     margin: 0;
     position: absolute;

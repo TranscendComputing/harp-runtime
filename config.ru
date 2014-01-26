@@ -22,6 +22,7 @@ require 'app/api_base'
 require 'app/harp_api'
 require 'app/harp_debug_api'
 require 'app/harp_user_api'
+require 'app/sample'
 require 'app/editor'
 require 'data_mapper'
 require 'delayed_job_data_mapper'
@@ -79,6 +80,16 @@ end
 ##~ a.description = "Harp User API"
 map "/api/v1/user" do
   run HarpUserApiApp
+end
+
+# Sample API
+#
+##~ a = sapi.apis.add
+##
+##~ a.set :path => "/sample"
+##~ a.description = "API for sample Harp scripts"
+map "/api/v1/sample" do
+  run SampleApp
 end
 
 map "/edit" do
