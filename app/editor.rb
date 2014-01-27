@@ -11,7 +11,7 @@ class EditorApp < Sinatra::Base
   end
 
   get '/' do
-    sample_file = params[:sample] || nil
+    sample_file = params[:sample] || "default.harp"
     if sample_file
       file = File.open(File.join(File.dirname(__FILE__), "../sample/#{sample_file}"))
       @content = file.read
