@@ -45,6 +45,7 @@ namespace :db do
   desc "Seed the database with configuration settings."
   task :seed do
     cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), 'config/settings.yaml'))
+    raise "Default Access/Secret keys not configured." if cnf['default_creds']['access']== 12345 || cnf['default_creds']['secret']== 67890
     cnf['default_creds']['keys'].each{|k| Key.first_or_create(:name=>k['name']).update(:value=>k['private_key']) }
     puts "Seeded Keys..."
   end

@@ -8,3 +8,34 @@
 default_creds:
   access: 12345
   secret: 67890
+  keys:
+        -  
+          name: default
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEAyXrPvzeVEj796mWg5xV3yi39SAXBXPFH/03xQFe0v8egSdOi
+            +G0riGKkeFvhjqvRPvxsX0Q+JGdJaYZYkQiphKHxIC7avKgyNgFzLeHHhQvcs9PF
+            pc4MR0d1xyemwTxKmERb4zlITDCNT2acDAR4sHhx6lPwM31Ga9FJfZDpqpXZUGdQ
+            d6yt5+sIfQL421yx7CfC3+wLL1Flp+ISgzcn4waHQiQNxXY0O7LMWuEDwD699fvn
+            6/EQjLteVQHlm9NPYBYmUYGks5XoWTcQe2xArjspluqhzgxNWdqP7dWrgpwgkGdz
+            /V102QNjwV2C9thZHqaDZm/PNQzC/23bJ5QNBQIDAQABAoIBAF7UXP+FK7bAy0YN
+            u2PIaO9SIgpKGy6hqd9yUgCUx1AUp07YO7Ztu7WfqAW2ST2bhQr+SAu21QDRVG5E
+            e18YEqGIjzM0mmN9TtS4bfvEbuIiKSjCnh5iEslhyv+HnCcLN5jfY9hY17x0ha4/
+            f2bwm9WDeyptg3rYldKdWNeu4ywUMN2Q8z8ap6rl6u7AxhgOGmqe+bWAtiuT44+L
+            dvDz5GgJCVD6nSerO/AF5t8NglVGRV7hVjZH9LoHAnIO78nWlxI/s4928aWfqboe
+            PCQ2MQYFLa9xYODQSSwQ2UAYUdC5CtELPdYOxFmK+MVicX5WHf9Il/FYYtezjhFd
+            xODriykCgYEA+MIUW7ih5G7rvK7o1Fuvbpj4UBR3E+jVXE7oHl5/439BJQO62l0D
+            UWT3KVO//+Ua/Kmjsq6MKCtjD/59Kx5E7XGBBl9TFgEHT4sVLVeTFK4djDvspheV
+            01DYaYiOWCoN6x1PJ8ghZeDM96HFNKPy+GkoFXzbMBLxR634vBruXZMCgYEAz1hh
+            UtwbaZHZSWjJaqdyBMrEQIN/n/sgXqLD41eZqRxNWSGL7IeZ4SKjvnlXNuxhbhi3
+            kwqmoTjleRqJS1tCpvmhecjUojZ0gmHgb9ew9bioNx6dPnh9mP0XJyJ9Tg8VQjrT
+            QcG0FFhOtBeI2GrmmnGeChsKpxEOq2WLC8XRSgcCgYEA7E7qKgul9ywL0y1RTtJe
+            QDEeymv2hrpLXSo0RQ0+bi3oA7KcYW20hjDkvqSpovzQey7nrAk2ab51l68I1tol
+            Xm7Rw+zwL9oASOb10iH8Pcv9k8clUs7a7GhDfVVU65nfqPcpx7/NQkugSqmpfg00
+            9hhnFKqMSgnknVQ+Eut+fvMCgYAyumrFPPiv8XD51ttAbsskhP9S0VlOKMCYprXK
+            T0pW54e9AModCmgJftIU7db6pwaHSyDOptJxq1vpLybb+u3psDVjeFEdhrkmlQ+2
+            DU1MMOtm4OSTviLsZS9e8b86c9I9q+q3sc5/E8Pdp8xhNnZI3vdNfaQzj6bJJETK
+            kpFLzQKBgFzSMD0t8Kbxb4O226HSgZevqNqXSuk/KbAsc3WB4xhCbCb8rd2v3q+6
+            LMWSJN9ynkkrf1KUfR0MHh0rQLCI3GUig5+JRf9ljnpPhe14zn8h/2tX4pW5AWSF
+            jz3nB3v6Tj0KktAKoOAYHlezQMgkiZ57nZwDGRdFoj838Hm1hwHz
+            -----END RSA PRIVATE KEY-----
