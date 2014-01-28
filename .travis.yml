@@ -11,6 +11,7 @@ rvm:
 matrix:
   allow_failures:
     - rvm: jruby-19mode
+    - rvm: "1.9.2" # no longer supported by httparty.
 before_script:
   - mongo harp_test --eval 'db.addUser("harp", "harp");'
   - gem install source2swagger
