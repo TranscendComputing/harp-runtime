@@ -1,0 +1,7 @@
+extern
+node_modules
+tmp
+vendor
+config/settings.y*ml
+bower_components
+*.db
