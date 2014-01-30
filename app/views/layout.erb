@@ -61,6 +61,13 @@
 
     <div class="container">
   <%= yield %>
+  
+  <%
+   cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../../config/settings.yaml'))
+  %>
+  <input id='access' name='access' type='hidden' value='<%=cnf['default_creds']['access']%>'/>
+  <input id='secret' name='secret' type='hidden' value='<%=cnf['default_creds']['secret']%>'/>
+  
     </div> <!-- /container -->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
