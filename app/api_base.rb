@@ -37,24 +37,27 @@ class ApiBase < Sinatra::Base
   before { content_type 'application/json', :charset => 'utf-8' }
 
   before {
-    if params[:harp_sig]
-      harp_sig = params[:harp_sig]
-      datetime = params[:datetime]
-      script = request.body.read
-
-      cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../config/settings.yaml'))
-      access = cnf['default_creds']['access']
-      secret = cnf['default_creds']['secret']
-      
-      string_to_sign = "HARP-HMAC-SHA256\n" +datetime+"\nPOST\n"+script
-      signature = sign(secret, string_to_sign) 
-      puts "signature #{signature}"
-      
-      if harp_sig != signature
-        raise "INVALID_MESSAGE_SIGNATURE"
+    if ENV['RACK_ENV'] == 'production'
+      # production config
+      if params[:harp_sig]
+        harp_sig = params[:harp_sig]
+        datetime = params[:datetime]
+        script = request.body.read
+  
+        cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../config/settings.yaml'))
+        access = cnf['default_creds']['access']
+        secret = cnf['default_creds']['secret']
+        
+        string_to_sign = "HARP-HMAC-SHA256\n" +datetime+"\nPOST\n"+script
+        signature = sign(secret, string_to_sign) 
+        puts "signature #{signature}"
+        
+        if harp_sig != signature
+          raise "INVALID_MESSAGE_SIGNATURE"
+        end
+      else
+        raise "MESSAGE_SIGNATURE_NOT_FOUND"
       end
-    else
-      raise "MESSAGE_SIGNATURE_NOT_FUND"
     end
     
     #Base64.encode64(hmac(secret, string_to_sign, digest_method)).strip
