@@ -61,6 +61,19 @@
 
     <div class="container">
   <%= yield %>
+  
+  <%
+   accessKey=""
+   secretKey=""
+   if ENV['RACK_ENV'] == 'production'
+    cnf = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../../config/settings.yaml'))
+    accessKey = cnf['default_creds']['access']
+    secertKey = cnf['default_creds']['secret']
+   end
+  %>
+  <input id='access' name='access' type='hidden' value='<%=accessKey%>'/>
+  <input id='secret' name='secret' type='hidden' value='<%=secretKey%>'/>
+  
     </div> <!-- /container -->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
