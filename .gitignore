@@ -26,4 +26,4 @@ config/settings.y*ml
 *.db
 node_modules
 bower_components
-.floo*
+.floo
