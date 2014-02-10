@@ -15,8 +15,7 @@
 	  },
 
 	  signature: function (credentials, datetime) {
-		var secret = credentials.secret;
-		var tosign = this.stringToSign(datetime);
+		var secret = credentials.secret, tosign = this.stringToSign(datetime);
 		var signed = CryptoJS.HmacSHA256(tosign, secret);
 		return signed.toString(CryptoJS.enc.Base64);
 	  },

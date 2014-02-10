@@ -1,4 +1,4 @@
-/*global define:true, Spinner:true, document:true, alert:true, console:true */
+/*global define:true, APISigner:true, Spinner:true, document:true, alert:true, console:true */
 define([
   'jquery',
   'underscore',
@@ -92,13 +92,11 @@ define([
           }
           lifecycle = lifecycle + "/" + this.harp_id;
       }
-      var access = $("#access").val();
-      var secret = $("#secret").val();
+      var access = $("#access").val(), secret = $("#secret").val(), credentials = {}, tm = new Date();
+
       APISigner.sign("POST", "/api/v1/harp-debug/"+lifecycle, "", data);
-      var credentials = new Object();
       credentials.access=access;
       credentials.secret=secret;
-      var tm = new Date();
       var datetime = tm.getFullYear()+":"+(tm.getMonth()+1)+":"+tm.getDate()+":"+tm.getHours()+":"+tm.getMinutes()+":" + tm.getSeconds()+":"+tm.getMilliseconds();
 	  var signature = APISigner.signature(credentials, datetime);
 	  signature = encodeURIComponent(signature);
