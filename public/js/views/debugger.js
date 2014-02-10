@@ -92,13 +92,18 @@ define([
           }
           lifecycle = lifecycle + "/" + this.harp_id;
       }
-      var access = $("#access").val(), secret = $("#secret").val(), credentials = {}, tm = new Date();
+      var access = $("#access").val(), 
+          secret = $("#secret").val(), 
+          credentials = {},
+          tm = new Date(),
+          datetime,
+          signature;
 
       APISigner.sign("POST", "/api/v1/harp-debug/"+lifecycle, "", data);
       credentials.access=access;
       credentials.secret=secret;
-      var datetime = tm.getFullYear()+":"+(tm.getMonth()+1)+":"+tm.getDate()+":"+tm.getHours()+":"+tm.getMinutes()+":" + tm.getSeconds()+":"+tm.getMilliseconds();
-	  var signature = APISigner.signature(credentials, datetime);
+      datetime = tm.getFullYear()+":"+(tm.getMonth()+1)+":"+tm.getDate()+":"+tm.getHours()+":"+tm.getMinutes()+":" + tm.getSeconds()+":"+tm.getMilliseconds();
+	  signature = APISigner.signature(credentials, datetime);
 	  signature = encodeURIComponent(signature);
 	  console.log("signature="+signature);
       return this.invoke("/api/v1/harp-debug/"+lifecycle+"?access="+access+

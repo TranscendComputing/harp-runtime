@@ -1,7 +1,7 @@
 /*global $:true, CryptoJS:true, _:true, console:true */
 
-//(function(){
-//  "use strict";
+(function(){
+  "use strict";
 
 	var APISigner = _.extend({
 	  constructor: function APISigner() {
@@ -15,8 +15,10 @@
 	  },
 
 	  signature: function (credentials, datetime) {
-		var secret = credentials.secret, tosign = this.stringToSign(datetime);
-		var signed = CryptoJS.HmacSHA256(tosign, secret);
+		var secret = credentials.secret, 
+		tosign = this.stringToSign(datetime),
+		signed;
+		signed = CryptoJS.HmacSHA256(tosign, secret);
 		return signed.toString(CryptoJS.enc.Base64);
 	  },
 
@@ -39,5 +41,5 @@
 		return parts.join('\n');
 	  }     
 	});
-//}());
+}());
 
