@@ -1,0 +1,30 @@
+# Create some instances on AWS
+template = <<END
+{
+    "Config": {
+    },
+    "Resources": {
+        "computeInstance1": {
+            "type": "Std::ComputeInstance",
+            "imageId": "ami-d0f89fb9",
+            "instanceType": "t1.micro",
+            "key_name": "rarora"
+        }
+    }
+}
+END
+
+engine.consume(template)
+
+def create()
+    engine.create("computeInstance1")
+end
+
+def destroy()
+    engine.destroy("computeInstance1")
+end
+
+def custom()
+    engine.destroy("computeInstance1")
+end
+
